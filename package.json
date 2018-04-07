@@ -1,0 +1,31 @@
+{
+  "name": "peviewer-dev",
+  "title": "PE Viewer",
+  "description": "Development working space of [peviewer.net](https://github.com/anders-liu/peviewer).",
+  "version": "0.0.1",
+  "author": "Anders Liu",
+  "license": "MIT",
+  "homepage": "https://github.com/anders-liu/peviewer-dev#readme",
+  "bugs": {
+    "url": "https://github.com/anders-liu/peviewer-dev/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anders-liu/peviewer-dev.git"
+  },
+  "keywords": [
+    "PE",
+    "EXE",
+    "DLL"
+  ],
+  "devDependencies": {
+    "@types/react": "^16.3.5",
+    "@types/react-dom": "^16.0.4",
+    "@types/react-redux": "^5.0.15",
+    "@types/redux": "^3.6.0",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-redux": "^5.0.7",
+    "redux": "^3.7.2"
+  }
+}
