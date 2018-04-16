@@ -1,0 +1,2 @@
+export const IMAGE_DOS_SIGNATURE = 0x5A4D;  // MZ
+export const IMAGE_NT_SIGNATURE = 0x00004550;  // PE00

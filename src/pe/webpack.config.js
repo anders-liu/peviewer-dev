@@ -2,14 +2,14 @@ const path = require("path");
 
 module.exports = (env) => {
     return {
-        entry: "./index.tsx",
+        entry: "./index.ts",
         output: {
-            filename: "ui.js",
+            filename: "pe.js",
             path: path.resolve(__dirname, "../../out/webpack/")
         },
         devtool: "source-map",
         resolve: {
-            extensions: [".ts", ".tsx", ".js"]
+            extensions: [".ts", ".js"],
         },
         module: {
             rules: [{
@@ -17,12 +17,6 @@ module.exports = (env) => {
             }, {
                 test: /\.js$/, loader: "source-map-loader", enforce: "pre"
             }]
-        },
-        externals: {
-            "react": "React",
-            "react-dom": "ReactDOM",
-            "redux": "Redux",
-            "react-redux": "ReactRedux"
         }
     };
 };
