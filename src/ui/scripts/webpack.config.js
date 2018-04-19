@@ -5,7 +5,7 @@ module.exports = (env) => {
         entry: "./index.tsx",
         output: {
             filename: "ui.js",
-            path: path.resolve(__dirname, "../../out/webpack/")
+            path: path.resolve(__dirname, "../../../out/webpack/")
         },
         devtool: "source-map",
         resolve: {

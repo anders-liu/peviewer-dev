@@ -3,5 +3,7 @@ node_modules/
 
 # Editors
 .vscode/
+.vs/
 
+# Outputs
 out/

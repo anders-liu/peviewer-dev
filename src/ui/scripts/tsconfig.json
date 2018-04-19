@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "../../out/tsc/ui/",
+        "outDir": "../../../out/tsc/ui/",
         "module": "commonjs",
         "lib": [
             "es6",
