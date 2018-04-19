@@ -4,12 +4,12 @@ module.exports = (env) => {
     return {
         entry: "./index.ts",
         output: {
-            filename: "pe.js",
+            filename: "worker.js",
             path: path.resolve(__dirname, "../../out/webpack/")
         },
         devtool: "source-map",
         resolve: {
-            extensions: [".ts", ".js"],
+            extensions: [".ts", ".js"]
         },
         module: {
             rules: [{
@@ -17,6 +17,9 @@ module.exports = (env) => {
             }, {
                 test: /\.js$/, loader: "source-map-loader", enforce: "pre"
             }]
+        },
+        externals: {
+            "pe": "PE"
         }
     };
 };

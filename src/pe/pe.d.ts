@@ -1,5 +1,5 @@
 declare namespace PE {
-    function load(): Image | null;
+    function load(buffer: ArrayBuffer): Image | null;
 
     interface Image {
         dosHeader: IMAGE_DOS_HEADER;

@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "outDir": "../../out/tsc/worker/",
+        "module": "commonjs",
+        "lib": [
+            "es6",
+            "webworker"
+        ],
+        "strict": true,
+        "removeComments": true,
+        "sourceMap": true
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}

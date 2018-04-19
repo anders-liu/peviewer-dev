@@ -1,3 +1,3 @@
-export function load(): PE.Image | null {
+export function load(buffer: ArrayBuffer): PE.Image | null {
     return null;
 }
