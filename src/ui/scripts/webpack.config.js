@@ -9,7 +9,10 @@ module.exports = (env) => {
         },
         devtool: "source-map",
         resolve: {
-            extensions: [".ts", ".tsx", ".js"]
+            extensions: [".ts", ".tsx", ".js"],
+            alias: {
+                "package.json": path.resolve(__dirname, "../../../package.json")
+            }
         },
         module: {
             rules: [{
