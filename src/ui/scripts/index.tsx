@@ -35,6 +35,8 @@ const store = Redux.createStore(R.appReducer, defaultState, composeEnhancers(
 ));
 
 ReactDOM.render(
-    <App />,
+    <ReactRedux.Provider store={store}>
+        <App />
+    </ReactRedux.Provider>,
     document.getElementById("app")
 );
