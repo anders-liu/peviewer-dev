@@ -34,6 +34,8 @@ const store = Redux.createStore(R.appReducer, defaultState, composeEnhancers(
         workerClientMiddleware)
 ));
 
+initWorkerClient(store);
+
 ReactDOM.render(
     <ReactRedux.Provider store={store}>
         <App />

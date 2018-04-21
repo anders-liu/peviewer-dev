@@ -2,6 +2,8 @@
 
 import * as M from "./message";
 
+importScripts("pe.js");
+
 let pe: PE.Image | null;
 
 onmessage = (ev) => {

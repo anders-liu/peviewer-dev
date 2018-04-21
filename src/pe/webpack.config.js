@@ -3,9 +3,12 @@ const path = require("path");
 module.exports = (env) => {
     return {
         entry: "./index.ts",
+        target: "webworker",
         output: {
             filename: "pe.js",
-            path: path.resolve(__dirname, "../../out/webpack/")
+            path: path.resolve(__dirname, "../../out/webpack/"),
+            libraryTarget: "umd",
+            library: "PE"
         },
         devtool: "source-map",
         resolve: {
