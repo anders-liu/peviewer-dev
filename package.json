@@ -18,6 +18,10 @@
     "EXE",
     "DLL"
   ],
+  "scripts": {
+    "build": "gulp",
+    "start": "pushd .\\out\\dist & start http-server -p 8051 & popd & start http://localhost:8051/dev"
+  },
   "devDependencies": {
     "@types/react": "^16.3.5",
     "@types/react-dom": "^16.0.4",
