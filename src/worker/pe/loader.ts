@@ -1,5 +1,5 @@
 import * as S from "./structures";
-import * as FL from "./image-flags";
+import * as F from "./image-flags";
 
 export interface FileDataProvider {
     getU1(p: number): number;
@@ -39,21 +39,21 @@ export function loadU8Field(d: FileDataProvider, p: number): S.U8Field {
     };
 }
 
-export function loadU1EnumField<TEnum>(d: FileDataProvider, p: number): S.U1EnumField<TEnum> {
+export function loadU1EnumField<T>(d: FileDataProvider, p: number): S.U1EnumField<T> {
     return {
-        _offset: p, _size: 1, data: d.getData(p, 1), value: d.getU1(p) as any as TEnum
+        _offset: p, _size: 1, data: d.getData(p, 1), value: d.getU1(p) as any as T
     };
 }
 
-export function loadU2EnumField<TEnum>(d: FileDataProvider, p: number): S.U2EnumField<TEnum> {
+export function loadU2EnumField<T>(d: FileDataProvider, p: number): S.U2EnumField<T> {
     return {
-        _offset: p, _size: 2, data: d.getData(p, 2), value: d.getU2(p) as any as TEnum
+        _offset: p, _size: 2, data: d.getData(p, 2), value: d.getU2(p) as any as T
     };
 }
 
-export function loadU4EnumField<TEnum>(d: FileDataProvider, p: number): S.U4EnumField<TEnum> {
+export function loadU4EnumField<T>(d: FileDataProvider, p: number): S.U4EnumField<T> {
     return {
-        _offset: p, _size: 4, data: d.getData(p, 4), value: d.getU4(p) as any as TEnum
+        _offset: p, _size: 4, data: d.getData(p, 4), value: d.getU4(p) as any as T
     };
 }
 
@@ -70,6 +70,23 @@ export function loadFixedSizeAsciiStringField(d: FileDataProvider, p: number, sz
     return {
         _offset: p, _size: sz, data, value
     };
+}
+
+export function loadStructArrayByCount<T extends S.FileData>(
+    d: FileDataProvider,
+    p: number,
+    loader: (d: FileDataProvider, p: number) => T,
+    count: number): S.StructArray<T> {
+
+    let items: T[] = [];
+    let ptr = p;
+    for (let i = 0; i < count; i++) {
+        const s = loader(d, ptr);
+        items.push(s);
+        ptr += s._size;
+    }
+
+    return { _offset: p, _size: ptr - p, items };
 }
 
 //
@@ -181,7 +198,7 @@ export function loadImageFileHeader(d: FileDataProvider, p: number): S.ImageFile
     const SizeOfOptionalHeader = loadU2Field(d, p);
     ptr += SizeOfOptionalHeader._size;
 
-    const Characteristics = loadU2EnumField<FL.ImageFile>(d, p);
+    const Characteristics = loadU2EnumField<F.ImageFile>(d, p);
     ptr += Characteristics._size;
 
     return {
@@ -265,10 +282,10 @@ export function loadImageOptionalHeader32(d: FileDataProvider, p: number): S.Ima
     const CheckSum = loadU4Field(d, p);
     ptr += CheckSum._size;
 
-    const Subsystem = loadU2EnumField<FL.ImageSubsystem>(d, p);
+    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, p);
     ptr += Subsystem._size;
 
-    const DllCharacteristics = loadU2EnumField<FL.ImageDllCharacteristics>(d, p);
+    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, p);
     ptr += DllCharacteristics._size;
 
     const SizeOfStackReserve = loadU4Field(d, p);
@@ -390,10 +407,10 @@ export function loadImageOptionalHeader64(d: FileDataProvider, p: number): S.Ima
     const CheckSum = loadU4Field(d, p);
     ptr += CheckSum._size;
 
-    const Subsystem = loadU2EnumField<FL.ImageSubsystem>(d, p);
+    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, p);
     ptr += Subsystem._size;
 
-    const DllCharacteristics = loadU2EnumField<FL.ImageDllCharacteristics>(d, p);
+    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, p);
     ptr += DllCharacteristics._size;
 
     const SizeOfStackReserve = loadU8Field(d, p);
@@ -448,6 +465,22 @@ export function loadImageOptionalHeader64(d: FileDataProvider, p: number): S.Ima
     };
 }
 
+export function loadImageDataDirectory(d: FileDataProvider, p: number): S.ImageDataDirectory {
+    let ptr = p;
+
+    const VirtualAddress = loadU4Field(d, ptr);
+    ptr += VirtualAddress._size;
+
+    const Size = loadU4Field(d, ptr);
+    ptr += Size._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        VirtualAddress,
+        Size,
+    };
+}
+
 export function loadImageSectionHeader(d: FileDataProvider, p: number): S.ImageSectionHeader {
     let ptr = p;
 
@@ -478,7 +511,7 @@ export function loadImageSectionHeader(d: FileDataProvider, p: number): S.ImageS
     const NumberOfLinenumbers = loadU2Field(d, p);
     ptr += NumberOfLinenumbers._size;
 
-    const Characteristics = loadU4EnumField<FL.ImageSection>(d, p);
+    const Characteristics = loadU4EnumField<F.ImageSection>(d, p);
     ptr += Characteristics._size;
 
     return {

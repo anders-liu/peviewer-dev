@@ -1,5 +1,5 @@
 import * as L from "./loader";
-import * as FL from "./image-flags";
+import * as F from "./image-flags";
 
 //
 // Basic structures.
@@ -27,16 +27,20 @@ export interface U8Field extends Field {
     low: number;
 }
 
-export interface EnumField<TEnum> extends Field {
-    value: TEnum;
+export interface EnumField<T> extends Field {
+    value: T;
 }
 
-export interface U1EnumField<TEnum> extends EnumField<TEnum> { }
-export interface U2EnumField<TEnum> extends EnumField<TEnum> { }
-export interface U4EnumField<TEnum> extends EnumField<TEnum> { }
+export interface U1EnumField<T> extends EnumField<T> { }
+export interface U2EnumField<T> extends EnumField<T> { }
+export interface U4EnumField<T> extends EnumField<T> { }
 
 export interface StringField extends Field {
     value: string;
+}
+
+export interface StructArray<T extends FileData> extends FileData {
+    items: T[];
 }
 
 //
@@ -66,13 +70,13 @@ export interface ImageDosHeader extends FileData {
 };
 
 export interface ImageFileHeader extends FileData {
-    /* WORD  */ Machine: U2EnumField<FL.ImageFileMachine>;
+    /* WORD  */ Machine: U2EnumField<F.ImageFileMachine>;
     /* WORD  */ NumberOfSections: U2Field;
     /* DWORD */ TimeDateStamp: U4Field;
     /* DWORD */ PointerToSymbolTable: U4Field;
     /* DWORD */ NumberOfSymbols: U4Field;
     /* WORD  */ SizeOfOptionalHeader: U2Field;
-    /* WORD  */ Characteristics: U2EnumField<FL.ImageFile>;
+    /* WORD  */ Characteristics: U2EnumField<F.ImageFile>;
 };
 
 export interface ImageOptionalHeader32 extends FileData {
@@ -99,8 +103,8 @@ export interface ImageOptionalHeader32 extends FileData {
     /* DWORD */ SizeOfImage: U4Field;
     /* DWORD */ SizeOfHeaders: U4Field;
     /* DWORD */ CheckSum: U4Field;
-    /* WORD  */ Subsystem: U2EnumField<FL.ImageSubsystem>;
-    /* WORD  */ DllCharacteristics: U2EnumField<FL.ImageDllCharacteristics>;
+    /* WORD  */ Subsystem: U2EnumField<F.ImageSubsystem>;
+    /* WORD  */ DllCharacteristics: U2EnumField<F.ImageDllCharacteristics>;
     /* DWORD */ SizeOfStackReserve: U4Field;
     /* DWORD */ SizeOfStackCommit: U4Field;
     /* DWORD */ SizeOfHeapReserve: U4Field;
@@ -132,8 +136,8 @@ export interface ImageOptionalHeader64 extends FileData {
     /* DWORD */ SizeOfImage: U4Field;
     /* DWORD */ SizeOfHeaders: U4Field;
     /* DWORD */ CheckSum: U4Field;
-    /* WORD  */ Subsystem: U2EnumField<FL.ImageSubsystem>;
-    /* WORD  */ DllCharacteristics: U2EnumField<FL.ImageDllCharacteristics>;
+    /* WORD  */ Subsystem: U2EnumField<F.ImageSubsystem>;
+    /* WORD  */ DllCharacteristics: U2EnumField<F.ImageDllCharacteristics>;
     /* ULONGLONG */ SizeOfStackReserve: U8Field;
     /* ULONGLONG */ SizeOfStackCommit: U8Field;
     /* ULONGLONG */ SizeOfHeapReserve: U8Field;
@@ -157,5 +161,5 @@ export interface ImageSectionHeader extends FileData {
     /* DWORD */ PointerToLinenumbers: U4Field;
     /* WORD  */ NumberOfRelocations: U2Field;
     /* WORD  */ NumberOfLinenumbers: U2Field;
-    /* DWORD */ Characteristics: U4EnumField<FL.ImageSection>;
+    /* DWORD */ Characteristics: U4EnumField<F.ImageSection>;
 };

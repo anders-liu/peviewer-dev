@@ -2,6 +2,9 @@ export const IMAGE_DOS_SIGNATURE = 0x4D5A;  // MZ
 
 export const IMAGE_NT_SIGNATURE = 0x50450000;  // PE00
 
+export const IMAGE_NT_OPTIONAL_HDR32_MAGIC = 0x10b;
+export const IMAGE_NT_OPTIONAL_HDR64_MAGIC = 0x20b;
+
 export enum ImageFile {
     IMAGE_FILE_RELOCS_STRIPPED = 0x0001,
     IMAGE_FILE_EXECUTABLE_IMAGE = 0x0002,
