@@ -59,7 +59,7 @@ export class PEImage implements L.FileDataProvider {
         this.fileHeader = L.loadImageFileHeader(this, ptr);
 
         ptr += this.fileHeader._size;
-        const magic = L.loadU4Field(this, ptr);
+        const magic = L.loadU2Field(this, ptr);
         switch (magic.value) {
             case F.IMAGE_NT_OPTIONAL_HDR32_MAGIC:
                 this.optionalHeader = L.loadImageOptionalHeader32(this, ptr);

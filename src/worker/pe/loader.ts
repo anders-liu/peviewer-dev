@@ -180,25 +180,25 @@ export function loadImageDosHeader(d: FileDataProvider, p: number): S.ImageDosHe
 export function loadImageFileHeader(d: FileDataProvider, p: number): S.ImageFileHeader {
     let ptr = p;
 
-    const Machine = loadU2Field(d, p);
+    const Machine = loadU2Field(d, ptr);
     ptr += Machine._size;
 
-    const NumberOfSections = loadU2Field(d, p);
+    const NumberOfSections = loadU2Field(d, ptr);
     ptr += NumberOfSections._size;
 
-    const TimeDateStamp = loadU4Field(d, p);
+    const TimeDateStamp = loadU4Field(d, ptr);
     ptr += TimeDateStamp._size;
 
-    const PointerToSymbolTable = loadU4Field(d, p);
+    const PointerToSymbolTable = loadU4Field(d, ptr);
     ptr += PointerToSymbolTable._size;
 
-    const NumberOfSymbols = loadU4Field(d, p);
+    const NumberOfSymbols = loadU4Field(d, ptr);
     ptr += NumberOfSymbols._size;
 
-    const SizeOfOptionalHeader = loadU2Field(d, p);
+    const SizeOfOptionalHeader = loadU2Field(d, ptr);
     ptr += SizeOfOptionalHeader._size;
 
-    const Characteristics = loadU2EnumField<F.ImageFile>(d, p);
+    const Characteristics = loadU2EnumField<F.ImageFile>(d, ptr);
     ptr += Characteristics._size;
 
     return {
@@ -216,94 +216,94 @@ export function loadImageFileHeader(d: FileDataProvider, p: number): S.ImageFile
 export function loadImageOptionalHeader32(d: FileDataProvider, p: number): S.ImageOptionalHeader32 {
     let ptr = p;
 
-    const Magic = loadU2Field(d, p);
+    const Magic = loadU2Field(d, ptr);
     ptr += Magic._size;
 
-    const MajorLinkerVersion = loadU1Field(d, p);
+    const MajorLinkerVersion = loadU1Field(d, ptr);
     ptr += MajorLinkerVersion._size;
 
-    const MinorLinkerVersion = loadU1Field(d, p);
+    const MinorLinkerVersion = loadU1Field(d, ptr);
     ptr += MinorLinkerVersion._size;
 
-    const SizeOfCode = loadU4Field(d, p);
+    const SizeOfCode = loadU4Field(d, ptr);
     ptr += SizeOfCode._size;
 
-    const SizeOfInitializedData = loadU4Field(d, p);
+    const SizeOfInitializedData = loadU4Field(d, ptr);
     ptr += SizeOfInitializedData._size;
 
-    const SizeOfUninitializedData = loadU4Field(d, p);
+    const SizeOfUninitializedData = loadU4Field(d, ptr);
     ptr += SizeOfUninitializedData._size;
 
-    const AddressOfEntryPoint = loadU4Field(d, p);
+    const AddressOfEntryPoint = loadU4Field(d, ptr);
     ptr += AddressOfEntryPoint._size;
 
-    const BaseOfCode = loadU4Field(d, p);
+    const BaseOfCode = loadU4Field(d, ptr);
     ptr += BaseOfCode._size;
 
-    const BaseOfData = loadU4Field(d, p);
+    const BaseOfData = loadU4Field(d, ptr);
     ptr += BaseOfData._size;
 
-    const ImageBase = loadU4Field(d, p);
+    const ImageBase = loadU4Field(d, ptr);
     ptr += ImageBase._size;
 
-    const SectionAlignment = loadU4Field(d, p);
+    const SectionAlignment = loadU4Field(d, ptr);
     ptr += SectionAlignment._size;
 
-    const FileAlignment = loadU4Field(d, p);
+    const FileAlignment = loadU4Field(d, ptr);
     ptr += FileAlignment._size;
 
-    const MajorOperatingSystemVersion = loadU2Field(d, p);
+    const MajorOperatingSystemVersion = loadU2Field(d, ptr);
     ptr += MajorOperatingSystemVersion._size;
 
-    const MinorOperatingSystemVersion = loadU2Field(d, p);
+    const MinorOperatingSystemVersion = loadU2Field(d, ptr);
     ptr += MinorOperatingSystemVersion._size;
 
-    const MajorImageVersion = loadU2Field(d, p);
+    const MajorImageVersion = loadU2Field(d, ptr);
     ptr += MajorImageVersion._size;
 
-    const MinorImageVersion = loadU2Field(d, p);
+    const MinorImageVersion = loadU2Field(d, ptr);
     ptr += MinorImageVersion._size;
 
-    const MajorSubsystemVersion = loadU2Field(d, p);
+    const MajorSubsystemVersion = loadU2Field(d, ptr);
     ptr += MajorSubsystemVersion._size;
 
-    const MinorSubsystemVersion = loadU2Field(d, p);
+    const MinorSubsystemVersion = loadU2Field(d, ptr);
     ptr += MinorSubsystemVersion._size;
 
-    const Win32VersionValue = loadU4Field(d, p);
+    const Win32VersionValue = loadU4Field(d, ptr);
     ptr += Win32VersionValue._size;
 
-    const SizeOfImage = loadU4Field(d, p);
+    const SizeOfImage = loadU4Field(d, ptr);
     ptr += SizeOfImage._size;
 
-    const SizeOfHeaders = loadU4Field(d, p);
+    const SizeOfHeaders = loadU4Field(d, ptr);
     ptr += SizeOfHeaders._size;
 
-    const CheckSum = loadU4Field(d, p);
+    const CheckSum = loadU4Field(d, ptr);
     ptr += CheckSum._size;
 
-    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, p);
+    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, ptr);
     ptr += Subsystem._size;
 
-    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, p);
+    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, ptr);
     ptr += DllCharacteristics._size;
 
-    const SizeOfStackReserve = loadU4Field(d, p);
+    const SizeOfStackReserve = loadU4Field(d, ptr);
     ptr += SizeOfStackReserve._size;
 
-    const SizeOfStackCommit = loadU4Field(d, p);
+    const SizeOfStackCommit = loadU4Field(d, ptr);
     ptr += SizeOfStackCommit._size;
 
-    const SizeOfHeapReserve = loadU4Field(d, p);
+    const SizeOfHeapReserve = loadU4Field(d, ptr);
     ptr += SizeOfHeapReserve._size;
 
-    const SizeOfHeapCommit = loadU4Field(d, p);
+    const SizeOfHeapCommit = loadU4Field(d, ptr);
     ptr += SizeOfHeapCommit._size;
 
-    const LoaderFlags = loadU4Field(d, p);
+    const LoaderFlags = loadU4Field(d, ptr);
     ptr += LoaderFlags._size;
 
-    const NumberOfRvaAndSizes = loadU4Field(d, p);
+    const NumberOfRvaAndSizes = loadU4Field(d, ptr);
     ptr += NumberOfRvaAndSizes._size;
 
     return {
@@ -344,91 +344,91 @@ export function loadImageOptionalHeader32(d: FileDataProvider, p: number): S.Ima
 export function loadImageOptionalHeader64(d: FileDataProvider, p: number): S.ImageOptionalHeader64 {
     let ptr = p;
 
-    const Magic = loadU2Field(d, p);
+    const Magic = loadU2Field(d, ptr);
     ptr += Magic._size;
 
-    const MajorLinkerVersion = loadU1Field(d, p);
+    const MajorLinkerVersion = loadU1Field(d, ptr);
     ptr += MajorLinkerVersion._size;
 
-    const MinorLinkerVersion = loadU1Field(d, p);
+    const MinorLinkerVersion = loadU1Field(d, ptr);
     ptr += MinorLinkerVersion._size;
 
-    const SizeOfCode = loadU4Field(d, p);
+    const SizeOfCode = loadU4Field(d, ptr);
     ptr += SizeOfCode._size;
 
-    const SizeOfInitializedData = loadU4Field(d, p);
+    const SizeOfInitializedData = loadU4Field(d, ptr);
     ptr += SizeOfInitializedData._size;
 
-    const SizeOfUninitializedData = loadU4Field(d, p);
+    const SizeOfUninitializedData = loadU4Field(d, ptr);
     ptr += SizeOfUninitializedData._size;
 
-    const AddressOfEntryPoint = loadU4Field(d, p);
+    const AddressOfEntryPoint = loadU4Field(d, ptr);
     ptr += AddressOfEntryPoint._size;
 
-    const BaseOfCode = loadU4Field(d, p);
+    const BaseOfCode = loadU4Field(d, ptr);
     ptr += BaseOfCode._size;
 
-    const ImageBase = loadU8Field(d, p);
+    const ImageBase = loadU8Field(d, ptr);
     ptr += ImageBase._size;
 
-    const SectionAlignment = loadU4Field(d, p);
+    const SectionAlignment = loadU4Field(d, ptr);
     ptr += SectionAlignment._size;
 
-    const FileAlignment = loadU4Field(d, p);
+    const FileAlignment = loadU4Field(d, ptr);
     ptr += FileAlignment._size;
 
-    const MajorOperatingSystemVersion = loadU2Field(d, p);
+    const MajorOperatingSystemVersion = loadU2Field(d, ptr);
     ptr += MajorOperatingSystemVersion._size;
 
-    const MinorOperatingSystemVersion = loadU2Field(d, p);
+    const MinorOperatingSystemVersion = loadU2Field(d, ptr);
     ptr += MinorOperatingSystemVersion._size;
 
-    const MajorImageVersion = loadU2Field(d, p);
+    const MajorImageVersion = loadU2Field(d, ptr);
     ptr += MajorImageVersion._size;
 
-    const MinorImageVersion = loadU2Field(d, p);
+    const MinorImageVersion = loadU2Field(d, ptr);
     ptr += MinorImageVersion._size;
 
-    const MajorSubsystemVersion = loadU2Field(d, p);
+    const MajorSubsystemVersion = loadU2Field(d, ptr);
     ptr += MajorSubsystemVersion._size;
 
-    const MinorSubsystemVersion = loadU2Field(d, p);
+    const MinorSubsystemVersion = loadU2Field(d, ptr);
     ptr += MinorSubsystemVersion._size;
 
-    const Win32VersionValue = loadU4Field(d, p);
+    const Win32VersionValue = loadU4Field(d, ptr);
     ptr += Win32VersionValue._size;
 
-    const SizeOfImage = loadU4Field(d, p);
+    const SizeOfImage = loadU4Field(d, ptr);
     ptr += SizeOfImage._size;
 
-    const SizeOfHeaders = loadU4Field(d, p);
+    const SizeOfHeaders = loadU4Field(d, ptr);
     ptr += SizeOfHeaders._size;
 
-    const CheckSum = loadU4Field(d, p);
+    const CheckSum = loadU4Field(d, ptr);
     ptr += CheckSum._size;
 
-    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, p);
+    const Subsystem = loadU2EnumField<F.ImageSubsystem>(d, ptr);
     ptr += Subsystem._size;
 
-    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, p);
+    const DllCharacteristics = loadU2EnumField<F.ImageDllCharacteristics>(d, ptr);
     ptr += DllCharacteristics._size;
 
-    const SizeOfStackReserve = loadU8Field(d, p);
+    const SizeOfStackReserve = loadU8Field(d, ptr);
     ptr += SizeOfStackReserve._size;
 
-    const SizeOfStackCommit = loadU8Field(d, p);
+    const SizeOfStackCommit = loadU8Field(d, ptr);
     ptr += SizeOfStackCommit._size;
 
-    const SizeOfHeapReserve = loadU8Field(d, p);
+    const SizeOfHeapReserve = loadU8Field(d, ptr);
     ptr += SizeOfHeapReserve._size;
 
-    const SizeOfHeapCommit = loadU8Field(d, p);
+    const SizeOfHeapCommit = loadU8Field(d, ptr);
     ptr += SizeOfHeapCommit._size;
 
-    const LoaderFlags = loadU4Field(d, p);
+    const LoaderFlags = loadU4Field(d, ptr);
     ptr += LoaderFlags._size;
 
-    const NumberOfRvaAndSizes = loadU4Field(d, p);
+    const NumberOfRvaAndSizes = loadU4Field(d, ptr);
     ptr += NumberOfRvaAndSizes._size;
 
     return {
@@ -484,34 +484,34 @@ export function loadImageDataDirectory(d: FileDataProvider, p: number): S.ImageD
 export function loadImageSectionHeader(d: FileDataProvider, p: number): S.ImageSectionHeader {
     let ptr = p;
 
-    const Name = loadFixedSizeAsciiStringField(d, p, 8);
+    const Name = loadFixedSizeAsciiStringField(d, ptr, 8);
     ptr += Name._size;
 
-    const VirtualSize = loadU4Field(d, p);
+    const VirtualSize = loadU4Field(d, ptr);
     ptr += VirtualSize._size;
 
-    const VirtualAddress = loadU4Field(d, p);
+    const VirtualAddress = loadU4Field(d, ptr);
     ptr += VirtualAddress._size;
 
-    const SizeOfRawData = loadU4Field(d, p);
+    const SizeOfRawData = loadU4Field(d, ptr);
     ptr += SizeOfRawData._size;
 
-    const PointerToRawData = loadU4Field(d, p);
+    const PointerToRawData = loadU4Field(d, ptr);
     ptr += PointerToRawData._size;
 
-    const PointerToRelocations = loadU4Field(d, p);
+    const PointerToRelocations = loadU4Field(d, ptr);
     ptr += PointerToRelocations._size;
 
-    const PointerToLinenumbers = loadU4Field(d, p);
+    const PointerToLinenumbers = loadU4Field(d, ptr);
     ptr += PointerToLinenumbers._size;
 
-    const NumberOfRelocations = loadU2Field(d, p);
+    const NumberOfRelocations = loadU2Field(d, ptr);
     ptr += NumberOfRelocations._size;
 
-    const NumberOfLinenumbers = loadU2Field(d, p);
+    const NumberOfLinenumbers = loadU2Field(d, ptr);
     ptr += NumberOfLinenumbers._size;
 
-    const Characteristics = loadU4EnumField<F.ImageSection>(d, p);
+    const Characteristics = loadU4EnumField<F.ImageSection>(d, ptr);
     ptr += Characteristics._size;
 
     return {
