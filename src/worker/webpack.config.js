@@ -17,9 +17,6 @@ module.exports = (env) => {
             }, {
                 test: /\.js$/, loader: "source-map-loader", enforce: "pre"
             }]
-        },
-        externals: {
-            "pe": "PE"
         }
     };
 };

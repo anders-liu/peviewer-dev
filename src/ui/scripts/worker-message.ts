@@ -2,7 +2,7 @@
 
 export function createReqOpenFileMessage(file: File): W.ReqOpenFileMessage {
     return {
-        type: "REQ_OPEN_FILE",
+        type: W.WorkerMessageType.REQ_OPEN_FILE,
         file
     };
 }

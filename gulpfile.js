@@ -7,23 +7,20 @@ const ws = require("webpack-stream");
 
 gulp.task("default", ["dev", "prod"]);
 
-gulp.task("dev", ["html-dev", "ui-dev", "worker-dev", "pe-dev"]);
-gulp.task("prod", ["html-prod", "ui-prod", "worker-prod", "pe-prod"]);
+gulp.task("dev", ["html-dev", "ui-dev", "worker-dev"]);
+gulp.task("prod", ["html-prod", "ui-prod", "worker-prod"]);
 
 gulp.task("html", ["html-dev", "html-prod"]);
 gulp.task("ui", ["ui-dev", "ui-prod"]);
 gulp.task("worker", ["worker-dev", "worker-prod"]);
-gulp.task("pe", ["pe-dev", "pe-prod"]);
 
 gulp.task("html-dev", () => build_html(true));
 gulp.task("ui-dev", () => build_scripts(true, PATH_SRC_UI));
 gulp.task("worker-dev", () => build_scripts(true, PATH_SRC_WORKER));
-gulp.task("pe-dev", () => build_scripts(true, PATH_SRC_PE));
 
 gulp.task("html-prod", () => build_html(false));
 gulp.task("ui-prod", () => build_scripts(false, PATH_SRC_UI));
 gulp.task("worker-prod", () => build_scripts(false, PATH_SRC_WORKER));
-gulp.task("pe-prod", () => build_scripts(false, PATH_SRC_PE));
 
 function build_html(is_dev) {
     const js_react = is_dev ? JS_REACT_DEV : JS_REACT;
@@ -70,7 +67,6 @@ const PATH_SRC = "./src/";
 const PATH_SRC_HTML = PATH_SRC + "ui/html/";
 const PATH_SRC_UI = PATH_SRC + "ui/scripts/";
 const PATH_SRC_WORKER = PATH_SRC + "worker/";
-const PATH_SRC_PE = PATH_SRC + "pe/";
 
 const PATH_OUT = "./out/dist/";
 const PATH_OUT_DEV = PATH_OUT + "dev/";

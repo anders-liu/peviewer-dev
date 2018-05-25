@@ -1,15 +1,12 @@
-/// <reference path="../pe/pe.d.ts" />
-
 import * as M from "./message";
+import { PEImage } from "./pe/image";
 
-importScripts("pe.js");
-
-let pe: PE.Image | null;
+let pe: PEImage | null = null;
 
 onmessage = (ev) => {
     const msg = ev.data as W.WorkerMessage;
     switch (msg.type) {
-        case "REQ_OPEN_FILE":
+        case W.WorkerMessageType.REQ_OPEN_FILE:
             handleReqOpenFile(msg as W.ReqOpenFileMessage);
             break;
     }
@@ -20,7 +17,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
 
     reader.onload = ev => {
         const buf = <ArrayBuffer>(<FileReader>ev.target).result;
-        pe = PE.load(buf);
+        pe = PEImage.load(buf);
     };
 
     reader.onerror = ev => {
