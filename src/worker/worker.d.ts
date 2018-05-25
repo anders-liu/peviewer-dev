@@ -3,13 +3,13 @@ declare namespace W {
     // Message
     //
 
-    type WorkerMessageType
-        = "REQ_OPEN_FILE"
+    const enum WorkerMessageType {
+        REQ_OPEN_FILE = "REQ_OPEN_FILE",
 
-        | "RES_NAV_DATA"
-        | "RES_PAGE_DATA"
-        | "RES_PE_ERROR"
-        ;
+        RES_NAV_DATA = "RES_NAV_DATA",
+        RES_PAGE_DATA = "RES_PAGE_DATA",
+        RES_PE_ERROR = "RES_PE_ERROR",
+    }
 
     export interface WorkerMessage {
         type: WorkerMessageType;

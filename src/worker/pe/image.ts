@@ -31,7 +31,7 @@ export class PEImage implements L.FileDataProvider {
     private check(p: number, sz: number): void {
         if (p < 0 || p >= this.data.byteLength
             || sz < 0 || p + sz > this.data.byteLength) {
-            throw new E.PEError("INVALID_DATA_POSITION", p, sz);
+            throw new E.PEError(E.PEErrorType.INVALID_DATA_POSITION, p, sz);
         }
     }
 
@@ -45,14 +45,14 @@ export class PEImage implements L.FileDataProvider {
         this.dosHeader = L.loadImageDosHeader(this, ptr);
 
         if (this.dosHeader.e_magic.value != F.IMAGE_DOS_SIGNATURE) {
-            throw new E.PEError("INVALID_DOS_SIGNATURE", ptr, 2);
+            throw new E.PEError(E.PEErrorType.INVALID_DOS_SIGNATURE, ptr, 2);
         }
 
         ptr = this.dosHeader.e_lfanew.value;
         this.peSignature = L.loadU4Field(this, ptr);
 
         if (this.peSignature.value != F.IMAGE_NT_SIGNATURE) {
-            throw new E.PEError("INVALID_PE_SIGNATURE", ptr, 4);
+            throw new E.PEError(E.PEErrorType.INVALID_PE_SIGNATURE, ptr, 4);
         }
 
         ptr += this.peSignature._size;
@@ -68,11 +68,11 @@ export class PEImage implements L.FileDataProvider {
                 this.optionalHeader = L.loadImageOptionalHeader64(this, ptr);
                 break;
             default:
-                throw new E.PEError("INVALID_OPTIONAL_HEADER_MAGIC", ptr, 2);
+                throw new E.PEError(E.PEErrorType.INVALID_OPTIONAL_HEADER_MAGIC, ptr, 2);
         }
 
         if (this.optionalHeader.NumberOfRvaAndSizes.value != F.IMAGE_NUMBEROF_DIRECTORY_ENTRIES) {
-            throw new E.PEError("INVALID_DATA_DIRECTORY_COUNT",
+            throw new E.PEError(E.PEErrorType.INVALID_DATA_DIRECTORY_COUNT,
                 this.optionalHeader.NumberOfRvaAndSizes._offset,
                 this.optionalHeader.NumberOfRvaAndSizes._size);
         }
