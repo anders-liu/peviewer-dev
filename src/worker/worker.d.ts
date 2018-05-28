@@ -50,10 +50,10 @@ declare namespace W {
     // Page data
     //
 
-    export type PageID
-        = "HOME"
-        | "HEADERS"
-        ;
+    export const enum PageID {
+        HOME = "HOME",
+        HEADERS = "HEADERS",
+    }
 
     export interface PageData {
         id: PageID;
@@ -62,32 +62,45 @@ declare namespace W {
 
     export interface SimpleStruct {
         title?: string;
-        items: SimpleStructItem[];
+        items?: SimpleStructItem[];
     }
 
     export interface GroupedStruct {
         title?: string;
-        groups: GroupedStructData[];
-    }
-
-    export interface GroupedStructData {
-        title?: string;
-        items: SimpleStructItem[];
+        groups?: SimpleStruct[];
     }
 
     export interface SimpleStructItem {
-        offset: number;
-        rva?: number;
-        size: number;
+        offset: string;
+        size: string;
+        rawData: string[];
         name: string;
-        value: number;
+        value: string;
+        descriptions?: ItemDescription[];
+    }
+
+    export const enum ItemDescriptionType {
+        SimpleString,
+        Nav,
+    }
+
+    export interface ItemDescription {
+        type: ItemDescriptionType;
+    }
+
+    export interface ItemSimpleDescription extends ItemDescription {
+        content: string;
+    }
+
+    export interface ItemNavDescription extends ItemDescription {
+        target: NavTarget;
     }
 
     export interface HeadersPageData extends PageData {
         dosHeader: SimpleStruct;
         peSignature: SimpleStruct;
-        peHeader: SimpleStruct;
+        fileHeader: SimpleStruct;
         optionalHeader: GroupedStruct;
-        sectionHeaders: SimpleStruct[];
+        sectionHeaders: GroupedStruct;
     }
 }

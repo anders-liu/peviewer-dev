@@ -1,5 +1,6 @@
 import * as M from "./message";
 import { PEImage } from "./pe/image";
+import { generatePageData } from "./page-data/generator";
 
 let pe: PEImage | null = null;
 
@@ -16,8 +17,17 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
     let reader = new FileReader();
 
     reader.onload = ev => {
-        const buf = <ArrayBuffer>(<FileReader>ev.target).result;
-        pe = PEImage.load(buf);
+        try {
+            const buf = <ArrayBuffer>(<FileReader>ev.target).result;
+            pe = PEImage.load(buf);
+            const pageData = generatePageData(pe, W.PageID.HEADERS);
+            const msg = M.createResPageDataMessage(pageData);
+            postMessage(msg);
+        } catch (ex) {
+            const msg = M.createResPEErrorMessage(ex.message
+                || `Unknown error: ${JSON.stringify(ex)}`);
+            postMessage(msg);
+        }
     };
 
     reader.onerror = ev => {

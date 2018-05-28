@@ -66,7 +66,7 @@ export interface ImageDosHeader extends FileData {
     /* WORD     */ e_oemid: U2Field;
     /* WORD     */ e_oeminfo: U2Field;
     /* WORD[10] */ e_res2: Field;
-    /* LONG     */ e_lfanew: U2Field;
+    /* LONG     */ e_lfanew: U4Field;
 };
 
 export interface ImageFileHeader extends FileData {

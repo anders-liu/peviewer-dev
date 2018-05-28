@@ -1,10 +1,10 @@
 import * as Redux from "redux";
 
-export type ActionType
-    = "OPEN_FILE"
-    | "SET_PAGE_DATA"
-    | "SET_WORKER_ERROR"
-    ;
+export const enum ActionType {
+    "OPEN_FILE",
+    "SET_PAGE_DATA",
+    "SET_WORKER_ERROR",
+}
 
 export interface OpenFileAction extends Redux.Action {
     file: File;

@@ -28,6 +28,30 @@ export class PEImage implements L.FileDataProvider {
         return new Uint8Array(this.data.buffer.slice(p, p + sz));
     }
 
+    public getDosHeader(): S.ImageDosHeader | undefined {
+        return this.dosHeader;
+    }
+
+    public getPESignature(): S.U4Field | undefined {
+        return this.peSignature;
+    }
+
+    public getFileHeader(): S.ImageFileHeader | undefined {
+        return this.fileHeader;
+    }
+
+    public getOptionalHeader(): S.ImageOptionalHeader32 | S.ImageOptionalHeader64 | undefined {
+        return this.optionalHeader;
+    }
+
+    public getDataDirectories(): S.StructArray<S.ImageDataDirectory> | undefined {
+        return this.dataDirectories;
+    }
+
+    public getSectionHeaders(): S.StructArray<S.ImageSectionHeader> | undefined {
+        return this.sectionHeaders;
+    }
+
     private check(p: number, sz: number): void {
         if (p < 0 || p >= this.data.byteLength
             || sz < 0 || p + sz > this.data.byteLength) {
