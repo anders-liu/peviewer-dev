@@ -21,7 +21,6 @@ const appInfo: S.AppInfo = {
 
 const defaultState: S.AppState = {
     appInfo,
-    fileInfo: null,
 };
 
 document.title = `${appInfo.title}`;

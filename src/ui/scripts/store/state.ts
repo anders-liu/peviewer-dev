@@ -2,7 +2,8 @@
 
 export interface AppState {
     appInfo: AppInfo;
-    fileInfo: FileInfo | null;
+    fileInfo?: FileInfo;
+    pageData?: W.PageData;
 }
 
 export interface AppInfo {

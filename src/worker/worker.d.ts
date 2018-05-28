@@ -52,6 +52,7 @@ declare namespace W {
 
     export const enum PageID {
         HOME = "HOME",
+        NOTFOUND = "NOTFOUND",
         HEADERS = "HEADERS",
     }
 
@@ -80,8 +81,8 @@ declare namespace W {
     }
 
     export const enum ItemDescriptionType {
-        SimpleString,
-        Nav,
+        STR = "STR",
+        NAV = "NAV",
     }
 
     export interface ItemDescription {
