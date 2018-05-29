@@ -56,22 +56,34 @@ declare namespace W {
         HEADERS = "HEADERS",
     }
 
+    export const enum KnownElemID {
+        DOS_HEADER = "dos-hdr",
+        PE_SIGNATURE = "pe-sig",
+        FILE_HEADER = "pe-hdr",
+        OPTIONAL_HEADER = "opt-hdr",
+        SECTION_HEADERS = "sec-hdrs",
+        SECTION_HEADER = "sec-hdr",
+    }
+
     export interface PageData {
         id: PageID;
         title: string;
     }
 
-    export interface SimpleStruct {
-        title?: string;
-        items?: SimpleStructItem[];
+    export interface StructData {
+        title: string;
+        elemID?: KnownElemID | string;
     }
 
-    export interface GroupedStruct {
-        title?: string;
+    export interface SimpleStruct extends StructData {
+        items?: StructItem[];
+    }
+
+    export interface GroupedStruct extends StructData {
         groups?: SimpleStruct[];
     }
 
-    export interface SimpleStructItem {
+    export interface StructItem {
         offset: string;
         size: string;
         rawData: string[];

@@ -5,7 +5,7 @@ import * as S from "./store/state";
 
 export const actionListenerMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>) => (next: Redux.Dispatch<S.AppState>) => (action: Redux.Action) => {
     switch (action.type) {
-        case "OPEN_FILE": {
+        case A.ActionType.OPEN_FILE: {
             const { appInfo } = store.getState();
             const { file } = action as A.OpenFileAction;
             document.title = `${file.name} - ${appInfo.title}`

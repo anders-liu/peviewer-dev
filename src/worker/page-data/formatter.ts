@@ -43,19 +43,19 @@ export function formatStructTitle(s: S.FileData, title: string): string {
     return `${title} [${formatU4Hex(s._offset)} - ${formatU4Hex(s._offset + s._size)} : ${formatHexDec(s._size)}]`;
 }
 
-export function formatU1Field(name: string, f: S.U1Field, showDec?: boolean): W.SimpleStructItem {
+export function formatU1Field(name: string, f: S.U1Field, showDec?: boolean): W.StructItem {
     return formatUIntField(name, f, 1, showDec);
 }
 
-export function formatU2Field(name: string, f: S.U2Field, showDec?: boolean): W.SimpleStructItem {
+export function formatU2Field(name: string, f: S.U2Field, showDec?: boolean): W.StructItem {
     return formatUIntField(name, f, 2, showDec);
 }
 
-export function formatU4Field(name: string, f: S.U4Field, showDec?: boolean): W.SimpleStructItem {
+export function formatU4Field(name: string, f: S.U4Field, showDec?: boolean): W.StructItem {
     return formatUIntField(name, f, 4, showDec);
 }
 
-export function formatU8Field(name: string, f: S.U8Field): W.SimpleStructItem {
+export function formatU8Field(name: string, f: S.U8Field): W.StructItem {
     return {
         offset: formatU4Hex(f._offset),
         size: formatHexDec(f._size),
@@ -65,7 +65,7 @@ export function formatU8Field(name: string, f: S.U8Field): W.SimpleStructItem {
     }
 }
 
-export function formatBytesField(name: string, f: S.Field): W.SimpleStructItem {
+export function formatBytesField(name: string, f: S.Field): W.StructItem {
     return {
         offset: formatU4Hex(f._offset),
         size: formatHexDec(f._size),
@@ -77,13 +77,13 @@ export function formatBytesField(name: string, f: S.Field): W.SimpleStructItem {
 
 function padZeroLeft(str: string, len: number): string {
     if (str.length < len) {
-        return "0".repeat(len - str.length);
+        return "0".repeat(len - str.length) + str;
     } else {
         return str;
     }
 }
 
-function formatUIntField(name: string, f: S.UIntField, sz: number, showDec?: boolean): W.SimpleStructItem {
+function formatUIntField(name: string, f: S.UIntField, sz: number, showDec?: boolean): W.StructItem {
     let hex: string;
     switch (sz) {
         case 1: hex = formatU1Hex(f.value); break;

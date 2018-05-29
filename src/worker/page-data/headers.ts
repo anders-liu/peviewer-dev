@@ -1,5 +1,6 @@
 import { PEImage } from "../pe/image";
 import * as FM from "./formatter";
+import { Z_UNKNOWN } from "zlib";
 
 export function generateHeadersPageData(pe: PEImage): W.HeadersPageData {
     return {
@@ -14,7 +15,10 @@ export function generateHeadersPageData(pe: PEImage): W.HeadersPageData {
 }
 
 function generateDosHeader(pe: PEImage): W.SimpleStruct {
-    let s: W.SimpleStruct = { title: "DOS Header" };
+    let s: W.SimpleStruct = {
+        title: "DOS Header",
+        elemID: W.KnownElemID.DOS_HEADER,
+    };
 
     const h = pe.getDosHeader();
     if (!h) return s;
@@ -45,28 +49,46 @@ function generateDosHeader(pe: PEImage): W.SimpleStruct {
 }
 
 function generatePESignature(pe: PEImage): W.SimpleStruct {
-    let s: W.SimpleStruct = { title: "PE Signature" };
+    let s: W.SimpleStruct = {
+        title: "PE Signature",
+        elemID: W.KnownElemID.PE_SIGNATURE,
+    };
 
-    // TODO
+    const h = pe.getPESignature();
+    if (!h) return s;
+
+    s.items = [
+        FM.formatU4Field("PE Signature", h),
+    ];
+
     return s;
 }
 
 function generateFileHeader(pe: PEImage): W.SimpleStruct {
-    let s: W.SimpleStruct = { title: "File Header" };
+    let s: W.SimpleStruct = {
+        title: "File Header",
+        elemID: W.KnownElemID.FILE_HEADER,
+    };
 
     // TODO
     return s;
 }
 
 function generateOptionalHeader(pe: PEImage): W.GroupedStruct {
-    let s: W.SimpleStruct = { title: "Optional Header" };
+    let s: W.SimpleStruct = {
+        title: "Optional Header",
+        elemID: W.KnownElemID.OPTIONAL_HEADER,
+    };
 
     // TODO
     return s;
 }
 
 function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
-    let s: W.SimpleStruct = { title: "Section headers" };
+    let s: W.SimpleStruct = {
+        title: "Section headers",
+        elemID: W.KnownElemID.SECTION_HEADERS,
+    };
 
     // TODO
     return s;
