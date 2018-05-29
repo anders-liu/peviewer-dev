@@ -55,14 +55,21 @@ export function formatU4Field(name: string, f: S.U4Field, showDec?: boolean): W.
     return formatUIntField(name, f, 4, showDec);
 }
 
-export function formatU8Field(name: string, f: S.U8Field): W.StructItem {
+export function formatU8Field(name: string, f: S.U8Field, showDec?: boolean): W.StructItem {
+    let value = `${formatU4RawHex(f.high)} ${formatU4Hex(f.low)}`;
+
+    if (showDec && f.high < 0x1FFFFF) {
+        const long = f.high * 0x100000000 + f.low;
+        value += ` (${formatDec(long)})`;
+    }
+
     return {
         offset: formatU4Hex(f._offset),
         size: formatHexDec(f._size),
         rawData: formatBytes(f.data),
         name,
-        value: `${formatU4RawHex(f.high)} ${formatU4Hex(f.low)}`,
-    }
+        value,
+    };
 }
 
 export function formatBytesField(name: string, f: S.Field): W.StructItem {
@@ -97,6 +104,10 @@ function formatUIntField(name: string, f: S.UIntField, sz: number, showDec?: boo
         size: formatHexDec(f._size),
         rawData: formatBytes(f.data),
         name,
-        value: showDec ? `${hex} (${f.value})` : hex,
+        value: showDec ? `${hex} (${formatDec(f.value)})` : hex,
     }
+}
+
+function formatDec(v: number): string {
+    return v.toLocaleString();
 }

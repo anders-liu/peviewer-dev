@@ -17,6 +17,7 @@ export class HeadersPage extends React.Component<HeadersPageProps> {
                 {renderSimpleStruct(data.peSignature)}
                 {renderSimpleStruct(data.fileHeader)}
                 {renderGroupedStruct(data.optionalHeader)}
+                {renderGroupedStruct(data.dataDirectories)}
                 {renderGroupedStruct(data.sectionHeaders)}
             </section>
         );

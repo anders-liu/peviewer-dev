@@ -1,30 +1,38 @@
 import * as React from "react";
 import * as ReactRedux from "react-redux";
 
-export function renderSimpleStruct(s: W.SimpleStruct) {
+export function renderSimpleStruct(s: W.SimpleStruct): JSX.Element {
     return (
         <div className="struct-data">
-            {renderStructTitle(s.title)}
+            {renderStructTitle(s)}
             <StructTable>
-                {s.items && s.items.map((v, i) => renderStructItemRow(v, i))}
+                {s.items && s.items.map((v, i) => renderStructItemRow(v, i.toString()))}
             </StructTable>
         </div>
     );
 }
 
-export function renderGroupedStruct(s: W.GroupedStruct) {
+export function renderGroupedStruct(s: W.GroupedStruct): JSX.Element {
     return (
         <div className="struct-data">
-            {renderStructTitle(s.title)}
+            {renderStructTitle(s)}
+            <StructTable>
+                {s.groups && s.groups.map((gv, gi) => {
+                    return [
+                        renderStructGroupTitleRow(gv.title, gi.toString())
+                    ].concat(gv.items && gv.items.map((v, i) =>
+                        renderStructItemRow(v, `${gi}.${i}`)) || []);
+                })}
+            </StructTable>
         </div>
     );
 }
 
-function renderStructTitle(title: string): JSX.Element {
-    return <h2>{title}</h2>;
+function renderStructTitle(s: W.StructData): JSX.Element {
+    return <h2 id={s.elemID}>{s.title}</h2>;
 }
 
-function renderStructItemRow(item: W.StructItem, key: number): JSX.Element {
+function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
     const { offset, size, rawData, name, value, descriptions } = item;
     return (
         <tr key={key}>
@@ -38,8 +46,8 @@ function renderStructItemRow(item: W.StructItem, key: number): JSX.Element {
     );
 }
 
-function renderStructGroupTitleRow(title: string): JSX.Element {
-    return (<tr><th colSpan={6}>{title}</th></tr>);
+function renderStructGroupTitleRow(title: string, key: string): JSX.Element {
+    return (<tr key={key}><th colSpan={6}>{title}</th></tr>);
 }
 
 class StructTable extends React.Component {

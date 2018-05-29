@@ -61,6 +61,7 @@ declare namespace W {
         PE_SIGNATURE = "pe-sig",
         FILE_HEADER = "pe-hdr",
         OPTIONAL_HEADER = "opt-hdr",
+        DATA_DIRECTORIES = "data-dir",
         SECTION_HEADERS = "sec-hdrs",
         SECTION_HEADER = "sec-hdr",
     }
@@ -114,6 +115,7 @@ declare namespace W {
         peSignature: SimpleStruct;
         fileHeader: SimpleStruct;
         optionalHeader: GroupedStruct;
+        dataDirectories: GroupedStruct;
         sectionHeaders: GroupedStruct;
     }
 }
