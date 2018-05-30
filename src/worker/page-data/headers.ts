@@ -197,7 +197,7 @@ function fillOptionalHeader64Fields(s: W.GroupedStruct, h: S.ImageOptionalHeader
 }
 
 function generateDataDirectories(pe: PEImage): W.GroupedStruct {
-    let s: W.SimpleStruct = {
+    let s: W.GroupedStruct = {
         title: "Data Dreictories",
         elemID: W.KnownElemID.DATA_DIRECTORIES,
     };
@@ -205,12 +205,19 @@ function generateDataDirectories(pe: PEImage): W.GroupedStruct {
     const h = pe.getDataDirectories();
     if (!h) return s;
 
-    // TODO
+    s.groups = h.items.map((v, i) => ({
+        title: `[${i}] ${F.ImageDirectoryEntry[i] || ""}`,
+        items: [
+            FM.formatU4Field("VirtualAddress", v.VirtualAddress),
+            FM.formatU4Field("Size", v.Size, true),
+        ]
+    } as W.SimpleStruct));
+
     return s;
 }
 
 function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
-    let s: W.SimpleStruct = {
+    let s: W.GroupedStruct = {
         title: "Section headers",
         elemID: W.KnownElemID.SECTION_HEADERS,
     };
@@ -218,6 +225,21 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
     const h = pe.getSectionHeaders();
     if (!h) return s;
 
-    // TODO
+    s.groups = h.items.map((v, i) => ({
+        title: `[${i}]`,
+        items: [
+            FM.formatStringField("Name", v.Name),
+            FM.formatU4Field("VirtualSize", v.VirtualSize, true),
+            FM.formatU4Field("VirtualAddress", v.VirtualAddress),
+            FM.formatU4Field("SizeOfRawData", v.SizeOfRawData, true),
+            FM.formatU4Field("PointerToRawData", v.PointerToRawData),
+            FM.formatU4Field("PointerToRelocations", v.PointerToRelocations),
+            FM.formatU4Field("PointerToLinenumbers", v.PointerToLinenumbers),
+            FM.formatU2Field("NumberOfRelocations", v.NumberOfRelocations, true),
+            FM.formatU2Field("NumberOfLinenumbers", v.NumberOfLinenumbers, true),
+            FM.formatU4Field("Characteristics", v.Characteristics),
+        ]
+    } as W.GroupedStruct));
+
     return s;
 }

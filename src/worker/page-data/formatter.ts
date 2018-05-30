@@ -82,6 +82,16 @@ export function formatBytesField(name: string, f: S.Field): W.StructItem {
     }
 }
 
+export function formatStringField(name: string, f: S.StringField): W.StructItem {
+    return {
+        offset: formatU4Hex(f._offset),
+        size: formatHexDec(f._size),
+        rawData: formatBytes(f.data),
+        name,
+        value: `"${f.value}"`,
+    }
+}
+
 function padZeroLeft(str: string, len: number): string {
     if (str.length < len) {
         return "0".repeat(len - str.length) + str;
