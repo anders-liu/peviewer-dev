@@ -65,7 +65,7 @@ export function loadFixedSizeByteArray(d: FileDataProvider, p: number, sz: numbe
 
 export function loadFixedSizeAsciiStringField(d: FileDataProvider, p: number, sz: number): S.StringField {
     const data = d.getData(p, sz);
-    const value = String.fromCharCode.apply(null, Array.from(data));
+    const value = String.fromCharCode.apply(null, Array.from(data).filter(v => v != 0));
 
     return {
         _offset: p, _size: sz, data, value
