@@ -48,8 +48,6 @@ function build_scripts(is_dev, src) {
     delete cfg.entry;
     cfg.mode = is_dev ? "development" : "production";
 
-    console.log(JSON.stringify(webpack));
-
     return gulp.
         src(path.resolve(src, entry.substr(2))).
         pipe(ws(cfg, webpack)).
