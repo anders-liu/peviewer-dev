@@ -38,10 +38,6 @@
     "typescript": "^2.8.3",
     "webpack": "^4.6.0",
     "webpack-stream": "^4.0.3"
-<<<<<<< HEAD
   },
   "dependencies": {}
-=======
-  }
->>>>>>> 05c4c04... Fix build script.
 }
