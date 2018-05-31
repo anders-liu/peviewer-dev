@@ -11,7 +11,7 @@ module.exports = (env) => {
         resolve: {
             extensions: [".ts", ".tsx", ".js"],
             alias: {
-                "package.json": path.resolve(__dirname, "../../../package.json")
+                "package.json": path.resolve(__dirname, "./package.g.json")
             }
         },
         module: {

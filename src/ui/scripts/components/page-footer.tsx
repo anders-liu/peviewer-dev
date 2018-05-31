@@ -17,12 +17,16 @@ function mapStateToProps(state: S.AppState): ConnectedProps {
 class PageFooterClass extends React.Component<ConnectedProps> {
     public render(): JSX.Element {
         const { appInfo } = this.props;
-        const { title, version, author, homepage, bugsUrl, year } = appInfo;
+        const { title, version, author, homepage, bugsUrl, buildTimeLocal, year } = appInfo;
 
         return (
             <footer id="app-footer">
-                <div>{title}. Coypright &copy; {author} {year}. Version {version}</div>
-                <div><a href={homepage} target="_blank">View on GitHub</a> | <a href={bugsUrl} target="_blank">Report Issue</a></div>
+                <div>{title}. Coypright &copy; {author} {year}.</div>
+                <div>Version {version}. Last build: {buildTimeLocal}</div>
+                <div>
+                    <a href={homepage} target="_blank">View on GitHub</a> |
+                    <a href={bugsUrl} target="_blank">Report Issue</a>
+                </div>
             </footer>
         )
     }
