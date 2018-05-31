@@ -4,9 +4,8 @@ declare module "package.json" {
         version: string;
         author: string;
         homepage: string;
-        bugs: {
-            url: string;
-        }
+        bugs_url: string;
+        build_time: string;
     };
     export = value;
 }
