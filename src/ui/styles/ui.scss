@@ -1,0 +1,21 @@
+@import "var";
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    display: grid;
+    width: 100%;
+    height: 100%;
+}
+
+#app-header {
+    color: $color-txt-lt;
+    background: $color-bg-mid-lt;
+}
+
+#app-footer {
+    color: $color-txt-lt;
+    background: $color-bg-dk;
+}
