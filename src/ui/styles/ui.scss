@@ -38,8 +38,15 @@ strong {
     padding: $size-pad-lg;
 
     .pg-title {
+        display: inline-block;
         margin: 0 0 $size-pad-mid 0;
         font-size: $size-txt-lg;
+    }
+
+    .pg-finfo {
+        display: inline-block;
+        vertical-align: baseline;
+        margin-left: 2 * $size-pad-lg;
     }
 }
 
@@ -105,7 +112,7 @@ strong {
         vertical-align: baseline;
 
         &:not(:first-child) {
-            margin-left: $size-pad-lg * 2;
+            margin-left: 2 * $size-pad-lg;
         }
 
         &>strong {

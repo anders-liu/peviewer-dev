@@ -19,6 +19,12 @@ function fileInfo(state: S.FileInfo | null = null, action: Redux.Action): S.File
             const { name, size } = file;
             return Object.assign({}, state, { name, size });
         }
+
+        case A.ActionType.SET_PE_PROPS: {
+            const { is32Bit, isManaged } = action as A.SetPEPropsAction;
+            return Object.assign({}, state, { is32Bit, isManaged });
+        }
+
         default: return state;
     }
 }

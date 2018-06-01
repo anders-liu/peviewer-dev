@@ -20,9 +20,17 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
         try {
             const buf = <ArrayBuffer>(<FileReader>ev.target).result;
             pe = PEImage.load(buf);
+
+            // Response with page data.
             const pageData = generatePageData(pe, W.PageID.HEADERS);
-            const msg = M.createResPageDataMessage(pageData);
-            postMessage(msg);
+            const pageDataMsg = M.createResPageDataMessage(pageData);
+            postMessage(pageDataMsg);
+
+            // Response with PE properties.
+            const pePropsMsg = M.createResPEPropsMessage(pe.is32Bit(), pe.isManaged());
+            postMessage(pePropsMsg);
+
+            // TODO: Response with navigation data.
         } catch (ex) {
             const msg = M.createResPEErrorMessage(ex.message
                 || `Unknown error: ${JSON.stringify(ex)}`);

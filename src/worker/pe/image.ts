@@ -28,6 +28,29 @@ export class PEImage implements L.FileDataProvider {
         return new Uint8Array(this.data.buffer.slice(p, p + sz));
     }
 
+    public is32Bit(): boolean | undefined {
+        const optHdr = this.getOptionalHeader();
+        if (optHdr == null) {
+            return undefined;
+        }
+
+        switch (optHdr.Magic.value) {
+            case F.IMAGE_NT_OPTIONAL_HDR32_MAGIC: return true;
+            case F.IMAGE_NT_OPTIONAL_HDR64_MAGIC: return false;
+            default: return undefined;
+        }
+    }
+
+    public isManaged(): boolean | undefined {
+        const dd = this.getDataDirectories();
+        if (dd == null) {
+            return undefined;
+        }
+
+        const ddCom = dd.items[F.ImageDirectoryEntry.IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR];
+        return ddCom && ddCom.VirtualAddress.value > 0 && ddCom.Size.value > 0;
+    }
+
     public getDosHeader(): S.ImageDosHeader | undefined {
         return this.dosHeader;
     }

@@ -3,6 +3,7 @@ import * as Redux from "redux";
 export const enum ActionType {
     OPEN_FILE = "OPEN_FILE",
     SET_PAGE_DATA = "SET_PAGE_DATA",
+    SET_PE_PROPS = "SET_PE_PROPS",
     SET_WORKER_ERROR = "SET_WORKER_ERROR",
 }
 
@@ -25,5 +26,18 @@ export function createSetPageDataAction(data: W.PageData): SetPageDataAction {
     return {
         type: ActionType.SET_PAGE_DATA,
         data
+    };
+}
+
+export interface SetPEPropsAction extends Redux.Action {
+    is32Bit?: boolean;
+    isManaged?: boolean;
+}
+
+export function createSetPEPropsAction(is32Bit?: boolean, isManaged?: boolean): SetPEPropsAction {
+    return {
+        type: ActionType.SET_PE_PROPS,
+        is32Bit,
+        isManaged
     };
 }

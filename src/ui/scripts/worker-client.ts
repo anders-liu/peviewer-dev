@@ -33,6 +33,11 @@ function handleMessage(msg: W.WorkerMessage): void {
             _store.dispatch(A.createSetPageDataAction(pageData));
             break;
 
+        case W.WorkerMessageType.RES_PE_PROPS:
+            const { is32Bit, isManaged } = <W.ResPEPropsMessage>msg;
+            _store.dispatch(A.createSetPEPropsAction(is32Bit, isManaged));
+            break;
+
         case W.WorkerMessageType.RES_PE_ERROR:
             break;
     }

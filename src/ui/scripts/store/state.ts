@@ -19,4 +19,6 @@ export interface AppInfo {
 export interface FileInfo {
     name: string;
     size: number;
+    is32Bit?: boolean;
+    isManaged?: boolean;
 }

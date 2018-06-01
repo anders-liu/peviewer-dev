@@ -8,6 +8,7 @@ declare namespace W {
 
         RES_NAV_DATA = "RES_NAV_DATA",
         RES_PAGE_DATA = "RES_PAGE_DATA",
+        RES_PE_PROPS = "RES_PE_PROPS",
         RES_PE_ERROR = "RES_PE_ERROR",
     }
 
@@ -25,6 +26,11 @@ declare namespace W {
 
     export interface ResPageDataMessage extends WorkerMessage {
         pageData: PageData;
+    }
+
+    export interface ResPEPropsMessage extends WorkerMessage {
+        is32Bit?: boolean;
+        isManaged?: boolean;
     }
 
     export interface ResPEErrorMessage extends WorkerMessage {
