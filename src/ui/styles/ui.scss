@@ -1,11 +1,26 @@
 @import "var";
 @import "mixin";
 
-body {
+body, input {
     @include txt-normal;
-
+    
+    color: $color-txt;
+    font-size: $size-txt-mid;
     margin: 0;
     padding: 0;
+}
+
+strong {
+    @include txt-bold;
+}
+
+.info {
+    color: $color-info-txt;
+    border: 1px solid $color-info-bdr;
+    border-radius: 5px;
+    background: $color-info-bg;
+    padding: $size-pad-lg;
+    margin: $size-pad-lg;
 }
 
 #app {
@@ -18,28 +33,58 @@ body {
 
 #app-header {
     grid-row: 1;
-    color: $color-txt-lt;
+    color: $color-txt;
     background: $color-bg-mid-lt;
     padding: $size-pad-lg;
+
+    .pg-title {
+        margin: 0 0 $size-pad-mid 0;
+        font-size: $size-txt-lg;
+    }
 }
 
 #app-content {
     grid-row: 2;
     overflow: auto;
     padding: $size-pad-lg;
-}
 
-.struct-table {
-    @include txt-code;
-
-    th, td {
-        white-space: nowrap;
-        padding: $size-pad-sm $size-pad-lg;
+    .struct-title {
+        font-size: $size-txt-mid-lg;
+        margin: $size-pad-lg 0 $size-pad-mid 0;
+        padding: $size-pad-mid $size-pad-lg - $size-pad-mid;
+        border-left: $size-pad-mid solid;
+        border-bottom: 1px solid;
+        color: $color-bg-mid-dk;
     }
 
-    th {
-        @include txt-bold;
-        text-align: left;
+    .struct-table {
+        @include txt-code;
+    
+        th, td {
+            white-space: nowrap;
+            padding: $size-pad-sm $size-pad-lg;
+        }
+    
+        th {
+            @include txt-bold;
+            text-align: left;
+        }
+    }
+
+    .file-opener {
+        margin-top: 100px;
+        text-align: center;
+        font-size: $size-txt-mid-lg;
+
+        input {
+            font-size: $size-txt-mid-lg;
+        }
+
+        .info {
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+        }
     }
 }
 
@@ -47,13 +92,24 @@ body {
     grid-row: 3;
     color: $color-txt-lt;
     background: $color-bg-dk;
-    padding: $size-pad-sm $size-pad-lg;
+    padding: $size-pad-lg;
     white-space: nowrap;
     font-size: $size-txt-sm;
+
     a {
         color: $color-txt-lt;
     }
+
     &>div {
         display: inline-block;
+        vertical-align: baseline;
+
+        &:not(:first-child) {
+            margin-left: $size-pad-lg * 2;
+        }
+
+        &>strong {
+            font-size: $size-txt-mid-lg;
+        }
     }
 }

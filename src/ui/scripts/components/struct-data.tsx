@@ -29,7 +29,7 @@ export function renderGroupedStruct(s: W.GroupedStruct): JSX.Element {
 }
 
 function renderStructTitle(s: W.StructData): JSX.Element {
-    return <h2 id={s.elemID}>{s.title}</h2>;
+    return <h2 id={s.elemID} className="struct-title">{s.title}</h2>;
 }
 
 function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {

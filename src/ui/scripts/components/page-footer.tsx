@@ -21,12 +21,12 @@ class PageFooterClass extends React.Component<ConnectedProps> {
 
         return (
             <footer id="app-footer">
-                <div>{title}. Coypright &copy; {author} {year}.</div>
-                <div>Version {version}. Last build: {buildTimeLocal}</div>
-                <div>
-                    <a href={homepage} target="_blank">View on GitHub</a> |
-                    <a href={bugsUrl} target="_blank">Report Issue</a>
-                </div>
+                <div><strong>{title}</strong></div>
+                <div>Coypright &copy; {author} {year}</div>
+                <div>Version {version}</div>
+                <div>Last build: {buildTimeLocal}</div>
+                <div><a href={homepage} target="_blank">View on GitHub</a></div>
+                <div><a href={bugsUrl} target="_blank">Report Issue</a></div>
             </footer>
         )
     }

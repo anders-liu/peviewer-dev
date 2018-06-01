@@ -226,7 +226,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
     if (!h) return s;
 
     s.groups = h.items.map((v, i) => ({
-        title: `[${i}]`,
+        title: `[${i}] (${v.Name.value})`,
         items: [
             FM.formatStringField("Name", v.Name),
             FM.formatU4Field("VirtualSize", v.VirtualSize, true),
