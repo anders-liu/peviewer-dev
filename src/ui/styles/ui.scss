@@ -1,0 +1,59 @@
+@import "var";
+@import "mixin";
+
+body {
+    @include txt-normal;
+
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    display: grid;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: auto 1fr auto;
+}
+
+#app-header {
+    grid-row: 1;
+    color: $color-txt-lt;
+    background: $color-bg-mid-lt;
+    padding: $size-pad-lg;
+}
+
+#app-content {
+    grid-row: 2;
+    overflow: auto;
+    padding: $size-pad-lg;
+}
+
+.struct-table {
+    @include txt-code;
+
+    th, td {
+        white-space: nowrap;
+        padding: $size-pad-sm $size-pad-lg;
+    }
+
+    th {
+        @include txt-bold;
+        text-align: left;
+    }
+}
+
+#app-footer {
+    grid-row: 3;
+    color: $color-txt-lt;
+    background: $color-bg-dk;
+    padding: $size-pad-sm $size-pad-lg;
+    white-space: nowrap;
+    font-size: $size-txt-sm;
+    a {
+        color: $color-txt-lt;
+    }
+    &>div {
+        display: inline-block;
+    }
+}
