@@ -35,7 +35,7 @@ function renderStructTitle(s: W.StructData): JSX.Element {
 function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
     const { offset, size, rawData, name, value, descriptions } = item;
     return (
-        <tr key={key}>
+        <tr key={key} className="st-tr">
             <td>{offset}</td>
             <td>{size}</td>
             <td>{rawData.map((v, i) => <div className="td-line" key={i}>{v}</div>)}</td>
@@ -47,7 +47,7 @@ function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
 }
 
 function renderStructGroupTitleRow(title: string, key: string): JSX.Element {
-    return (<tr key={key}><th colSpan={6}>{title}</th></tr>);
+    return (<tr key={key} className="st-grphdr"><th colSpan={6}>{title}</th></tr>);
 }
 
 class StructTable extends React.Component {
@@ -55,7 +55,7 @@ class StructTable extends React.Component {
         return (
             <table className="struct-table">
                 <thead>
-                    <tr>
+                    <tr className="st-hdr">
                         <th>Offset</th>
                         <th>Size</th>
                         <th>Raw Data</th>

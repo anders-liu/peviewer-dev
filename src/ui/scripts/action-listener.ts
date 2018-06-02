@@ -25,7 +25,7 @@ export const actionListenerMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>
                 } else {
                     const elem = document.getElementById("app-content");
                     if (elem) {
-                        elem.scrollTo(0, 0);
+                        elem.scrollTop = 0;
                     }
                 }
             } else {

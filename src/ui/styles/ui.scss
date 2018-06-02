@@ -75,12 +75,14 @@ strong {
         margin: $size-pad-lg 0 $size-pad-mid 0;
         padding: $size-pad-mid $size-pad-lg - $size-pad-mid;
         border-left: $size-pad-mid solid;
-        border-bottom: 1px solid;
         color: $color-bg-mid-dk;
     }
 
     .struct-table {
         @include txt-code;
+        border-collapse: collapse;
+        border-bottom: 2px solid $color-txt-mid-lt;
+        width: 100%;
     
         th, td {
             white-space: nowrap;
@@ -90,6 +92,32 @@ strong {
         th {
             @include txt-bold;
             text-align: left;
+        }
+
+        .st-hdr {
+            border-bottom: 1px solid $color-txt-mid-lt;
+            background: $color-bg-mid-dk;
+            color: $color-txt-lt;
+        }
+
+        .st-grphdr{
+            border-top: 1px solid $color-txt-mid-lt;
+            border-bottom: 1px solid $color-txt-mid-lt;
+            background: $color-bg-mid;
+        }
+
+        .st-tr{
+            &:nth-child(odd) {
+                background: $color-bg-lt;
+            }
+
+            &:nth-child(even) {
+                background: $color-bg-mid-lt;
+            }
+
+            &:hover {
+                background: $color-bg-mid;
+            }
         }
     }
 
@@ -111,6 +139,7 @@ strong {
 
     .top-lnk {
         text-align: right;
+        margin: $size-pad-mid 0;
     }
 }
 
