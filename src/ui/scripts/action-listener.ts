@@ -14,8 +14,8 @@ export const actionListenerMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>
 
         case A.ActionType.OPEN_NAV: {
             const { pageData } = store.getState();
-            const { nav } = action as A.OpenNavAction;
-            const { pageID, elemID } = nav.target;
+            const { target } = action as A.OpenNavAction;
+            const { pageID, elemID } = target;
             if (pageData && pageData.nav.pageID === pageID) {
                 if (elemID) {
                     const elem = document.getElementById(elemID);

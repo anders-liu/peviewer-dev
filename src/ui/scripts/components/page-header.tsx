@@ -87,10 +87,10 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
                     <tbody>
                         {navList.map((v, i) => (
                             <tr key={i}>
-                                <th><NavLink nav={v} /></th>
+                                <th><NavLink target={v.target} /></th>
                                 <td>
                                     {v.children && v.children.map((cv, ci) => (
-                                        <NavLink key={ci} nav={cv} />
+                                        <NavLink key={ci} target={cv.target} />
                                     ))}
                                 </td>
                             </tr>

@@ -19,11 +19,11 @@ export function createOpenFileAction(file: File): OpenFileAction {
 }
 
 export interface OpenNavAction extends Redux.Action {
-    nav: W.NavData;
+    target: W.NavTarget;
 }
 
-export function createOpenNavAction(nav: W.NavData): OpenNavAction {
-    return { type: ActionType.OPEN_NAV, nav };
+export function createOpenNavAction(target: W.NavTarget): OpenNavAction {
+    return { type: ActionType.OPEN_NAV, target };
 }
 
 export interface SetNavListAction extends Redux.Action {

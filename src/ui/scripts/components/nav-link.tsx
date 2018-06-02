@@ -5,7 +5,7 @@ import * as A from "../store/actions";
 import * as S from "../store/state";
 
 export interface NavLinkProps {
-    nav: W.NavData;
+    target: W.NavTarget;
     extraClass?: string;
 }
 
@@ -15,14 +15,14 @@ interface ConnectedEvents {
 
 function mapDispatchToEvents(dispatch: ReactRedux.Dispatch<S.AppState>, ownProps: NavLinkProps): ConnectedEvents {
     return {
-        onClick: () => { dispatch(A.createOpenNavAction(ownProps.nav)); }
+        onClick: () => { dispatch(A.createOpenNavAction(ownProps.target)); }
     };
 }
 
 class NavLinkClass extends React.Component<NavLinkProps & ConnectedEvents> {
     public render(): JSX.Element {
-        const { nav, extraClass, onClick } = this.props;
-        const { title } = nav.target;
+        const { target, extraClass, onClick } = this.props;
+        const { title } = target;
 
         let className = "nav";
         if (extraClass) {

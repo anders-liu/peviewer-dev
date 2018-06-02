@@ -74,6 +74,7 @@ declare namespace W {
 
     export const enum KnownTitle {
         NOTFOUND = "Page Not Found",
+        TOP = "TOP",
         HEADERS = "Headers",
         DOS_HEADER = "DOS Header",
         PE_SIGNATURE = "PE Signature",
