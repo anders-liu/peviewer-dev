@@ -11,6 +11,27 @@ export const actionListenerMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>
             document.title = `${file.name} - ${appInfo.title}`
             break;
         }
+
+        case A.ActionType.OPEN_NAV: {
+            const { pageData } = store.getState();
+            const { nav } = action as A.OpenNavAction;
+            const { pageID, elemID } = nav.target;
+            if (pageData && pageData.nav.pageID === pageID) {
+                if (elemID) {
+                    const elem = document.getElementById(elemID);
+                    if (elem) {
+                        elem.scrollIntoView();
+                    }
+                } else {
+                    const elem = document.getElementById("app-content");
+                    if (elem) {
+                        elem.scrollTo(0, 0);
+                    }
+                }
+            } else {
+                // TODO: Require new page nav from worker.
+            }
+        }
     }
     return next(action);
 }) as Redux.Middleware;

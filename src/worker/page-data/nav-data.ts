@@ -22,7 +22,7 @@ function generateHeadersNavData(pe: PEImage): W.NavData {
         }, {
             target: { pageID, title: W.KnownTitle.DATA_DIRECTORIES, elemID: W.KnownElemID.DATA_DIRECTORIES }
         }, {
-            target: { pageID, title: W.KnownTitle.SECTION_HEADERS, elemID: W.KnownElemID.SECTION_HEADER }
+            target: { pageID, title: W.KnownTitle.SECTION_HEADERS, elemID: W.KnownElemID.SECTION_HEADERS }
         }]
     };
 }

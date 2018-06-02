@@ -23,6 +23,10 @@ strong {
     margin: $size-pad-lg;
 }
 
+.nav {
+    cursor: pointer;
+}
+
 #app {
     display: grid;
     position: absolute;
@@ -34,7 +38,7 @@ strong {
 #app-header {
     grid-row: 1;
     color: $color-txt;
-    background: $color-bg-mid-lt;
+    background: $color-bg-mid;
     padding: $size-pad-lg;
 
     .pg-title {
@@ -47,6 +51,17 @@ strong {
         display: inline-block;
         vertical-align: baseline;
         margin-left: 2 * $size-pad-lg;
+    }
+
+    .pg-navlst {
+        margin: $size-pad-lg 0-$size-pad-lg 0-$size-pad-lg 0-$size-pad-lg;
+        padding: $size-pad-lg;
+        background: $color-bg-mid-lt;
+
+        .nav {
+            margin-left: $size-pad-lg;
+            text-decoration: underline;
+        }
     }
 }
 
