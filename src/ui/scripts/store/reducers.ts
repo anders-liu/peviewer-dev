@@ -6,6 +6,7 @@ export const appReducer = Redux.combineReducers({
     appInfo,
     fileInfo,
     pageData,
+    navList,
 }) as Redux.Reducer<S.AppState>;
 
 function appInfo(state: S.AppInfo | null = null, action: Redux.Action): S.AppInfo | null {
@@ -35,6 +36,18 @@ function pageData(state: W.PageData | null = null, action: Redux.Action): W.Page
             const { data } = action as A.SetPageDataAction;
             return data;
         }
+
+        default: return state;
+    }
+}
+
+function navList(state: W.NavData[] = [], action: Redux.Action): W.NavData[] {
+    switch (action.type) {
+        case A.ActionType.SET_NAV_LIST: {
+            const { navList } = action as A.SetNavListAction;
+            return navList;
+        }
+
         default: return state;
     }
 }

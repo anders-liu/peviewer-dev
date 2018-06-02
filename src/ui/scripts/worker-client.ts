@@ -26,6 +26,8 @@ export function initWorkerClient(store: Redux.Store<S.AppState>): void {
 function handleMessage(msg: W.WorkerMessage): void {
     switch (msg.type) {
         case W.WorkerMessageType.RES_NAV_DATA:
+            const { navList } = <W.ResNavDataMessage>msg;
+            _store.dispatch(A.createSetNavListAction(navList));
             break;
 
         case W.WorkerMessageType.RES_PAGE_DATA:

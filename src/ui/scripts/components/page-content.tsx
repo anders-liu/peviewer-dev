@@ -34,7 +34,7 @@ class PageContentClass extends React.Component<ConnectedProps> {
             return <OpenFilePage />;
         }
 
-        switch (pageData.id) {
+        switch (pageData.nav.pageID) {
             case W.PageID.HEADERS:
                 return <HeadersPage data={pageData as W.HeadersPageData} />;
             default:

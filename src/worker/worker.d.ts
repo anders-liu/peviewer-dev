@@ -42,9 +42,9 @@ declare namespace W {
     //
 
     export interface NavTarget {
-        title: string;
+        title: KnownTitle;
         pageID: PageID;
-        elemID?: string;
+        elemID?: KnownElemID | string;
     }
 
     export interface NavData {
@@ -72,13 +72,23 @@ declare namespace W {
         SECTION_HEADER = "sec-hdr",
     }
 
+    export const enum KnownTitle {
+        NOTFOUND = "Page Not Found",
+        HEADERS = "Headers",
+        DOS_HEADER = "DOS Header",
+        PE_SIGNATURE = "PE Signature",
+        FILE_HEADER = "PE File Header",
+        OPTIONAL_HEADER = "Optional Header",
+        DATA_DIRECTORIES = "Data Directories",
+        SECTION_HEADERS = "Section Headers",
+    }
+
     export interface PageData {
-        id: PageID;
-        title: string;
+        nav: NavTarget;
     }
 
     export interface StructData {
-        title: string;
+        title: KnownTitle | string;
         elemID?: KnownElemID | string;
     }
 

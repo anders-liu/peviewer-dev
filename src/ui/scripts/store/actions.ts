@@ -2,6 +2,7 @@ import * as Redux from "redux";
 
 export const enum ActionType {
     OPEN_FILE = "OPEN_FILE",
+    SET_NAV_LIST = "SET_NAV_LIST",
     SET_PAGE_DATA = "SET_PAGE_DATA",
     SET_PE_PROPS = "SET_PE_PROPS",
     SET_WORKER_ERROR = "SET_WORKER_ERROR",
@@ -15,6 +16,17 @@ export function createOpenFileAction(file: File): OpenFileAction {
     return {
         type: ActionType.OPEN_FILE,
         file
+    };
+}
+
+export interface SetNavListAction extends Redux.Action {
+    navList: W.NavData[];
+}
+
+export function createSetNavListAction(navList: W.NavData[]): SetNavListAction {
+    return {
+        type: ActionType.SET_NAV_LIST,
+        navList
     };
 }
 

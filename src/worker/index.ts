@@ -1,6 +1,7 @@
 import * as M from "./message";
 import { PEImage } from "./pe/image";
 import { generatePageData } from "./page-data/generator";
+import { generateNavList } from "./page-data/nav-data";
 
 let pe: PEImage | null = null;
 
@@ -27,10 +28,15 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
             postMessage(pageDataMsg);
 
             // Response with PE properties.
-            const pePropsMsg = M.createResPEPropsMessage(pe.is32Bit(), pe.isManaged());
+            const is32Bit = pe.is32Bit();
+            const isManaged = pe.isManaged();
+            const pePropsMsg = M.createResPEPropsMessage(is32Bit, isManaged);
             postMessage(pePropsMsg);
 
-            // TODO: Response with navigation data.
+            // Response with navigation data.
+            const navList = generateNavList(pe);
+            const navMsg = M.createResNavDataMessage(navList);
+            postMessage(navMsg);
         } catch (ex) {
             const msg = M.createResPEErrorMessage(ex.message
                 || `Unknown error: ${JSON.stringify(ex)}`);
