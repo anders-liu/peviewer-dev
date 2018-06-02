@@ -22,6 +22,7 @@ const appInfo: S.AppInfo = {
 
 const defaultState: S.AppState = {
     appInfo,
+    navList: []
 };
 
 document.title = `${appInfo.title}`;

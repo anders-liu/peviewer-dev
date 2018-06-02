@@ -2,16 +2,19 @@ import * as React from "react";
 import * as ReactRedux from "react-redux";
 
 import * as S from "../store/state";
+import { NavLink } from "./nav-link";
 
 interface ConnectedProps {
     fileInfo?: S.FileInfo;
+    navList: W.NavData[];
 }
 
 function mapStateToProps(state: S.AppState): ConnectedProps {
-    const { fileInfo } = state;
+    const { fileInfo, navList } = state;
 
     return {
-        fileInfo
+        fileInfo,
+        navList
     };
 }
 
@@ -28,7 +31,9 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
 
     private renderWelcome(): JSX.Element {
         return (
-            <h1 className="pg-title">Welcome to PE Viewer.</h1>
+            <div className="pg-title-line">
+                <h1 className="pg-title">Welcome to PE Viewer.</h1>
+            </div>
         );
     }
 
@@ -37,6 +42,17 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
 
         return (
             <React.Fragment>
+                {this.renderTitleLine(fileInfo)}
+                {this.renderNavList()}
+            </React.Fragment>
+        );
+    }
+
+    private renderTitleLine(fileInfo: S.FileInfo): JSX.Element {
+        const { name, size, is32Bit, isManaged } = fileInfo;
+
+        return (
+            <div className="pg-title-line">
                 <h1 className="pg-title">{name}</h1>
                 <div className="pg-finfo">
                     <span>{size.toLocaleString()} bytes.</span>
@@ -55,7 +71,33 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
                         </React.Fragment>
                     )}
                 </div>
-            </React.Fragment>
+            </div>
+        );
+    }
+
+    private renderNavList(): JSX.Element | null {
+        const { navList } = this.props;
+        if (!navList) {
+            return null;
+        }
+
+        return (
+            <div className="pg-navlst">
+                <table>
+                    <tbody>
+                        {navList.map((v, i) => (
+                            <tr key={i}>
+                                <th><NavLink nav={v} /></th>
+                                <td>
+                                    {v.children && v.children.map((cv, ci) => (
+                                        <NavLink key={ci} nav={cv} />
+                                    ))}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 }

@@ -4,7 +4,7 @@ export interface AppState {
     appInfo: AppInfo;
     fileInfo?: FileInfo;
     pageData?: W.PageData;
-    navList?: W.NavData[];
+    navList: W.NavData[];
 }
 
 export interface AppInfo {
