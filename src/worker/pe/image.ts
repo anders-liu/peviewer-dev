@@ -8,6 +8,10 @@ export class PEImage implements L.FileDataProvider {
         return new PEImage(buf);
     }
 
+    //
+    // FileDataProvider functions.
+    //
+
     public getU1(p: number): number {
         this.check(p, 1);
         return this.data.getUint8(p);
@@ -27,6 +31,10 @@ export class PEImage implements L.FileDataProvider {
         this.check(p, sz);
         return new Uint8Array(this.data.buffer.slice(p, p + sz));
     }
+
+    //
+    // Image attributes.
+    //
 
     public is32Bit(): boolean | undefined {
         const optHdr = this.getOptionalHeader();
@@ -51,6 +59,10 @@ export class PEImage implements L.FileDataProvider {
         return ddCom && ddCom.VirtualAddress.value > 0 && ddCom.Size.value > 0;
     }
 
+    //
+    // Image headers.
+    //
+
     public getDosHeader(): S.ImageDosHeader | undefined {
         return this.dosHeader;
     }
@@ -74,6 +86,26 @@ export class PEImage implements L.FileDataProvider {
     public getSectionHeaders(): S.StructArray<S.ImageSectionHeader> | undefined {
         return this.sectionHeaders;
     }
+
+    //
+    // Metadata structures.
+    //
+
+    public getCliHeader(): S.CliHeader | undefined {
+        return this.cliHeader;
+    }
+
+    public getMetadataRoot(): S.MetadataRoot | undefined {
+        return this.metadataRoot;
+    }
+
+    public getMetadataStreamHeaders(): S.StructArray<S.MetadataStreamHeader> | undefined {
+        return this.metadataStreamHeaders;
+    }
+
+    //
+    // Private implementations.
+    //
 
     private check(p: number, sz: number): void {
         if (p < 0 || p >= this.data.byteLength
@@ -143,4 +175,8 @@ export class PEImage implements L.FileDataProvider {
     private optionalHeader?: S.ImageOptionalHeader32 | S.ImageOptionalHeader64;
     private dataDirectories?: S.StructArray<S.ImageDataDirectory>;
     private sectionHeaders?: S.StructArray<S.ImageSectionHeader>;
+
+    private cliHeader?: S.CliHeader;
+    private metadataRoot?: S.MetadataRoot;
+    private metadataStreamHeaders?: S.StructArray<S.MetadataStreamHeader>;
 }
