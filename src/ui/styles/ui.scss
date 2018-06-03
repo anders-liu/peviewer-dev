@@ -72,7 +72,7 @@ strong {
 
     .struct-title {
         font-size: $size-txt-mid-lg;
-        margin: $size-pad-lg 0 $size-pad-mid 0;
+        margin: $size-pad-lg 0;
         padding: $size-pad-mid $size-pad-lg - $size-pad-mid;
         border-left: $size-pad-mid solid;
         color: $color-bg-mid-dk;
@@ -116,7 +116,7 @@ strong {
             }
 
             &:hover {
-                background: $color-bg-mid;
+                /*background: $color-bg-mid;*/
             }
         }
     }
