@@ -173,7 +173,7 @@ export interface CliHeader extends FileData {
     /* WORD                 */ MajorRuntimeVersion: U2Field;
     /* WORD                 */ MinorRuntimeVersion: U2Field;
     /* IMAGE_DATA_DIRECTORY */ MetaData: ImageDataDirectory;
-    /* DWORD                */ Flags: U4Field;
+    /* DWORD                */ Flags: U4EnumField<F.ComImageFlags>;
     /* DWORD                */ EntryPointToken: U4Field;
     /* IMAGE_DATA_DIRECTORY */ Resources: ImageDataDirectory;
     /* IMAGE_DATA_DIRECTORY */ StrongNameSignature: ImageDataDirectory;
@@ -191,7 +191,7 @@ export interface MetadataRoot extends FileData {
     VersionLength: U4Field;
     VersionString: StringField;
     VersionPadding: Field;
-    Flags: U2Field;
+    Flags: U2Field;  // Reserved, always 0
     Streams: U2Field;
 }
 
@@ -199,4 +199,5 @@ export interface MetadataStreamHeader extends FileData {
     Offset: U4Field;
     Size: U4Field;
     Name: StringField;
+    Padding: Field;
 }
