@@ -1,9 +1,12 @@
 import { PEImage } from "../pe/image";
 
 export function generateNavList(pe: PEImage): W.NavData[] {
-    return [
-        generateHeadersNavData(pe)
-    ];
+    let navList: W.NavData[] = [generateHeadersNavData(pe)];
+
+    const navMD = generateMDHeadersNavData(pe);
+    if (navMD) navList.push(navMD);
+
+    return navList;
 }
 
 function generateHeadersNavData(pe: PEImage): W.NavData {
@@ -24,5 +27,29 @@ function generateHeadersNavData(pe: PEImage): W.NavData {
         }, {
             target: { pageID, title: W.KnownTitle.SECTION_HEADERS, elemID: W.KnownElemID.SECTION_HEADERS }
         }]
+    };
+}
+
+function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
+    const pageID = W.PageID.MD_HEADERS;
+
+    if (!pe.isManaged()) return undefined;
+
+    let children: W.NavData[] = [{
+        target: { pageID, title: W.KnownTitle.CLI_HEADER, elemID: W.KnownElemID.CLI_HEADER }
+    }];
+
+    if (pe.hasMetadata()) {
+        children.push({
+            target: { pageID, title: W.KnownTitle.MD_ROOT, elemID: W.KnownElemID.MD_ROOT }
+        });
+        children.push({
+            target: { pageID, title: W.KnownTitle.MDS_HEADERS, elemID: W.KnownElemID.MDS_HEADERS }
+        });
+    }
+
+    return {
+        target: { pageID, title: W.KnownTitle.MD_HEADERS },
+        children
     };
 }

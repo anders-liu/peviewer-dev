@@ -49,14 +49,26 @@ export class PEImage implements L.FileDataProvider {
         }
     }
 
-    public isManaged(): boolean | undefined {
+    public isManaged(): boolean {
         const dd = this.getDataDirectories();
-        if (dd == null) {
-            return undefined;
-        }
+        return dd != null && this.isDataDirectoryValid(
+            dd.items[F.ImageDirectoryEntry.IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR]
+        );
+    }
 
-        const ddCom = dd.items[F.ImageDirectoryEntry.IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR];
-        return ddCom && ddCom.VirtualAddress.value > 0 && ddCom.Size.value > 0;
+    public hasMetadata(): boolean {
+        const h = this.getCliHeader();
+        return h != null && this.isDataDirectoryValid(h.MetaData);
+    }
+
+    public hasManagedResources(): boolean {
+        const h = this.getCliHeader();
+        return h != null && this.isDataDirectoryValid(h.Resources);
+    }
+
+    public hasStrongNameSignature(): boolean {
+        const h = this.getCliHeader();
+        return h != null && this.isDataDirectoryValid(h.StrongNameSignature);
     }
 
     //
@@ -227,6 +239,10 @@ export class PEImage implements L.FileDataProvider {
             const sz = h.VirtualSize.value;
             return rva >= p && rva < p + sz;
         }).shift();
+    }
+
+    private isDataDirectoryValid(dd?: S.ImageDataDirectory): boolean {
+        return (dd && dd.VirtualAddress.value > 0 && dd.Size.value > 0) || false;
     }
 
     private readonly data: DataView;

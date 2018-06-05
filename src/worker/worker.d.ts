@@ -74,7 +74,7 @@ declare namespace W {
 
         CLI_HEADER = "cli-hdr",
         MD_ROOT = "md-root",
-        MD_HEADERS = "md-hdrs",
+        MDS_HEADERS = "md-hdrs",
     }
 
     export const enum KnownTitle {
@@ -89,7 +89,7 @@ declare namespace W {
         DATA_DIRECTORIES = "Data Directories",
         SECTION_HEADERS = "Section Headers",
 
-        MD_HEADERS = "Metadata Headers",
+        MD_HEADERS = "Metadata",
         CLI_HEADER = "CLI Header",
         MD_ROOT = "Metadata Root",
         MDS_HEADERS = "Stream Headers",

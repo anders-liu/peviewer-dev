@@ -78,7 +78,7 @@ function generateMetadataStreamHeader(pe: PEImage): W.GroupedStruct | undefined 
 
     const s: W.GroupedStruct = {
         title: W.KnownTitle.MDS_HEADERS,
-        elemID: W.KnownElemID.MD_HEADERS,
+        elemID: W.KnownElemID.MDS_HEADERS,
         groups: h.items.map((v, i) => ({
             title: `[${i}] (${v.Name.value})`,
             items: [
