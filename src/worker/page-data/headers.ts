@@ -2,7 +2,6 @@ import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
-import { Z_UNKNOWN } from "zlib";
 
 export function generateHeadersPageData(pe: PEImage): W.HeadersPageData {
     return {
@@ -241,7 +240,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
             FM.formatU2Field("NumberOfLinenumbers", v.NumberOfLinenumbers, true),
             FM.formatU4Field("Characteristics", v.Characteristics),
         ]
-    } as W.GroupedStruct));
+    }));
 
     return s;
 }

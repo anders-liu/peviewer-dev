@@ -60,6 +60,7 @@ declare namespace W {
         HOME = "HOME",
         NOTFOUND = "NOTFOUND",
         HEADERS = "HEADERS",
+        MD_HEADERS = "MD_HEADERS",
     }
 
     export const enum KnownElemID {
@@ -70,11 +71,16 @@ declare namespace W {
         DATA_DIRECTORIES = "data-dir",
         SECTION_HEADERS = "sec-hdrs",
         SECTION_HEADER = "sec-hdr",
+
+        CLI_HEADER = "cli-hdr",
+        MD_ROOT = "md-root",
+        MD_HEADERS = "md-hdrs",
     }
 
     export const enum KnownTitle {
         NOTFOUND = "Page Not Found",
         TOP = "TOP",
+
         HEADERS = "Headers",
         DOS_HEADER = "DOS Header",
         PE_SIGNATURE = "PE Signature",
@@ -82,6 +88,11 @@ declare namespace W {
         OPTIONAL_HEADER = "Optional Header",
         DATA_DIRECTORIES = "Data Directories",
         SECTION_HEADERS = "Section Headers",
+
+        MD_HEADERS = "Metadata Headers",
+        CLI_HEADER = "CLI Header",
+        MD_ROOT = "Metadata Root",
+        MDS_HEADERS = "Stream Headers",
     }
 
     export interface PageData {
@@ -134,5 +145,11 @@ declare namespace W {
         optionalHeader: GroupedStruct;
         dataDirectories: GroupedStruct;
         sectionHeaders: GroupedStruct;
+    }
+
+    export interface MetadataHeadersPageData extends PageData {
+        cliHeader: SimpleStruct;
+        metadataRoot?: SimpleStruct;
+        streamHeaders?: GroupedStruct;
     }
 }
