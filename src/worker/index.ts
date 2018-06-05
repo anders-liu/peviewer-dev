@@ -23,7 +23,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
             pe = PEImage.load(buf);
 
             // Response with page data.
-            const pageData = generatePageData(pe, W.PageID.HEADERS);
+            const pageData = generatePageData(pe, pe.isManaged() ? W.PageID.MD_HEADERS : W.PageID.HEADERS);
             const pageDataMsg = M.createResPageDataMessage(pageData);
             postMessage(pageDataMsg);
 

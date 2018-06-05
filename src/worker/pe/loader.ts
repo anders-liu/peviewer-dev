@@ -76,13 +76,13 @@ export function loadFixedSizeAsciiStringField(d: FileDataProvider, p: number, sz
 export function loadNullTerminatedStringField(d: FileDataProvider, p: number): S.StringField {
     let bytes: number[] = [];
     let ptr = p;
-    let b = d.getU1(ptr);
-    while (b != 0) {
+    let b: number;
+
+    do {
+        b = d.getU1(ptr++);
         bytes.push(b);
-        ptr++;
-        b = d.getU1(ptr);
-    }
-    const value = String.fromCharCode.apply(null, bytes);
+    } while (b != 0);
+    const value = String.fromCharCode.apply(null, bytes.slice(0, bytes.length - 1));
 
     return {
         _offset: p, _size: ptr - p, data: Uint8Array.from(bytes), value
