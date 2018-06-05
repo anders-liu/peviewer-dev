@@ -82,7 +82,6 @@ strong {
         @include txt-code;
         border-collapse: collapse;
         border-bottom: 2px solid $color-txt-mid-lt;
-        width: 100%;
     
         th, td {
             white-space: nowrap;
@@ -113,10 +112,6 @@ strong {
 
             &:nth-child(even) {
                 background: $color-bg-mid-lt;
-            }
-
-            &:hover {
-                /*background: $color-bg-mid;*/
             }
         }
     }
