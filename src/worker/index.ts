@@ -11,6 +11,10 @@ onmessage = (ev) => {
         case W.WorkerMessageType.REQ_OPEN_FILE:
             handleReqOpenFile(msg as W.ReqOpenFileMessage);
             break;
+
+        case W.WorkerMessageType.REQ_OPEN_NAV:
+            handleReqOpenNav(msg as W.ReqOpenNavMessage);
+            break;
     }
 };
 
@@ -23,7 +27,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
             pe = PEImage.load(buf);
 
             // Response with page data.
-            const pageData = generatePageData(pe, pe.isManaged() ? W.PageID.MD_HEADERS : W.PageID.HEADERS);
+            const pageData = generatePageData(pe, W.PageID.HEADERS);
             const pageDataMsg = M.createResPageDataMessage(pageData);
             postMessage(pageDataMsg);
 
@@ -51,4 +55,13 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
     };
 
     reader.readAsArrayBuffer(msg.file);
+}
+
+function handleReqOpenNav(msg: W.ReqOpenNavMessage): void {
+    if (pe != null) {
+        const pageData = generatePageData(pe, msg.target.pageID);
+        pageData.nav.elemID = msg.target.elemID;
+        const res = M.createResPageDataMessage(pageData);
+        postMessage(res);
+    }
 }

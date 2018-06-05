@@ -13,6 +13,16 @@ export const workerClientMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>) 
             _worker.postMessage(WM.createReqOpenFileMessage(file));
             break;
         }
+
+        case A.ActionType.OPEN_NAV: {
+            const { target } = action as A.OpenNavAction;
+            const { pageData } = store.getState();
+            const { pageID, elemID } = target;
+            if (!pageData || pageData.nav.pageID != pageID) {
+                _worker.postMessage(WM.createReqOpenNavMessage(target));
+            }
+            break;
+        }
     }
     return next(action);
 }) as Redux.Middleware;

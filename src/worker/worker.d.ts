@@ -5,6 +5,7 @@ declare namespace W {
 
     const enum WorkerMessageType {
         REQ_OPEN_FILE = "REQ_OPEN_FILE",
+        REQ_OPEN_NAV = "REQ_OPEN_NAV",
 
         RES_NAV_DATA = "RES_NAV_DATA",
         RES_PAGE_DATA = "RES_PAGE_DATA",
@@ -18,6 +19,10 @@ declare namespace W {
 
     export interface ReqOpenFileMessage extends WorkerMessage {
         file: File;
+    }
+
+    export interface ReqOpenNavMessage extends WorkerMessage {
+        target: NavTarget;
     }
 
     export interface ResNavDataMessage extends WorkerMessage {
