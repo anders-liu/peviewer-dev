@@ -13,6 +13,7 @@ export interface AppInfo {
     author: string;
     homepage: string;
     bugsUrl: string;
+    releaseNotesUrl: string;
     buildTimeLocal: string;
     year: string;
 }

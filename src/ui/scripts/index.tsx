@@ -16,6 +16,7 @@ const appInfo: S.AppInfo = {
     author: packageJson.author,
     homepage: packageJson.homepage,
     bugsUrl: packageJson.bugs_url,
+    releaseNotesUrl: packageJson.release_notes,
     buildTimeLocal: new Date(Date.parse(packageJson.build_time)).toLocaleString(),
     year: new Date().getFullYear().toString(),
 };

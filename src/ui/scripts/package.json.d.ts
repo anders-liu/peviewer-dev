@@ -5,6 +5,7 @@ declare module "package.json" {
         author: string;
         homepage: string;
         bugs_url: string;
+        release_notes: string;
         build_time: string;
     };
     export = value;

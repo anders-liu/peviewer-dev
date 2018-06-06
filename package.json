@@ -2,7 +2,7 @@
   "name": "peviewer-dev",
   "title": "PE Viewer",
   "description": "Development working space of [peviewer.net](https://github.com/anders-liu/peviewer).",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Anders Liu",
   "license": "MIT",
   "homepage": "https://github.com/anders-liu/peviewer-dev#readme",
@@ -12,6 +12,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anders-liu/peviewer-dev.git"
+  },
+  "release-notes": {
+    "url": "https://github.com/anders-liu/peviewer/blob/master/RELEASES.md"
   },
   "keywords": [
     "PE",

@@ -78,11 +78,12 @@ function build_styles(is_dev) {
 function gen_package_json() {
     const pkg = require("./package.json");
     const json = {
-        title: pkg.title,
-        version: pkg.version,
-        author: pkg.author,
-        homepage: pkg.homepage,
-        bugs_url: pkg.bugs.url,
+        title: pkg["title"],
+        version: pkg["version"],
+        author: pkg["author"],
+        homepage: pkg["homepage"],
+        bugs_url: pkg["bugs"]["url"],
+        release_notes: pkg["release-notes"]["url"],
         build_time: LAST_BUILD_TIME
     }
     return file("package.g.json", JSON.stringify(json), { src: true }).
