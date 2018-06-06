@@ -163,3 +163,41 @@ export interface ImageSectionHeader extends FileData {
     /* WORD  */ NumberOfLinenumbers: U2Field;
     /* DWORD */ Characteristics: U4EnumField<F.ImageSection>;
 };
+
+//
+// Metadata structures.
+//
+
+export interface CliHeader extends FileData {
+    /* DWORD                */ cb: U4Field;
+    /* WORD                 */ MajorRuntimeVersion: U2Field;
+    /* WORD                 */ MinorRuntimeVersion: U2Field;
+    /* IMAGE_DATA_DIRECTORY */ MetaData: ImageDataDirectory;
+    /* DWORD                */ Flags: U4EnumField<F.ComImageFlags>;
+    /* DWORD                */ EntryPointToken: U4Field;
+    /* IMAGE_DATA_DIRECTORY */ Resources: ImageDataDirectory;
+    /* IMAGE_DATA_DIRECTORY */ StrongNameSignature: ImageDataDirectory;
+    /* IMAGE_DATA_DIRECTORY */ CodeManagerTable: ImageDataDirectory;
+    /* IMAGE_DATA_DIRECTORY */ VTableFixups: ImageDataDirectory;
+    /* IMAGE_DATA_DIRECTORY */ ExportAddressTableJumps: ImageDataDirectory;
+    /* IMAGE_DATA_DIRECTORY */ ManagedNativeHeader: ImageDataDirectory;
+}
+
+export interface MetadataRoot extends FileData {
+    Signature: U4Field;
+    MajorVersion: U2Field;
+    MinorVersion: U2Field;
+    Reserved: U4Field;
+    VersionLength: U4Field;
+    VersionString: StringField;
+    VersionPadding: Field;
+    Flags: U2Field;  // Reserved, always 0
+    Streams: U2Field;
+}
+
+export interface MetadataStreamHeader extends FileData {
+    Offset: U4Field;
+    Size: U4Field;
+    Name: StringField;
+    Padding: Field;
+}

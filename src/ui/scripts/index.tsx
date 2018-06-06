@@ -15,12 +15,15 @@ const appInfo: S.AppInfo = {
     version: packageJson.version,
     author: packageJson.author,
     homepage: packageJson.homepage,
-    bugsUrl: packageJson.bugs.url,
+    bugsUrl: packageJson.bugs_url,
+    releaseNotesUrl: packageJson.release_notes,
+    buildTimeLocal: new Date(Date.parse(packageJson.build_time)).toLocaleString(),
     year: new Date().getFullYear().toString(),
 };
 
 const defaultState: S.AppState = {
     appInfo,
+    navList: []
 };
 
 document.title = `${appInfo.title}`;

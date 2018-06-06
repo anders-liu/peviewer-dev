@@ -4,6 +4,7 @@ export interface AppState {
     appInfo: AppInfo;
     fileInfo?: FileInfo;
     pageData?: W.PageData;
+    navList: W.NavData[];
 }
 
 export interface AppInfo {
@@ -12,10 +13,14 @@ export interface AppInfo {
     author: string;
     homepage: string;
     bugsUrl: string;
+    releaseNotesUrl: string;
+    buildTimeLocal: string;
     year: string;
 }
 
 export interface FileInfo {
     name: string;
     size: number;
+    is32Bit?: boolean;
+    isManaged?: boolean;
 }
