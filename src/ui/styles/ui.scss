@@ -91,6 +91,7 @@ strong {
         th, td {
             white-space: nowrap;
             padding: $size-pad-sm $size-pad-lg;
+            vertical-align: text-top;
         }
     
         th {

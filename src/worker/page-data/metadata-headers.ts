@@ -2,6 +2,7 @@ import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
+import { PageFallback } from "csstype";
 
 export function generateMetadataHeadersPageData(pe: PEImage): W.MetadataHeadersPageData {
     return {
@@ -12,6 +13,7 @@ export function generateMetadataHeadersPageData(pe: PEImage): W.MetadataHeadersP
         cliHeader: generateCliHeader(pe),
         metadataRoot: generateMetadataRoot(pe),
         streamHeaders: generateMetadataStreamHeader(pe),
+        snSignature: generateSNSignature(pe),
     };
 
 }
@@ -47,6 +49,18 @@ function generateCliHeader(pe: PEImage): W.SimpleStruct {
         FM.formatU4Field("ManagedNativeHeader.Size", h.ManagedNativeHeader.Size, true),
     ];
 
+    return s;
+}
+
+function generateSNSignature(pe: PEImage): W.SimpleStruct | undefined {
+    const d = pe.getStrongNameSignature();
+    if (!d) return undefined;
+
+    const s: W.SimpleStruct = {
+        title: W.KnownTitle.SN_SIG,
+        elemID: W.KnownElemID.SN_SIG,
+        items: [FM.formatBytesField("Signature", d)]
+    };
     return s;
 }
 

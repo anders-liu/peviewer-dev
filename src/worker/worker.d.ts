@@ -80,6 +80,7 @@ declare namespace W {
         CLI_HEADER = "cli-hdr",
         MD_ROOT = "md-root",
         MDS_HEADERS = "md-hdrs",
+        SN_SIG = "sn-sig",
     }
 
     export const enum KnownTitle {
@@ -98,6 +99,7 @@ declare namespace W {
         CLI_HEADER = "CLI Header",
         MD_ROOT = "Metadata Root",
         MDS_HEADERS = "Stream Headers",
+        SN_SIG = "Strong Name Signature",
     }
 
     export interface PageData {
@@ -156,5 +158,6 @@ declare namespace W {
         cliHeader: SimpleStruct;
         metadataRoot?: SimpleStruct;
         streamHeaders?: GroupedStruct;
+        snSignature?: SimpleStruct;
     }
 }

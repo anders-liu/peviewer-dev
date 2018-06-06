@@ -104,7 +104,7 @@ export class PEImage implements L.FileDataProvider {
     //
 
     public getCliHeader(): S.CliHeader | undefined {
-        if (this.cliHeader != null) return this.cliHeader;
+        if (this.cliHeader) return this.cliHeader;
         if (!this.isManaged()) return undefined;
 
         const offset = this.rvaToOffset(this.dataDirectories!
@@ -116,7 +116,7 @@ export class PEImage implements L.FileDataProvider {
     }
 
     public getMetadataRoot(): S.MetadataRoot | undefined {
-        if (this.metadataRoot != null) return this.metadataRoot;
+        if (this.metadataRoot) return this.metadataRoot;
 
         const cliHeader = this.getCliHeader();
         if (!cliHeader) return undefined;
@@ -129,7 +129,7 @@ export class PEImage implements L.FileDataProvider {
     }
 
     public getMetadataStreamHeaders(): S.StructArray<S.MetadataStreamHeader> | undefined {
-        if (this.metadataStreamHeaders != null) return this.metadataStreamHeaders;
+        if (this.metadataStreamHeaders) return this.metadataStreamHeaders;
 
         const mdRoot = this.getMetadataRoot();
         if (!mdRoot || !mdRoot.Streams.value) return undefined;
@@ -141,6 +141,21 @@ export class PEImage implements L.FileDataProvider {
             mdRoot.Streams.value
         );
         return this.metadataStreamHeaders;
+    }
+
+    public getStrongNameSignature(): S.Field | undefined {
+        if (this.strongNameSignature) return this.strongNameSignature;
+
+        const cliHeader = this.getCliHeader();
+        if (!cliHeader) return undefined;
+
+        const offset = this.rvaToOffset(cliHeader.StrongNameSignature.VirtualAddress.value);
+        if (!offset) return undefined;
+
+        this.strongNameSignature = L.loadFixedSizeByteArrayField(
+            this, offset,
+            cliHeader.StrongNameSignature.Size.value);
+        return this.strongNameSignature;
     }
 
     //
@@ -257,4 +272,5 @@ export class PEImage implements L.FileDataProvider {
     private cliHeader?: S.CliHeader;
     private metadataRoot?: S.MetadataRoot;
     private metadataStreamHeaders?: S.StructArray<S.MetadataStreamHeader>;
+    private strongNameSignature?: S.Field;
 }

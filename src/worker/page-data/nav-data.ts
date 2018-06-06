@@ -48,6 +48,12 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
         });
     }
 
+    if (pe.hasStrongNameSignature()) {
+        children.push({
+            target: { pageID, title: W.KnownTitle.SN_SIG, elemID: W.KnownElemID.SN_SIG }
+        });
+    }
+
     return {
         target: { pageID, title: W.KnownTitle.MD_HEADERS },
         children

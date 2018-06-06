@@ -18,11 +18,12 @@ export class MetadataHeadersPage extends React.Component<MetadataHeadersPageProp
                 <TopLink />
                 {this.renderMetadataRoot()}
                 {this.renderStreamHeaders()}
+                {this.renderSNSignature()}
             </section>
         );
     }
 
-    public renderMetadataRoot(): JSX.Element | undefined {
+    private renderMetadataRoot(): JSX.Element | undefined {
         const { data } = this.props;
         return data.metadataRoot && (
             <React.Fragment>
@@ -32,11 +33,21 @@ export class MetadataHeadersPage extends React.Component<MetadataHeadersPageProp
         );
     }
 
-    public renderStreamHeaders(): JSX.Element | undefined {
+    private renderStreamHeaders(): JSX.Element | undefined {
         const { data } = this.props;
         return data.streamHeaders && (
             <React.Fragment>
                 {renderGroupedStruct(data.streamHeaders)}
+                <TopLink />
+            </React.Fragment>
+        );
+    }
+
+    private renderSNSignature(): JSX.Element | undefined {
+        const { data } = this.props;
+        return data.snSignature && (
+            <React.Fragment>
+                {renderSimpleStruct(data.snSignature)}
                 <TopLink />
             </React.Fragment>
         );
