@@ -25,7 +25,7 @@ class OpenFilePageClass extends React.Component<ConnectedEvents> {
             <section className="file-opener">
                 <div>Select a file:</div>
                 <div><input type="file" onChange={this.onFileChange}></input></div>
-                <div>No data would be uploaded, everything is parsed locally.</div>
+                <div className="info">No data would be uploaded, everything is parsed locally.</div>
             </section>
         )
     }

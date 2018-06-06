@@ -13,6 +13,16 @@ export const workerClientMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>) 
             _worker.postMessage(WM.createReqOpenFileMessage(file));
             break;
         }
+
+        case A.ActionType.OPEN_NAV: {
+            const { target } = action as A.OpenNavAction;
+            const { pageData } = store.getState();
+            const { pageID, elemID } = target;
+            if (!pageData || pageData.nav.pageID != pageID) {
+                _worker.postMessage(WM.createReqOpenNavMessage(target));
+            }
+            break;
+        }
     }
     return next(action);
 }) as Redux.Middleware;
@@ -26,11 +36,18 @@ export function initWorkerClient(store: Redux.Store<S.AppState>): void {
 function handleMessage(msg: W.WorkerMessage): void {
     switch (msg.type) {
         case W.WorkerMessageType.RES_NAV_DATA:
+            const { navList } = <W.ResNavDataMessage>msg;
+            _store.dispatch(A.createSetNavListAction(navList));
             break;
 
         case W.WorkerMessageType.RES_PAGE_DATA:
             const { pageData } = <W.ResPageDataMessage>msg;
             _store.dispatch(A.createSetPageDataAction(pageData));
+            break;
+
+        case W.WorkerMessageType.RES_PE_PROPS:
+            const { is32Bit, isManaged } = <W.ResPEPropsMessage>msg;
+            _store.dispatch(A.createSetPEPropsAction(is32Bit, isManaged));
             break;
 
         case W.WorkerMessageType.RES_PE_ERROR:

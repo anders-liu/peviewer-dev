@@ -1,5 +1,6 @@
 import * as S from "./structures";
 import * as F from "./image-flags";
+import * as U from "./utils";
 
 export interface FileDataProvider {
     getU1(p: number): number;
@@ -57,7 +58,7 @@ export function loadU4EnumField<T>(d: FileDataProvider, p: number): S.U4EnumFiel
     };
 }
 
-export function loadFixedSizeByteArray(d: FileDataProvider, p: number, sz: number): S.Field {
+export function loadFixedSizeByteArrayField(d: FileDataProvider, p: number, sz: number): S.Field {
     return {
         _offset: p, _size: sz, data: d.getData(p, sz)
     };
@@ -65,10 +66,26 @@ export function loadFixedSizeByteArray(d: FileDataProvider, p: number, sz: numbe
 
 export function loadFixedSizeAsciiStringField(d: FileDataProvider, p: number, sz: number): S.StringField {
     const data = d.getData(p, sz);
-    const value = String.fromCharCode.apply(null, Array.from(data));
+    const value = String.fromCharCode.apply(null, Array.from(data).filter(v => v != 0));
 
     return {
         _offset: p, _size: sz, data, value
+    };
+}
+
+export function loadNullTerminatedStringField(d: FileDataProvider, p: number): S.StringField {
+    let bytes: number[] = [];
+    let ptr = p;
+    let b: number;
+
+    do {
+        b = d.getU1(ptr++);
+        bytes.push(b);
+    } while (b != 0);
+    const value = String.fromCharCode.apply(null, bytes.slice(0, bytes.length - 1));
+
+    return {
+        _offset: p, _size: ptr - p, data: Uint8Array.from(bytes), value
     };
 }
 
@@ -138,7 +155,7 @@ export function loadImageDosHeader(d: FileDataProvider, p: number): S.ImageDosHe
     const e_ovno = loadU2Field(d, ptr);
     ptr += e_ovno._size;
 
-    const e_res = loadFixedSizeByteArray(d, ptr, 4 * 2);
+    const e_res = loadFixedSizeByteArrayField(d, ptr, 4 * 2);
     ptr += e_res._size;
 
     const e_oemid = loadU2Field(d, ptr);
@@ -147,7 +164,7 @@ export function loadImageDosHeader(d: FileDataProvider, p: number): S.ImageDosHe
     const e_oeminfo = loadU2Field(d, ptr);
     ptr += e_oeminfo._size;
 
-    const e_res2 = loadFixedSizeByteArray(d, ptr, 10 * 2);
+    const e_res2 = loadFixedSizeByteArrayField(d, ptr, 10 * 2);
     ptr += e_res2._size;
 
     const e_lfanew = loadU4Field(d, ptr);
@@ -526,5 +543,135 @@ export function loadImageSectionHeader(d: FileDataProvider, p: number): S.ImageS
         NumberOfRelocations,
         NumberOfLinenumbers,
         Characteristics,
+    };
+}
+
+//
+// Metadata structures.
+//
+
+export function loadCliHeader(d: FileDataProvider, p: number): S.CliHeader {
+    let ptr = p;
+
+    const cb = loadU4Field(d, ptr);
+    ptr += cb._size;
+
+    const MajorRuntimeVersion = loadU2Field(d, ptr);
+    ptr += MajorRuntimeVersion._size;
+
+    const MinorRuntimeVersion = loadU2Field(d, ptr);
+    ptr += MinorRuntimeVersion._size;
+
+    const MetaData = loadImageDataDirectory(d, ptr);
+    ptr += MetaData._size;
+
+    const Flags = loadU4Field(d, ptr);
+    ptr += Flags._size;
+
+    const EntryPointToken = loadU4Field(d, ptr);
+    ptr += EntryPointToken._size;
+
+    const Resources = loadImageDataDirectory(d, ptr);
+    ptr += Resources._size;
+
+    const StrongNameSignature = loadImageDataDirectory(d, ptr);
+    ptr += StrongNameSignature._size;
+
+    const CodeManagerTable = loadImageDataDirectory(d, ptr);
+    ptr += CodeManagerTable._size;
+
+    const VTableFixups = loadImageDataDirectory(d, ptr);
+    ptr += VTableFixups._size;
+
+    const ExportAddressTableJumps = loadImageDataDirectory(d, ptr);
+    ptr += ExportAddressTableJumps._size;
+
+    const ManagedNativeHeader = loadImageDataDirectory(d, ptr);
+    ptr += ManagedNativeHeader._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        cb,
+        MajorRuntimeVersion,
+        MinorRuntimeVersion,
+        MetaData,
+        Flags,
+        EntryPointToken,
+        Resources,
+        StrongNameSignature,
+        CodeManagerTable,
+        VTableFixups,
+        ExportAddressTableJumps,
+        ManagedNativeHeader,
+    };
+}
+
+export function loadMetadataRoot(d: FileDataProvider, p: number): S.MetadataRoot {
+    let ptr = p;
+
+    const Signature = loadU4Field(d, ptr);
+    ptr += Signature._size;
+
+    const MajorVersion = loadU2Field(d, ptr);
+    ptr += MajorVersion._size;
+
+    const MinorVersion = loadU2Field(d, ptr);
+    ptr += MinorVersion._size;
+
+    const Reserved = loadU4Field(d, ptr);
+    ptr += Reserved._size;
+
+    const VersionLength = loadU4Field(d, ptr);
+    ptr += VersionLength._size;
+
+    const VersionString = loadNullTerminatedStringField(d, ptr);
+    ptr += VersionString._size;
+
+    const paddingSize = U.calculatePadding(VersionString._size);
+    const VersionPadding = loadFixedSizeByteArrayField(d, ptr, paddingSize);
+    ptr += VersionPadding._size;
+
+    const Flags = loadU2Field(d, ptr);
+    ptr += Flags._size;
+
+    const Streams = loadU2Field(d, ptr);
+    ptr += Streams._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Signature,
+        MajorVersion,
+        MinorVersion,
+        Reserved,
+        VersionLength,
+        VersionString,
+        VersionPadding,
+        Flags,
+        Streams,
+    };
+}
+
+export function loadMetadataStreamHeader(d: FileDataProvider, p: number): S.MetadataStreamHeader {
+    let ptr = p;
+
+    const Offset = loadU4Field(d, ptr);
+    ptr += Offset._size;
+
+    const Size = loadU4Field(d, ptr);
+    ptr += Size._size;
+
+    const Name = loadNullTerminatedStringField(d, ptr);
+    ptr += Name._size;
+
+    const paddingSize = U.calculatePadding(Name._size);
+    const Padding = loadFixedSizeByteArrayField(d, ptr, paddingSize);
+    ptr += Padding._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Offset,
+        Size,
+        Name,
+        Padding,
     };
 }

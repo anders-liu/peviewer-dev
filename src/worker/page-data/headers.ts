@@ -2,12 +2,13 @@ import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
-import { Z_UNKNOWN } from "zlib";
 
 export function generateHeadersPageData(pe: PEImage): W.HeadersPageData {
     return {
-        id: W.PageID.HEADERS,
-        title: "Headers",
+        nav: {
+            pageID: W.PageID.HEADERS,
+            title: W.KnownTitle.HEADERS,
+        },
         dosHeader: generateDosHeader(pe),
         peSignature: generatePESignature(pe),
         fileHeader: generateFileHeader(pe),
@@ -19,7 +20,7 @@ export function generateHeadersPageData(pe: PEImage): W.HeadersPageData {
 
 function generateDosHeader(pe: PEImage): W.SimpleStruct {
     let s: W.SimpleStruct = {
-        title: "DOS Header",
+        title: W.KnownTitle.DOS_HEADER,
         elemID: W.KnownElemID.DOS_HEADER,
     };
 
@@ -53,7 +54,7 @@ function generateDosHeader(pe: PEImage): W.SimpleStruct {
 
 function generatePESignature(pe: PEImage): W.SimpleStruct {
     let s: W.SimpleStruct = {
-        title: "PE Signature",
+        title: W.KnownTitle.PE_SIGNATURE,
         elemID: W.KnownElemID.PE_SIGNATURE,
     };
 
@@ -69,7 +70,7 @@ function generatePESignature(pe: PEImage): W.SimpleStruct {
 
 function generateFileHeader(pe: PEImage): W.SimpleStruct {
     let s: W.SimpleStruct = {
-        title: "File Header",
+        title: W.KnownTitle.FILE_HEADER,
         elemID: W.KnownElemID.FILE_HEADER,
     };
 
@@ -91,7 +92,7 @@ function generateFileHeader(pe: PEImage): W.SimpleStruct {
 
 function generateOptionalHeader(pe: PEImage): W.GroupedStruct {
     let s: W.GroupedStruct = {
-        title: "Optional Header",
+        title: W.KnownTitle.OPTIONAL_HEADER,
         elemID: W.KnownElemID.OPTIONAL_HEADER,
     };
 
@@ -198,7 +199,7 @@ function fillOptionalHeader64Fields(s: W.GroupedStruct, h: S.ImageOptionalHeader
 
 function generateDataDirectories(pe: PEImage): W.GroupedStruct {
     let s: W.GroupedStruct = {
-        title: "Data Dreictories",
+        title: W.KnownTitle.DATA_DIRECTORIES,
         elemID: W.KnownElemID.DATA_DIRECTORIES,
     };
 
@@ -218,7 +219,7 @@ function generateDataDirectories(pe: PEImage): W.GroupedStruct {
 
 function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
     let s: W.GroupedStruct = {
-        title: "Section headers",
+        title: W.KnownTitle.SECTION_HEADERS,
         elemID: W.KnownElemID.SECTION_HEADERS,
     };
 
@@ -226,7 +227,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
     if (!h) return s;
 
     s.groups = h.items.map((v, i) => ({
-        title: `[${i}]`,
+        title: `[${i}] (${v.Name.value})`,
         items: [
             FM.formatStringField("Name", v.Name),
             FM.formatU4Field("VirtualSize", v.VirtualSize, true),
@@ -239,7 +240,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
             FM.formatU2Field("NumberOfLinenumbers", v.NumberOfLinenumbers, true),
             FM.formatU4Field("Characteristics", v.Characteristics),
         ]
-    } as W.GroupedStruct));
+    }));
 
     return s;
 }

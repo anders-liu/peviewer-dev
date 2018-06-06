@@ -1,6 +1,7 @@
 import * as M from "./message";
 import { PEImage } from "./pe/image";
 import { generatePageData } from "./page-data/generator";
+import { generateNavList } from "./page-data/nav-data";
 
 let pe: PEImage | null = null;
 
@@ -9,6 +10,10 @@ onmessage = (ev) => {
     switch (msg.type) {
         case W.WorkerMessageType.REQ_OPEN_FILE:
             handleReqOpenFile(msg as W.ReqOpenFileMessage);
+            break;
+
+        case W.WorkerMessageType.REQ_OPEN_NAV:
+            handleReqOpenNav(msg as W.ReqOpenNavMessage);
             break;
     }
 };
@@ -20,9 +25,22 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
         try {
             const buf = <ArrayBuffer>(<FileReader>ev.target).result;
             pe = PEImage.load(buf);
+
+            // Response with page data.
             const pageData = generatePageData(pe, W.PageID.HEADERS);
-            const msg = M.createResPageDataMessage(pageData);
-            postMessage(msg);
+            const pageDataMsg = M.createResPageDataMessage(pageData);
+            postMessage(pageDataMsg);
+
+            // Response with PE properties.
+            const is32Bit = pe.is32Bit();
+            const isManaged = pe.isManaged();
+            const pePropsMsg = M.createResPEPropsMessage(is32Bit, isManaged);
+            postMessage(pePropsMsg);
+
+            // Response with navigation data.
+            const navList = generateNavList(pe);
+            const navMsg = M.createResNavDataMessage(navList);
+            postMessage(navMsg);
         } catch (ex) {
             const msg = M.createResPEErrorMessage(ex.message
                 || `Unknown error: ${JSON.stringify(ex)}`);
@@ -37,4 +55,13 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
     };
 
     reader.readAsArrayBuffer(msg.file);
+}
+
+function handleReqOpenNav(msg: W.ReqOpenNavMessage): void {
+    if (pe != null) {
+        const pageData = generatePageData(pe, msg.target.pageID);
+        pageData.nav.elemID = msg.target.elemID;
+        const res = M.createResPageDataMessage(pageData);
+        postMessage(res);
+    }
 }

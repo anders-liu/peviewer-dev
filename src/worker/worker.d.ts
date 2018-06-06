@@ -5,9 +5,11 @@ declare namespace W {
 
     const enum WorkerMessageType {
         REQ_OPEN_FILE = "REQ_OPEN_FILE",
+        REQ_OPEN_NAV = "REQ_OPEN_NAV",
 
         RES_NAV_DATA = "RES_NAV_DATA",
         RES_PAGE_DATA = "RES_PAGE_DATA",
+        RES_PE_PROPS = "RES_PE_PROPS",
         RES_PE_ERROR = "RES_PE_ERROR",
     }
 
@@ -19,12 +21,21 @@ declare namespace W {
         file: File;
     }
 
+    export interface ReqOpenNavMessage extends WorkerMessage {
+        target: NavTarget;
+    }
+
     export interface ResNavDataMessage extends WorkerMessage {
         navList: NavData[];
     }
 
     export interface ResPageDataMessage extends WorkerMessage {
         pageData: PageData;
+    }
+
+    export interface ResPEPropsMessage extends WorkerMessage {
+        is32Bit?: boolean;
+        isManaged?: boolean;
     }
 
     export interface ResPEErrorMessage extends WorkerMessage {
@@ -36,9 +47,9 @@ declare namespace W {
     //
 
     export interface NavTarget {
-        title: string;
+        title: KnownTitle;
         pageID: PageID;
-        elemID?: string;
+        elemID?: KnownElemID | string;
     }
 
     export interface NavData {
@@ -54,6 +65,7 @@ declare namespace W {
         HOME = "HOME",
         NOTFOUND = "NOTFOUND",
         HEADERS = "HEADERS",
+        MD_HEADERS = "MD_HEADERS",
     }
 
     export const enum KnownElemID {
@@ -64,15 +76,36 @@ declare namespace W {
         DATA_DIRECTORIES = "data-dir",
         SECTION_HEADERS = "sec-hdrs",
         SECTION_HEADER = "sec-hdr",
+
+        CLI_HEADER = "cli-hdr",
+        MD_ROOT = "md-root",
+        MDS_HEADERS = "md-hdrs",
+    }
+
+    export const enum KnownTitle {
+        NOTFOUND = "Page Not Found",
+        TOP = "TOP",
+
+        HEADERS = "Headers",
+        DOS_HEADER = "DOS Header",
+        PE_SIGNATURE = "PE Signature",
+        FILE_HEADER = "PE File Header",
+        OPTIONAL_HEADER = "Optional Header",
+        DATA_DIRECTORIES = "Data Directories",
+        SECTION_HEADERS = "Section Headers",
+
+        MD_HEADERS = "Metadata",
+        CLI_HEADER = "CLI Header",
+        MD_ROOT = "Metadata Root",
+        MDS_HEADERS = "Stream Headers",
     }
 
     export interface PageData {
-        id: PageID;
-        title: string;
+        nav: NavTarget;
     }
 
     export interface StructData {
-        title: string;
+        title: KnownTitle | string;
         elemID?: KnownElemID | string;
     }
 
@@ -117,5 +150,11 @@ declare namespace W {
         optionalHeader: GroupedStruct;
         dataDirectories: GroupedStruct;
         sectionHeaders: GroupedStruct;
+    }
+
+    export interface MetadataHeadersPageData extends PageData {
+        cliHeader: SimpleStruct;
+        metadataRoot?: SimpleStruct;
+        streamHeaders?: GroupedStruct;
     }
 }

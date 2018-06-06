@@ -6,3 +6,10 @@ export function createReqOpenFileMessage(file: File): W.ReqOpenFileMessage {
         file
     };
 }
+
+export function createReqOpenNavMessage(target: W.NavTarget): W.ReqOpenNavMessage {
+    return {
+        type: W.WorkerMessageType.REQ_OPEN_NAV,
+        target
+    };
+}
