@@ -143,6 +143,13 @@ export class PEImage implements L.FileDataProvider {
         return this.metadataStreamHeaders;
     }
 
+    public getMetadataStreamHeader(name: F.MetadataStreamName): S.MetadataStreamHeader | undefined {
+        const headers = this.getMetadataStreamHeaders();
+        if (!headers) return undefined;
+
+        return headers.items.filter(v => v.Name.value == name).shift();
+    }
+
     public getStrongNameSignature(): S.Field | undefined {
         if (this.strongNameSignature) return this.strongNameSignature;
 
@@ -156,6 +163,20 @@ export class PEImage implements L.FileDataProvider {
             this, offset,
             cliHeader.StrongNameSignature.Size.value);
         return this.strongNameSignature;
+    }
+
+    public getMetadataTableHeader(): S.MetadataTableHeader | undefined {
+        if (this.metadataTableHeader) return this.metadataTableHeader;
+
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Table);
+        if (!sh) return undefined;
+
+        const offset = mdRoot._offset + sh.Offset.value;
+        this.metadataTableHeader = L.loadMetadataTableHeader(this, offset);
+        return this.metadataTableHeader;
     }
 
     //
@@ -273,4 +294,6 @@ export class PEImage implements L.FileDataProvider {
     private metadataRoot?: S.MetadataRoot;
     private metadataStreamHeaders?: S.StructArray<S.MetadataStreamHeader>;
     private strongNameSignature?: S.Field;
+
+    private metadataTableHeader?: S.MetadataTableHeader;
 }

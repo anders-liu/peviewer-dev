@@ -6,3 +6,12 @@ export function calculatePadding(dataSize: number, align: number = 4): number {
         return align - r;
     }
 }
+
+export function count1(n: number) {
+	let c = 0;
+	for (let i = 0, mask = 1; i < 32; i++ , mask <<= 1) {
+		if (n & mask)
+			c++;
+	}
+	return c;
+}

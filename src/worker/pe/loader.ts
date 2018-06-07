@@ -675,3 +675,44 @@ export function loadMetadataStreamHeader(d: FileDataProvider, p: number): S.Meta
         Padding,
     };
 }
+
+export function loadMetadataTableHeader(d: FileDataProvider, p: number): S.MetadataTableHeader {
+    let ptr = p;
+
+    const Reserved = loadU4Field(d, ptr);
+    ptr += Reserved._size;
+
+    const MajorVersion = loadU1Field(d, ptr);
+    ptr += MajorVersion._size;
+
+    const MinorVersion = loadU1Field(d, ptr);
+    ptr += MinorVersion._size;
+
+    const HeapSizes = loadU1Field(d, ptr);
+    ptr += HeapSizes._size;
+
+    const Reserved2 = loadU1Field(d, ptr);
+    ptr += Reserved2._size;
+
+    const Valid = loadU8Field(d, ptr);
+    ptr += Valid._size;
+
+    const Sorted = loadU8Field(d, ptr);
+    ptr += Sorted._size;
+
+    const tables = U.count1(Valid.high) + U.count1(Valid.low);
+    const Rows = loadStructArrayByCount(d, ptr, loadU4Field, tables);
+    ptr += Rows._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Reserved,
+        MajorVersion,
+        MinorVersion,
+        HeapSizes,
+        Reserved2,
+        Valid,
+        Sorted,
+        Rows,
+    }
+}

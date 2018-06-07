@@ -201,3 +201,14 @@ export interface MetadataStreamHeader extends FileData {
     Name: StringField;
     Padding: Field;
 }
+
+export interface MetadataTableHeader extends FileData {
+    Reserved: U4Field;
+    MajorVersion: U1Field;
+    MinorVersion: U1Field;
+    HeapSizes: U1Field;
+    Reserved2: U1Field;
+    Valid: U8Field;
+    Sorted: U8Field;
+    Rows: StructArray<U4Field>;
+}

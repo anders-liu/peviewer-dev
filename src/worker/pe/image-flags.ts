@@ -157,6 +157,10 @@ export enum ImageSection {
     IMAGE_SCN_SCALE_INDEX = 0x00000001,
 }
 
+//
+// Metadata structures.
+//
+
 export enum ComImageFlags {
     COMIMAGE_FLAGS_ILONLY = 0x00000001,
     COMIMAGE_FLAGS_32BITREQUIRED = 0x00000002,
@@ -168,3 +172,17 @@ export enum ComImageFlags {
 }
 
 export const MetadataSignature = 0x424A5342;
+
+export const enum MetadataStreamName {
+    Table = "#~",
+    Strings = "#Strings",
+    US = "#US",
+    GUID = "#GUID",
+    Blob = "#Blob",
+}
+
+export const enum MetadataTableHeapSize {
+    String = 0,
+    GUID = 1,
+    Blob = 2,
+}
