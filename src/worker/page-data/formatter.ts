@@ -1,5 +1,4 @@
 import * as S from "../pe/structures";
-import { format } from "url";
 
 export function formatU1RawHex(d: number): string {
     return padZeroLeft(d.toString(16).toUpperCase(), 2);

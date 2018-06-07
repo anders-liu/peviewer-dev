@@ -66,6 +66,7 @@ declare namespace W {
         NOTFOUND = "NOTFOUND",
         HEADERS = "HEADERS",
         MD_HEADERS = "MD_HEADERS",
+        MDS_TABLE = "MDS_TABLE",
     }
 
     export const enum KnownElemID {
@@ -81,6 +82,8 @@ declare namespace W {
         MD_ROOT = "md-root",
         MDS_HEADERS = "md-hdrs",
         SN_SIG = "sn-sig",
+
+        MDT_HEADER = "mdt-hdr",
     }
 
     export const enum KnownTitle {
@@ -100,6 +103,10 @@ declare namespace W {
         MD_ROOT = "Metadata Root",
         MDS_HEADERS = "Stream Headers",
         SN_SIG = "Strong Name Signature",
+
+        MDS_TABLE = "#~ Stream",
+        MDT_HEADER = "Metadata Table Header",
+        MDT_LIST = "Metadata Table List",
     }
 
     export interface PageData {
@@ -159,5 +166,9 @@ declare namespace W {
         metadataRoot?: SimpleStruct;
         streamHeaders?: GroupedStruct;
         snSignature?: SimpleStruct;
+    }
+
+    export interface MdsTablePageData extends PageData {
+        mdTableHeader: GroupedStruct;
     }
 }

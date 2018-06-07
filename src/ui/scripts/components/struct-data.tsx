@@ -46,8 +46,8 @@ function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
     );
 }
 
-function renderStructGroupTitleRow(title: string, key: string): JSX.Element {
-    return (<tr key={key} className="st-grphdr"><th colSpan={6}>{title}</th></tr>);
+function renderStructGroupTitleRow(title: string, key: string): JSX.Element | null {
+    return title ? (<tr key={key} className="st-grphdr"><th colSpan={6}>{title}</th></tr>) : null;
 }
 
 class StructTable extends React.Component {

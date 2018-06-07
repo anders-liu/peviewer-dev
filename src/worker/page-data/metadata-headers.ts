@@ -2,7 +2,6 @@ import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
-import { PageFallback } from "csstype";
 
 export function generateMetadataHeadersPageData(pe: PEImage): W.MetadataHeadersPageData {
     return {
@@ -15,7 +14,6 @@ export function generateMetadataHeadersPageData(pe: PEImage): W.MetadataHeadersP
         streamHeaders: generateMetadataStreamHeader(pe),
         snSignature: generateSNSignature(pe),
     };
-
 }
 
 function generateCliHeader(pe: PEImage): W.SimpleStruct {

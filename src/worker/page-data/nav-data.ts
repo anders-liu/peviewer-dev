@@ -6,6 +6,9 @@ export function generateNavList(pe: PEImage): W.NavData[] {
     const navMD = generateMDHeadersNavData(pe);
     if (navMD) navList.push(navMD);
 
+    const navMDT = generateMDTablesNavData(pe);
+    if (navMDT) navList.push(navMDT);
+
     return navList;
 }
 
@@ -57,5 +60,15 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
     return {
         target: { pageID, title: W.KnownTitle.MD_HEADERS },
         children
+    };
+}
+
+function generateMDTablesNavData(pe: PEImage): W.NavData | undefined {
+    const pageID = W.PageID.MDS_TABLE;
+    const h = pe.getMetadataTableHeader();
+    if (!h) return undefined;
+
+    return {
+        target: { pageID, title: W.KnownTitle.MDS_TABLE },
     };
 }
