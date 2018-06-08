@@ -39,7 +39,7 @@ export class MdsTablePage extends React.Component<MdsTablePageProps> {
                     </thead>
                     <tbody>
                         {this.props.data.tableInfo.map((v, i) => (
-                            <tr key={i}>
+                            <tr key={i} className="st-tr">
                                 <td>{v.index}</td>
                                 <td>{v.name}</td>
                                 <td>{v.rows}</td>
