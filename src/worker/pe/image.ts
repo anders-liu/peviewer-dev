@@ -1,7 +1,9 @@
 import * as S from "./structures";
+import * as A from "./aux-structures";
 import * as L from "./loader";
 import * as F from "./image-flags";
 import * as E from "./error";
+import * as U from "./utils";
 
 export class PEImage implements L.FileDataProvider {
     public static load(buf: ArrayBuffer): PEImage {
@@ -69,6 +71,33 @@ export class PEImage implements L.FileDataProvider {
     public hasStrongNameSignature(): boolean {
         const h = this.getCliHeader();
         return h != null && this.isDataDirectoryValid(h.StrongNameSignature);
+    }
+
+    public isMetadataTableValid(id: F.MetadataTableIndex): boolean {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].valid;
+        } else {
+            return false;
+        }
+    }
+
+    public isMetadataTableSorted(id: F.MetadataTableIndex): boolean {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].sorted;
+        } else {
+            return false;
+        }
+    }
+
+    public getMetadataTableRows(id: F.MetadataTableIndex): number {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].rows;
+        } else {
+            return 0;
+        }
     }
 
     //
@@ -176,6 +205,8 @@ export class PEImage implements L.FileDataProvider {
 
         const offset = mdRoot._offset + sh.Offset.value;
         this.metadataTableHeader = L.loadMetadataTableHeader(this, offset);
+        this.fillMetadataTableInfo();
+
         return this.metadataTableHeader;
     }
 
@@ -281,6 +312,21 @@ export class PEImage implements L.FileDataProvider {
         return (dd && dd.VirtualAddress.value > 0 && dd.Size.value > 0) || false;
     }
 
+    private fillMetadataTableInfo(): void {
+        const h = this.metadataTableHeader;
+        if (!h) return;
+
+        let info: A.MetadataTableInfo = {};
+        let nValid = 0;
+        for (let id = 0; id < F.NumberOfMdTables; id++) {
+            const valid = U.isSetLong(h.Valid.high, h.Valid.low, id);
+            const sorted = U.isSetLong(h.Sorted.high, h.Sorted.low, id);
+            const rows = valid ? h.Rows.items[nValid++].value : 0;
+            info[id] = { valid, sorted, rows };
+        }
+        this.metadataTableInfo = info;
+    }
+
     private readonly data: DataView;
 
     private dosHeader?: S.ImageDosHeader;
@@ -296,4 +342,5 @@ export class PEImage implements L.FileDataProvider {
     private strongNameSignature?: S.Field;
 
     private metadataTableHeader?: S.MetadataTableHeader;
+    private metadataTableInfo?: A.MetadataTableInfo;
 }

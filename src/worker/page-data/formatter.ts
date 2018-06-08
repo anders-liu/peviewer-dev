@@ -28,6 +28,10 @@ export function formatHexDec(d: number): string {
     return `${d.toString(16).toUpperCase()}h (${d})`;
 }
 
+export function formatDec(v: number): string {
+    return v.toLocaleString();
+}
+
 export function formatBytes(bytes: Uint8Array, lineWidth: number = 16): string[] {
     let lines: string[] = [];
     for (let start = 0; start < bytes.length; start += lineWidth) {
@@ -115,8 +119,4 @@ function formatUIntField(name: string, f: S.UIntField, sz: number, showDec?: boo
         name,
         value: showDec ? `${hex} (${formatDec(f.value)})` : hex,
     }
-}
-
-function formatDec(v: number): string {
-    return v.toLocaleString();
 }

@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as ReactRedux from "react-redux";
 
+export function renderTableTitle(title: string, elemID?: string): JSX.Element {
+    return <h2 id={elemID} className="struct-title">{title}</h2>;
+}
+
 export function renderSimpleStruct(s: W.SimpleStruct): JSX.Element {
     return (
         <div className="struct-data">
@@ -29,7 +33,7 @@ export function renderGroupedStruct(s: W.GroupedStruct): JSX.Element {
 }
 
 function renderStructTitle(s: W.StructData): JSX.Element {
-    return <h2 id={s.elemID} className="struct-title">{s.title}</h2>;
+    return renderTableTitle(s.title, s.elemID);
 }
 
 function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {

@@ -84,6 +84,7 @@ declare namespace W {
         SN_SIG = "sn-sig",
 
         MDT_HEADER = "mdt-hdr",
+        MDT_LIST = "mdt-lst",
     }
 
     export const enum KnownTitle {
@@ -169,6 +170,15 @@ declare namespace W {
     }
 
     export interface MdsTablePageData extends PageData {
-        mdTableHeader: GroupedStruct;
+        tableHeader: GroupedStruct;
+        tableInfo: MdTableInfo[];
+    }
+
+    export interface MdTableInfo {
+        index: string;
+        name: string;
+        valid: boolean;
+        sorted: boolean;
+        rows: string;
     }
 }

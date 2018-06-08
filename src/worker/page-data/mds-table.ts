@@ -9,7 +9,8 @@ export function generateMdsTablePageData(pe: PEImage): W.MdsTablePageData {
             pageID: W.PageID.MDS_TABLE,
             title: W.KnownTitle.MDS_TABLE,
         },
-        mdTableHeader: generateMDTableHeader(pe),
+        tableHeader: generateMDTableHeader(pe),
+        tableInfo: generateMDTableList(pe),
     };
 }
 
@@ -38,5 +39,19 @@ function generateMDTableHeader(pe: PEImage): W.GroupedStruct {
         items: h.Rows.items.map((v, i) => FM.formatU4Field(`Rows[${i}]`, v, true))
     }];
 
+    return s;
+}
+
+function generateMDTableList(pe: PEImage): W.MdTableInfo[] {
+    let s: W.MdTableInfo[] = [];
+    for (let id = 0; id < F.NumberOfMdTables; id++) {
+        s.push({
+            index: `${FM.formatU1Hex(id)} (${FM.formatDec(id)})`,
+            name: F.MetadataTableIndex[id],
+            valid: pe.isMetadataTableValid(id),
+            sorted: pe.isMetadataTableSorted(id),
+            rows: FM.formatDec(pe.getMetadataTableRows(id)),
+        });
+    }
     return s;
 }
