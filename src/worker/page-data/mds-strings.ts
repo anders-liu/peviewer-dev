@@ -6,7 +6,7 @@ import * as G from "./generator";
 
 export function generateMdsStringsPageData(pe: PEImage,
     cache: G.GeneratorCache, cfg: G.GeneratorConfig,
-    pgNum: number): W.MdsStringsPageData {
+    pgNum: number): W.PagedItemListPageData {
 
     checkAndBuildCache(pe, cache, cfg);
     const items = cache.mdsStrings && cache.mdsStrings.pages[pgNum];
@@ -18,9 +18,20 @@ export function generateMdsStringsPageData(pe: PEImage,
         },
         items: {
             title: W.KnownTitle.MDS_STRINGS,
-            items: items && items.map(index =>
-                FM.formatStringField(`#String[${FM.formatHexDec(index)}]`, pe.getMdsStringsItem(index)!)
-            )
+            groups: [{
+                title: "",
+                items: items && items.map(index =>
+                    FM.formatStringField(`#String[${FM.formatHexDec(index)}]`, pe.getMdsStringsItem(index)!)
+                )
+            }]
+        },
+        paging: {
+            currentPageNumber: pgNum,
+            pageNavList: cache.mdsStrings!.pages.map((v, i) => ({
+                title: `[${i + 1}]`,
+                pageID: W.PageID.MDS_STRINGS,
+                pageNum: i
+            }))
         }
     };
 }
@@ -49,7 +60,8 @@ function checkAndBuildCache(pe: PEImage, cache: G.GeneratorCache, cfg: G.Generat
 
     for (let pStart = 0; pStart < indexes.length; pStart++) {
         let pEnd = pStart;
-        while (pEnd - pStart <= cfg.mdsStringsPageSize && pEnd < indexes.length) {
+        while (indexes[pEnd] - indexes[pStart] < cfg.mdsStringsPageSize
+            && pEnd < indexes.length) {
             pageItems.push(indexes[pEnd++]);
         }
         pages.push(pageItems.slice());

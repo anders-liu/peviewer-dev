@@ -35,5 +35,5 @@ export interface GeneratorConfig {
 let cache: GeneratorCache = {};
 
 const cfg: GeneratorConfig = {
-    mdsStringsPageSize: 1000,  // Total bytes per page.
+    mdsStringsPageSize: 5000,  // Total bytes per page.
 }

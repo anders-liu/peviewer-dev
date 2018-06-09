@@ -17,8 +17,8 @@ export const workerClientMiddleware = ((store: Redux.MiddlewareAPI<S.AppState>) 
         case A.ActionType.OPEN_NAV: {
             const { target } = action as A.OpenNavAction;
             const { pageData } = store.getState();
-            const { pageID, elemID } = target;
-            if (!pageData || pageData.nav.pageID != pageID) {
+            const { pageID, pageNum } = target;
+            if (!pageData || pageData.nav.pageID != pageID || pageData.nav.pageNum != pageNum) {
                 _worker.postMessage(WM.createReqOpenNavMessage(target));
             }
             break;

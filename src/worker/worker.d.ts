@@ -47,7 +47,7 @@ declare namespace W {
     //
 
     export interface NavTarget {
-        title: KnownTitle;
+        title: KnownTitle | string;
         pageID: PageID;
         pageNum?: number; // 0-based
         elemID?: KnownElemID | string;
@@ -194,8 +194,8 @@ declare namespace W {
         rows: string;
     }
 
-    export interface MdsStringsPageData extends PageData {
-        items: SimpleStruct;
+    export interface PagedItemListPageData extends PageData {
+        items: GroupedStruct;
         paging?: Paging;
     }
 }
