@@ -9,7 +9,7 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
         case W.PageID.HEADERS: return generateHeadersPageData(pe);
         case W.PageID.MD_HEADERS: return generateMetadataHeadersPageData(pe);
         case W.PageID.MDS_TABLE: return generateMdsTablePageData(pe);
-        case W.PageID.MDS_STRINGS: return generateMdsStringsPageData(pe, cache, cfg, pageNum!);
+        case W.PageID.MDS_STRINGS: return generateMdsStringsPageData(pe, cache, cfg, pageNum || 0);
         default: return { nav: { pageID: W.PageID.NOTFOUND, title: W.KnownTitle.NOTFOUND } };
     }
 }

@@ -1,7 +1,7 @@
 @import "var";
 @import "mixin";
 
-body, input {
+body, input, select {
     @include txt-normal;
     
     color: $color-txt;
@@ -25,6 +25,14 @@ strong {
 
 .nav {
     cursor: pointer;
+}
+
+.pgn {
+    margin: $size-pad-mid 0;
+
+    select {
+        margin:0 $size-pad-lg;
+    }
 }
 
 #app {

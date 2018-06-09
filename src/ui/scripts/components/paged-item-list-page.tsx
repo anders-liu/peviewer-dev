@@ -3,7 +3,7 @@ import * as ReactRedux from "react-redux";
 
 import { renderTableTitle, renderGroupedStruct } from "./struct-data";
 import { TopLink } from "./top-link";
-import { NavLink } from "./nav-link";
+import { Paginate } from "./paginate";
 
 interface PagedItemListPageProps {
     data: W.PagedItemListPageData;
@@ -15,28 +15,11 @@ export class PagedItemListPage extends React.Component<PagedItemListPageProps> {
 
         return (
             <section className="data-page">
-                {this.renderPaging()}
+                <Paginate />
                 {renderGroupedStruct(data.items)}
-                {this.renderPaging()}
+                <Paginate />
                 <TopLink />
             </section>
-        );
-    }
-
-    private renderPaging(): JSX.Element | null {
-        const { data } = this.props;
-        if (!data.paging || data.paging.pageNavList.length == 1) {
-            return null;
-        }
-
-        return (
-            <div>
-                {data.paging.pageNavList.map((v, i) => (
-                    i == data.paging!.currentPageNumber ?
-                        <strong key={i}>{v.title}</strong> :
-                        <NavLink key={i} target={v} />
-                ))}
-            </div>
         );
     }
 }

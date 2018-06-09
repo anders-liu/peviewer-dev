@@ -11,6 +11,8 @@ export function generateMdsStringsPageData(pe: PEImage,
     checkAndBuildCache(pe, cache, cfg);
     const items = cache.mdsStrings && cache.mdsStrings.pages[pgNum];
 
+    const titleOf = (i: number) => `#String[${FM.formatHexDec(i)}]`;
+
     return {
         nav: {
             pageID: W.PageID.MDS_STRINGS,
@@ -21,14 +23,14 @@ export function generateMdsStringsPageData(pe: PEImage,
             groups: [{
                 title: "",
                 items: items && items.map(index =>
-                    FM.formatStringField(`#String[${FM.formatHexDec(index)}]`, pe.getMdsStringsItem(index)!)
+                    FM.formatStringField(titleOf(index), pe.getMdsStringsItem(index)!)
                 )
             }]
         },
         paging: {
             currentPageNumber: pgNum,
             pageNavList: cache.mdsStrings!.pages.map((v, i) => ({
-                title: `[${i + 1}]`,
+                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
                 pageID: W.PageID.MDS_STRINGS,
                 pageNum: i
             }))
