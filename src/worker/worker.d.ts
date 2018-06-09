@@ -49,6 +49,7 @@ declare namespace W {
     export interface NavTarget {
         title: KnownTitle;
         pageID: PageID;
+        pageNum?: number; // 0-based
         elemID?: KnownElemID | string;
     }
 
@@ -75,6 +76,7 @@ declare namespace W {
         HEADERS = "HEADERS",
         MD_HEADERS = "MD_HEADERS",
         MDS_TABLE = "MDS_TABLE",
+        MDS_STRINGS = "MDS_STRINGS",
     }
 
     export const enum KnownElemID {
@@ -116,6 +118,8 @@ declare namespace W {
         MDS_TABLE = "#~ Stream",
         MDT_HEADER = "Metadata Table Header",
         MDT_LIST = "Metadata Table List",
+
+        MDS_STRINGS = "#String Stream",
     }
 
     export interface PageData {
@@ -191,7 +195,7 @@ declare namespace W {
     }
 
     export interface MdsStringsPageData extends PageData {
-        items: GroupedStruct;
+        items: SimpleStruct;
         paging?: Paging;
     }
 }

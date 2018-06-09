@@ -210,6 +210,21 @@ export class PEImage implements L.FileDataProvider {
         return this.metadataTableHeader;
     }
 
+    public getMdsStringsItem(offset: number): S.StringField | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Strings);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadNullTerminatedStringField(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
+    }
+
     //
     // Utilities.
     //
