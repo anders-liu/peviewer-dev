@@ -1,4 +1,5 @@
 import { PEImage } from "../pe/image";
+import * as F from "../pe/image-flags";
 
 export function generateNavList(pe: PEImage): W.NavData[] {
     let navList: W.NavData[] = [generateHeadersNavData(pe)];
@@ -54,6 +55,12 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
     if (pe.hasStrongNameSignature()) {
         children.push({
             target: { pageID, title: W.KnownTitle.SN_SIG, elemID: W.KnownElemID.SN_SIG }
+        });
+    }
+
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.Strings)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_STRINGS, title: W.KnownTitle.MDS_STRINGS, pageNum: 0 }
         });
     }
 

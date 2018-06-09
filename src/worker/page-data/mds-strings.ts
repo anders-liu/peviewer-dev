@@ -19,7 +19,7 @@ export function generateMdsStringsPageData(pe: PEImage,
         items: {
             title: W.KnownTitle.MDS_STRINGS,
             items: items && items.map(index =>
-                FM.formatStringField(`#String[${FM.formatHexDec(index)}`, pe.getMdsStringsItem(index)!)
+                FM.formatStringField(`#String[${FM.formatHexDec(index)}]`, pe.getMdsStringsItem(index)!)
             )
         }
     };
@@ -37,7 +37,7 @@ function checkAndBuildCache(pe: PEImage, cache: G.GeneratorCache, cfg: G.Generat
     // Fetch all #Strings item offsets.
     let indexes: number[] = [0];
     const base = mdRoot._offset + sh.Offset.value;
-    for (let p = 1; p <= sh.Size.value; p++) {
+    for (let p = 1; p < sh.Size.value; p++) {
         if (pe.getU1(base + p - 1) == 0) {
             indexes.push(p);
         }
@@ -46,17 +46,16 @@ function checkAndBuildCache(pe: PEImage, cache: G.GeneratorCache, cfg: G.Generat
     // Put into pages.
     let pages: G.MdsStringsPageCache[] = [];
     let pageItems: G.MdsStringsPageCache = [];
-    indexes.reduce((pv, cv, ci, a) => {
-        const size = pv + cv;
-        if (size >= cfg.mdsStringsPageSize || ci == a.length - 1) {
-            pages.push(pageItems.slice());
-            pageItems = [];
-            return 0;
-        } else {
-            pageItems.push(cv);
-            return size;
+
+    for (let pStart = 0; pStart < indexes.length; pStart++) {
+        let pEnd = pStart;
+        while (pEnd - pStart <= cfg.mdsStringsPageSize && pEnd < indexes.length) {
+            pageItems.push(indexes[pEnd++]);
         }
-    });
+        pages.push(pageItems.slice());
+        pageItems = [];
+        pStart = pEnd;
+    }
 
     cache.mdsStrings = { pages };
 }

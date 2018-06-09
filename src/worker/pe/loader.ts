@@ -82,7 +82,8 @@ export function loadNullTerminatedStringField(d: FileDataProvider, p: number): S
         b = d.getU1(ptr++);
         bytes.push(b);
     } while (b != 0);
-    const value = String.fromCharCode.apply(null, bytes.slice(0, bytes.length - 1));
+    const str = bytes.slice(0, bytes.length - 1).map(v => `%${v.toString(16)}`).join("");
+    const value = decodeURIComponent(str);
 
     return {
         _offset: p, _size: ptr - p, data: Uint8Array.from(bytes), value
