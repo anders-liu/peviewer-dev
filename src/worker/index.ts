@@ -1,6 +1,6 @@
 import * as M from "./message";
 import { PEImage } from "./pe/image";
-import { generatePageData } from "./page-data/generator";
+import { generatePageData, clearGeneratorCache } from "./page-data/generator";
 import { generateNavList } from "./page-data/nav-data";
 
 let pe: PEImage | null = null;
@@ -25,6 +25,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
         try {
             const buf = <ArrayBuffer>(<FileReader>ev.target).result;
             pe = PEImage.load(buf);
+            clearGeneratorCache();
 
             // Response with page data.
             const pageData = generatePageData(pe, W.PageID.HEADERS);

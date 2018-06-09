@@ -58,6 +58,14 @@ declare namespace W {
     }
 
     //
+    // Paging
+    //
+    export interface Paging {
+        currentPageNumber: number;
+        pageNavList: NavTarget[];
+    }
+
+    //
     // Page data
     //
 
@@ -180,5 +188,10 @@ declare namespace W {
         valid: boolean;
         sorted: boolean;
         rows: string;
+    }
+
+    export interface MdsStringsPageData extends PageData {
+        items: GroupedStruct;
+        paging?: Paging;
     }
 }
