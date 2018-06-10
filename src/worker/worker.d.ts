@@ -77,6 +77,7 @@ declare namespace W {
         MD_HEADERS = "MD_HEADERS",
         MDS_TABLE = "MDS_TABLE",
         MDS_STRINGS = "MDS_STRINGS",
+        MDS_GUID = "MDS_GUID",
     }
 
     export const enum KnownElemID {
@@ -120,6 +121,7 @@ declare namespace W {
         MDT_LIST = "Metadata Table List",
 
         MDS_STRINGS = "#String Stream",
+        MDS_GUID = "#GUID",
     }
 
     export interface PageData {

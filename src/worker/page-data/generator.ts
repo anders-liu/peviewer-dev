@@ -2,7 +2,7 @@ import { PEImage } from "../pe/image";
 import { generateHeadersPageData } from "./headers";
 import { generateMetadataHeadersPageData } from "./metadata-headers";
 import { generateMdsTablePageData } from "./mds-table";
-import { generateMdsStringsPageData } from "./mds-strings";
+import { generateMdsStringsPageData, generateMdsGuidPageData } from "./mds-list";
 
 export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number): W.PageData {
     switch (pageID) {
@@ -10,6 +10,7 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
         case W.PageID.MD_HEADERS: return generateMetadataHeadersPageData(pe);
         case W.PageID.MDS_TABLE: return generateMdsTablePageData(pe);
         case W.PageID.MDS_STRINGS: return generateMdsStringsPageData(pe, cache, cfg, pageNum || 0);
+        case W.PageID.MDS_GUID: return generateMdsGuidPageData(pe);
         default: return { nav: { pageID: W.PageID.NOTFOUND, title: W.KnownTitle.NOTFOUND } };
     }
 }

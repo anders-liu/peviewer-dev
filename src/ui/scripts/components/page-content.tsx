@@ -45,6 +45,7 @@ class PageContentClass extends React.Component<ConnectedProps> {
             case W.PageID.MDS_TABLE:
                 return <MdsTablePage data={pageData as W.MdsTablePageData} />;
             case W.PageID.MDS_STRINGS:
+            case W.PageID.MDS_GUID:
                 return <PagedItemListPage data={pageData as W.PagedItemListPageData} />;
             default:
                 return <div>Page not found.</div>;

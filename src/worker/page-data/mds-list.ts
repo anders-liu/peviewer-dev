@@ -8,7 +8,7 @@ export function generateMdsStringsPageData(pe: PEImage,
     cache: G.GeneratorCache, cfg: G.GeneratorConfig,
     pgNum: number): W.PagedItemListPageData {
 
-    checkAndBuildCache(pe, cache, cfg);
+    checkAndBuildCacheForMdsStrings(pe, cache, cfg);
     const items = cache.mdsStrings && cache.mdsStrings.pages[pgNum];
 
     const titleOf = (i: number) => `#String[${FM.formatHexDec(i)}]`;
@@ -38,7 +38,7 @@ export function generateMdsStringsPageData(pe: PEImage,
     };
 }
 
-function checkAndBuildCache(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
+function checkAndBuildCacheForMdsStrings(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
     if (cache.mdsStrings) return;
 
     const mdRoot = pe.getMetadataRoot();
@@ -72,4 +72,22 @@ function checkAndBuildCache(pe: PEImage, cache: G.GeneratorCache, cfg: G.Generat
     }
 
     cache.mdsStrings = { pages };
+}
+
+export function generateMdsGuidPageData(pe: PEImage): W.PagedItemListPageData {
+    const titleOf = (i: number) => `#GUID[${FM.formatHexDec(i)}]`;
+    return {
+        nav: {
+            pageID: W.PageID.MDS_GUID,
+            title: W.KnownTitle.MDS_GUID,
+        },
+        items: {
+            title: W.KnownTitle.MDS_GUID,
+            groups: [{
+                title: "",
+                items: pe.getMdsGuidItems()!.items.map((v, i) =>
+                    FM.formatGuidField(titleOf(i + 1), v))
+            }]
+        },
+    };
 }

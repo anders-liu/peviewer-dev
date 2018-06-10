@@ -64,6 +64,12 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
         });
     }
 
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.GUID)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_GUID, title: W.KnownTitle.MDS_GUID, pageNum: 0 }
+        });
+    }
+
     return {
         target: { pageID, title: W.KnownTitle.MD_HEADERS },
         children

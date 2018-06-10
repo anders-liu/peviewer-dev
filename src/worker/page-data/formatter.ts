@@ -82,7 +82,7 @@ export function formatBytesField(name: string, f: S.Field): W.StructItem {
         rawData: formatBytes(f.data),
         name,
         value: "",
-    }
+    };
 }
 
 export function formatStringField(name: string, f: S.StringField): W.StructItem {
@@ -92,7 +92,22 @@ export function formatStringField(name: string, f: S.StringField): W.StructItem 
         rawData: formatBytes(f.data),
         name,
         value: `"${f.value}"`,
-    }
+    };
+}
+
+export function formatGuidField(name: string, f: S.Field): W.StructItem {
+    const b = (n: number) => formatU1RawHex(f.data[n]);
+    const value = "{" + b(3) + b(2) + b(1) + b(0) + "-"
+        + b(5) + b(4) + "-" + b(7) + b(6) + "-" + b(8) + b(9) + "-"
+        + b(10) + b(11) + b(12) + b(13) + b(14) + b(15) + "}";
+
+    return {
+        offset: formatU4Hex(f._offset),
+        size: formatHexDec(f._size),
+        rawData: formatBytes(f.data),
+        name,
+        value,
+    };
 }
 
 function padZeroLeft(str: string, len: number): string {
