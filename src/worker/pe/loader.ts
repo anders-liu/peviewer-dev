@@ -759,3 +759,19 @@ export function loadMetadataUSItem(d: FileDataProvider, p: number): S.MetadataUS
         Suffix,
     };
 }
+
+export function loadMetadataBlobItem(d: FileDataProvider, p: number): S.MetadataBlobItem {
+    let ptr = p;
+
+    const Size = loadCompressedUIntField(d, ptr);
+    ptr += Size._size;
+
+    const Value = loadFixedSizeByteArrayField(d, ptr, Size.value);
+    ptr += Value._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Size,
+        Value,
+    };
+}

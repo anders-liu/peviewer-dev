@@ -255,6 +255,21 @@ export class PEImage implements L.FileDataProvider {
             count);
     }
 
+    public getMdsBlobItem(offset: number): S.MetadataBlobItem | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Blob);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadMetadataBlobItem(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
+    }
+
     //
     // Utilities.
     //

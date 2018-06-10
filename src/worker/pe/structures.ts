@@ -220,3 +220,8 @@ export interface MetadataUSItem extends FileData {
     Value: StringField;
     Suffix: Field;
 }
+
+export interface MetadataBlobItem extends FileData {
+    Size: CompressedUIntField;
+    Value: Field;
+}

@@ -5,7 +5,8 @@ import { generateMdsTablePageData } from "./mds-table";
 import {
     generateMdsStringsPageData,
     generateMdsUSPageData,
-    generateMdsGuidPageData
+    generateMdsGuidPageData,
+    generateMdsBlobPageData
 } from "./mds-list";
 
 export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number): W.PageData {
@@ -16,6 +17,7 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
         case W.PageID.MDS_STRINGS: return generateMdsStringsPageData(pe, cache, cfg, pageNum || 0);
         case W.PageID.MDS_US: return generateMdsUSPageData(pe, cache, cfg, pageNum || 0);
         case W.PageID.MDS_GUID: return generateMdsGuidPageData(pe);
+        case W.PageID.MDS_BLOB: return generateMdsBlobPageData(pe, cache, cfg, pageNum || 0);
         default: return { nav: { pageID: W.PageID.NOTFOUND, title: W.KnownTitle.NOTFOUND } };
     }
 }
@@ -23,6 +25,7 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
 export interface GeneratorCache {
     mdsStrings?: MdsOffsetListCache;
     mdsUS?: MdsOffsetListCache;
+    mdsBlob?: MdsOffsetListCache;
 }
 
 export type MdsOffsetListCache = {

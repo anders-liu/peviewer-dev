@@ -79,6 +79,7 @@ declare namespace W {
         MDS_STRINGS = "MDS_STRINGS",
         MDS_US = "MDS_US",
         MDS_GUID = "MDS_GUID",
+        MDS_BLOB = "MDS_BLOB",
     }
 
     export const enum KnownElemID {
@@ -124,6 +125,7 @@ declare namespace W {
         MDS_STRINGS = "#String Stream",
         MDS_US = "#US",
         MDS_GUID = "#GUID",
+        MDS_BLOB = "#Blob",
     }
 
     export interface PageData {

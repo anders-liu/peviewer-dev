@@ -78,6 +78,44 @@ export function generateMdsUSPageData(pe: PEImage,
     };
 }
 
+export function generateMdsBlobPageData(pe: PEImage,
+    cache: G.GeneratorCache, cfg: G.GeneratorConfig,
+    pgNum: number): W.PagedItemListPageData {
+
+    checkAndBuildCacheForMdsBlob(pe, cache, cfg);
+    const items = cache.mdsBlob && cache.mdsBlob.pages[pgNum];
+
+    const titleOf = (i: number) => `#Blob[${FM.formatHexDec(i)}]`;
+
+    return {
+        nav: {
+            pageID: W.PageID.MDS_BLOB,
+            title: W.KnownTitle.MDS_BLOB,
+        },
+        items: {
+            title: W.KnownTitle.MDS_BLOB,
+            groups: items && items.map(index => {
+                const item = pe.getMdsBlobItem(index)!;
+                return {
+                    title: titleOf(index),
+                    items: [
+                        FM.formatCompressedUIntField("Size", item.Size),
+                        FM.formatBytesField("Value", item.Value),
+                    ]
+                }
+            })
+        },
+        paging: {
+            currentPageNumber: pgNum,
+            pageNavList: cache.mdsBlob!.pages.map((v, i) => ({
+                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
+                pageID: W.PageID.MDS_BLOB,
+                pageNum: i
+            }))
+        }
+    };
+}
+
 export function generateMdsGuidPageData(pe: PEImage): W.PagedItemListPageData {
     const titleOf = (i: number) => `#GUID[${FM.formatHexDec(i)}]`;
     return {
@@ -130,6 +168,22 @@ function checkAndBuildCacheForMdsUS(pe: PEImage, cache: G.GeneratorCache, cfg: G
     const indexes = getBlobIndexes(pe, mdRoot._offset + sh.Offset.value, sh.Size.value);
 
     cache.mdsUS = {
+        pages: putIndexToPages(indexes, cfg.mdsOffsetListPageSize)
+    };
+}
+
+function checkAndBuildCacheForMdsBlob(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
+    if (cache.mdsBlob) return;
+
+    const mdRoot = pe.getMetadataRoot();
+    if (!mdRoot) return;
+
+    const sh = pe.getMetadataStreamHeader(F.MetadataStreamName.Blob);
+    if (!sh) return;
+
+    const indexes = getBlobIndexes(pe, mdRoot._offset + sh.Offset.value, sh.Size.value);
+
+    cache.mdsBlob = {
         pages: putIndexToPages(indexes, cfg.mdsOffsetListPageSize)
     };
 }
