@@ -1,6 +1,7 @@
 import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
+import * as U from "../pe/utils";
 import * as FM from "./formatter";
 import * as G from "./generator";
 
@@ -38,40 +39,43 @@ export function generateMdsStringsPageData(pe: PEImage,
     };
 }
 
-function checkAndBuildCacheForMdsStrings(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
-    if (cache.mdsStrings) return;
+export function generateMdsUSPageData(pe: PEImage,
+    cache: G.GeneratorCache, cfg: G.GeneratorConfig,
+    pgNum: number): W.PagedItemListPageData {
 
-    const mdRoot = pe.getMetadataRoot();
-    if (!mdRoot) return;
+    checkAndBuildCacheForMdsUS(pe, cache, cfg);
+    const items = cache.mdsUS && cache.mdsUS.pages[pgNum];
 
-    const sh = pe.getMetadataStreamHeader(F.MetadataStreamName.Strings);
-    if (!sh) return;
+    const titleOf = (i: number) => `#US[${FM.formatHexDec(i)}]`;
 
-    // Fetch all #Strings item offsets.
-    let indexes: number[] = [0];
-    const base = mdRoot._offset + sh.Offset.value;
-    for (let p = 1; p < sh.Size.value; p++) {
-        if (pe.getU1(base + p - 1) == 0) {
-            indexes.push(p);
+    return {
+        nav: {
+            pageID: W.PageID.MDS_US,
+            title: W.KnownTitle.MDS_US,
+        },
+        items: {
+            title: W.KnownTitle.MDS_US,
+            groups: items && items.map(index => {
+                const item = pe.getMdsUSItem(index)!;
+                return {
+                    title: titleOf(index),
+                    items: [
+                        FM.formatCompressedUIntField("Size", item.Size),
+                        FM.formatStringField("Value", item.Value),
+                        FM.formatBytesField("Suffix", item.Suffix),
+                    ]
+                }
+            })
+        },
+        paging: {
+            currentPageNumber: pgNum,
+            pageNavList: cache.mdsUS!.pages.map((v, i) => ({
+                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
+                pageID: W.PageID.MDS_US,
+                pageNum: i
+            }))
         }
-    }
-
-    // Put into pages.
-    let pages: G.MdsStringsPageCache[] = [];
-    let pageItems: G.MdsStringsPageCache = [];
-
-    for (let pStart = 0; pStart < indexes.length; pStart++) {
-        let pEnd = pStart;
-        while (indexes[pEnd] - indexes[pStart] < cfg.mdsStringsPageSize
-            && pEnd < indexes.length) {
-            pageItems.push(indexes[pEnd++]);
-        }
-        pages.push(pageItems.slice());
-        pageItems = [];
-        pStart = pEnd;
-    }
-
-    cache.mdsStrings = { pages };
+    };
 }
 
 export function generateMdsGuidPageData(pe: PEImage): W.PagedItemListPageData {
@@ -90,4 +94,72 @@ export function generateMdsGuidPageData(pe: PEImage): W.PagedItemListPageData {
             }]
         },
     };
+}
+
+function checkAndBuildCacheForMdsStrings(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
+    if (cache.mdsStrings) return;
+
+    const mdRoot = pe.getMetadataRoot();
+    if (!mdRoot) return;
+
+    const sh = pe.getMetadataStreamHeader(F.MetadataStreamName.Strings);
+    if (!sh) return;
+
+    let indexes: number[] = [0];
+    const base = mdRoot._offset + sh.Offset.value;
+    for (let p = 1; p < sh.Size.value; p++) {
+        if (pe.getU1(base + p - 1) == 0) {
+            indexes.push(p);
+        }
+    }
+
+    cache.mdsStrings = {
+        pages: putIndexToPages(indexes, cfg.mdsOffsetListPageSize)
+    };
+}
+
+function checkAndBuildCacheForMdsUS(pe: PEImage, cache: G.GeneratorCache, cfg: G.GeneratorConfig): void {
+    if (cache.mdsUS) return;
+
+    const mdRoot = pe.getMetadataRoot();
+    if (!mdRoot) return;
+
+    const sh = pe.getMetadataStreamHeader(F.MetadataStreamName.US);
+    if (!sh) return;
+
+    const indexes = getBlobIndexes(pe, mdRoot._offset + sh.Offset.value, sh.Size.value);
+
+    cache.mdsUS = {
+        pages: putIndexToPages(indexes, cfg.mdsOffsetListPageSize)
+    };
+}
+
+function getBlobIndexes(pe: PEImage, base: number, size: number): number[] {
+    let indexes: number[] = [];
+    let p = 0;
+
+    while (p < size) {
+        indexes.push(p);
+        const dtsz = U.getCompressedIntSize(pe.getU1(base + p));
+        const szval = U.decompressUint(pe.getData(base + p, dtsz));
+        p += szval + dtsz;
+    }
+
+    return indexes;
+}
+
+function putIndexToPages(indexes: number[], pageSize: number): G.MdsOffsetListPageCache[] {
+    let pages: G.MdsOffsetListPageCache[] = [];
+    let pageItems: G.MdsOffsetListPageCache = [];
+
+    for (let pStart = 0, pEnd = 0; pStart < indexes.length; pStart = pEnd) {
+        while (indexes[pEnd] - indexes[pStart] < pageSize
+            && pEnd < indexes.length) {
+            pageItems.push(indexes[pEnd++]);
+        }
+        pages.push(pageItems.slice());
+        pageItems = [];
+    }
+
+    return pages;
 }

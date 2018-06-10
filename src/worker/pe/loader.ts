@@ -40,6 +40,14 @@ export function loadU8Field(d: FileDataProvider, p: number): S.U8Field {
     };
 }
 
+export function loadCompressedUIntField(d: FileDataProvider, p: number): S.CompressedUIntField {
+    const sz = U.getCompressedIntSize(d.getU1(p));
+    const data = new Uint8Array(d.getData(p, sz));
+    const value = U.decompressUint(data);
+
+    return { _offset: p, _size: sz, data, value };
+}
+
 export function loadU1EnumField<T>(d: FileDataProvider, p: number): S.U1EnumField<T> {
     return {
         _offset: p, _size: 1, data: d.getData(p, 1), value: d.getU1(p) as any as T
@@ -87,6 +95,16 @@ export function loadNullTerminatedStringField(d: FileDataProvider, p: number): S
 
     return {
         _offset: p, _size: ptr - p, data: Uint8Array.from(bytes), value
+    };
+}
+
+export function loadFixedSizeUnicodeStringField(d: FileDataProvider, p: number, sz: number): S.StringField {
+    const data = d.getData(p, sz);
+    const arr = new Uint16Array(data.buffer);
+    const value = String.fromCodePoint.apply(null, arr);
+
+    return {
+        _offset: p, _size: sz, data, value
     };
 }
 
@@ -715,5 +733,29 @@ export function loadMetadataTableHeader(d: FileDataProvider, p: number): S.Metad
         Valid,
         Sorted,
         Rows,
-    }
+    };
+}
+
+export function loadMetadataUSItem(d: FileDataProvider, p: number): S.MetadataUSItem {
+    let ptr = p;
+
+    const Size = loadCompressedUIntField(d, ptr);
+    ptr += Size._size;
+
+    const sz = Size.value;
+    const strSize = sz > 0 ? sz - 1 : 0;
+    const suffixSize = sz > 0 ? 1 : 0;
+
+    const Value = loadFixedSizeUnicodeStringField(d, ptr, strSize);
+    ptr += Value._size;
+
+    const Suffix = loadFixedSizeByteArrayField(d, ptr, suffixSize);
+    ptr += Suffix._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Size,
+        Value,
+        Suffix,
+    };
 }

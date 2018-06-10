@@ -75,6 +75,10 @@ export function formatU8Field(name: string, f: S.U8Field, showDec?: boolean): W.
     };
 }
 
+export function formatCompressedUIntField(name: string, f: S.CompressedUIntField): W.StructItem {
+    return formatUIntField(name, f, f._size, true);
+}
+
 export function formatBytesField(name: string, f: S.Field): W.StructItem {
     return {
         offset: formatU4Hex(f._offset),

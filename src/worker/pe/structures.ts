@@ -27,6 +27,8 @@ export interface U8Field extends Field {
     low: number;
 }
 
+export interface CompressedUIntField extends UIntField { }
+
 export interface EnumField<T> extends Field {
     value: T;
 }
@@ -211,4 +213,10 @@ export interface MetadataTableHeader extends FileData {
     Valid: U8Field;
     Sorted: U8Field;
     Rows: StructArray<U4Field>;
+}
+
+export interface MetadataUSItem extends FileData {
+    Size: CompressedUIntField;
+    Value: StringField;
+    Suffix: Field;
 }

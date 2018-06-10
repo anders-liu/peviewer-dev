@@ -2,7 +2,11 @@ import { PEImage } from "../pe/image";
 import { generateHeadersPageData } from "./headers";
 import { generateMetadataHeadersPageData } from "./metadata-headers";
 import { generateMdsTablePageData } from "./mds-table";
-import { generateMdsStringsPageData, generateMdsGuidPageData } from "./mds-list";
+import {
+    generateMdsStringsPageData,
+    generateMdsUSPageData,
+    generateMdsGuidPageData
+} from "./mds-list";
 
 export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number): W.PageData {
     switch (pageID) {
@@ -10,31 +14,33 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
         case W.PageID.MD_HEADERS: return generateMetadataHeadersPageData(pe);
         case W.PageID.MDS_TABLE: return generateMdsTablePageData(pe);
         case W.PageID.MDS_STRINGS: return generateMdsStringsPageData(pe, cache, cfg, pageNum || 0);
+        case W.PageID.MDS_US: return generateMdsUSPageData(pe, cache, cfg, pageNum || 0);
         case W.PageID.MDS_GUID: return generateMdsGuidPageData(pe);
         default: return { nav: { pageID: W.PageID.NOTFOUND, title: W.KnownTitle.NOTFOUND } };
     }
 }
 
 export interface GeneratorCache {
-    mdsStrings?: MdsStringsCache;
+    mdsStrings?: MdsOffsetListCache;
+    mdsUS?: MdsOffsetListCache;
 }
 
-export type MdsStringsCache = {
-    pages: MdsStringsPageCache[];
+export type MdsOffsetListCache = {
+    pages: MdsOffsetListPageCache[];
 }
 
-export type MdsStringsPageCache = number[];
+export type MdsOffsetListPageCache = number[];
 
 export function clearGeneratorCache(): void {
     cache = {};
 }
 
 export interface GeneratorConfig {
-    mdsStringsPageSize: number;
+    mdsOffsetListPageSize: number;
 }
 
 let cache: GeneratorCache = {};
 
 const cfg: GeneratorConfig = {
-    mdsStringsPageSize: 5000,  // Total bytes per page.
+    mdsOffsetListPageSize: 5000,  // Total bytes per page.
 }

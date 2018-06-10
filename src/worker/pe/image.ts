@@ -225,6 +225,21 @@ export class PEImage implements L.FileDataProvider {
         }
     }
 
+    public getMdsUSItem(offset: number): S.MetadataUSItem | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.US);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadMetadataUSItem(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
+    }
+
     public getMdsGuidItems(): S.StructArray<S.Field> | undefined {
         const mdRoot = this.getMetadataRoot();
         if (!mdRoot) return undefined;

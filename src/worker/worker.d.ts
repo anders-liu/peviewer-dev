@@ -77,6 +77,7 @@ declare namespace W {
         MD_HEADERS = "MD_HEADERS",
         MDS_TABLE = "MDS_TABLE",
         MDS_STRINGS = "MDS_STRINGS",
+        MDS_US = "MDS_US",
         MDS_GUID = "MDS_GUID",
     }
 
@@ -121,6 +122,7 @@ declare namespace W {
         MDT_LIST = "Metadata Table List",
 
         MDS_STRINGS = "#String Stream",
+        MDS_US = "#US",
         MDS_GUID = "#GUID",
     }
 

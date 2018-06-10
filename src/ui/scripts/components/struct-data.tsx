@@ -44,7 +44,7 @@ function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
             <td>{size}</td>
             <td>{rawData.map((v, i) => <div className="td-line" key={i}>{v}</div>)}</td>
             <td>{name}</td>
-            <td>{value}</td>
+            <td className="wrap">{value}</td>
             <td></td>
         </tr>
     );
