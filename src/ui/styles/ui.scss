@@ -1,7 +1,7 @@
 @import "var";
 @import "mixin";
 
-body, input {
+body, input, select {
     @include txt-normal;
     
     color: $color-txt;
@@ -25,6 +25,14 @@ strong {
 
 .nav {
     cursor: pointer;
+}
+
+.pgn {
+    margin: $size-pad-mid 0;
+
+    select {
+        margin:0 $size-pad-lg;
+    }
 }
 
 #app {
@@ -91,6 +99,14 @@ strong {
         th, td {
             white-space: nowrap;
             padding: $size-pad-sm $size-pad-lg;
+            vertical-align: text-top;
+
+            &.wrap {
+                white-space: normal;
+                //max-width: 395px;
+                overflow-wrap: break-word;
+                word-break: break-word;
+            }
         }
     
         th {
@@ -111,11 +127,11 @@ strong {
         }
 
         .st-tr{
-            &:nth-child(odd) {
+            &:nth-child(even) {
                 background: $color-bg-lt;
             }
 
-            &:nth-child(even) {
+            &:nth-child(odd) {
                 background: $color-bg-mid-lt;
             }
         }

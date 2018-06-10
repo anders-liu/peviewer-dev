@@ -6,6 +6,9 @@ import * as S from "../store/state";
 
 export interface NavLinkProps {
     target: W.NavTarget;
+    disable?: boolean;
+    text?: string;
+    title?: string;
     extraClass?: string;
 }
 
@@ -21,17 +24,29 @@ function mapDispatchToEvents(dispatch: ReactRedux.Dispatch<S.AppState>, ownProps
 
 class NavLinkClass extends React.Component<NavLinkProps & ConnectedEvents> {
     public render(): JSX.Element {
-        const { target, extraClass, onClick } = this.props;
-        const { title } = target;
+        const { target, disable, text, title, extraClass, onClick } = this.props;
 
         let className = "nav";
+        if (disable) {
+            className += " disabled"
+        }
         if (extraClass) {
             className += " " + extraClass;
         }
 
-        return (
-            <a className={className} title={title} onClick={onClick}>{title}</a>
-        );
+        if (disable || !target) {
+            return (
+                <span className={className} title={title}>
+                    {text}
+                </span>
+            );
+        } else {
+            return (
+                <a className={className} title={title || target.title} onClick={onClick}>
+                    {text || target.title}
+                </a>
+            );
+        }
     }
 }
 

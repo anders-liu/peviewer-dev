@@ -1,5 +1,4 @@
 import * as S from "../pe/structures";
-import { format } from "url";
 
 export function formatU1RawHex(d: number): string {
     return padZeroLeft(d.toString(16).toUpperCase(), 2);
@@ -27,6 +26,10 @@ export function formatU4Hex(d: number): string {
 
 export function formatHexDec(d: number): string {
     return `${d.toString(16).toUpperCase()}h (${d})`;
+}
+
+export function formatDec(v: number): string {
+    return v.toLocaleString();
 }
 
 export function formatBytes(bytes: Uint8Array, lineWidth: number = 16): string[] {
@@ -72,6 +75,10 @@ export function formatU8Field(name: string, f: S.U8Field, showDec?: boolean): W.
     };
 }
 
+export function formatCompressedUIntField(name: string, f: S.CompressedUIntField): W.StructItem {
+    return formatUIntField(name, f, f._size, true);
+}
+
 export function formatBytesField(name: string, f: S.Field): W.StructItem {
     return {
         offset: formatU4Hex(f._offset),
@@ -79,7 +86,7 @@ export function formatBytesField(name: string, f: S.Field): W.StructItem {
         rawData: formatBytes(f.data),
         name,
         value: "",
-    }
+    };
 }
 
 export function formatStringField(name: string, f: S.StringField): W.StructItem {
@@ -89,7 +96,22 @@ export function formatStringField(name: string, f: S.StringField): W.StructItem 
         rawData: formatBytes(f.data),
         name,
         value: `"${f.value}"`,
-    }
+    };
+}
+
+export function formatGuidField(name: string, f: S.Field): W.StructItem {
+    const b = (n: number) => formatU1RawHex(f.data[n]);
+    const value = "{" + b(3) + b(2) + b(1) + b(0) + "-"
+        + b(5) + b(4) + "-" + b(7) + b(6) + "-" + b(8) + b(9) + "-"
+        + b(10) + b(11) + b(12) + b(13) + b(14) + b(15) + "}";
+
+    return {
+        offset: formatU4Hex(f._offset),
+        size: formatHexDec(f._size),
+        rawData: formatBytes(f.data),
+        name,
+        value,
+    };
 }
 
 function padZeroLeft(str: string, len: number): string {
@@ -116,8 +138,4 @@ function formatUIntField(name: string, f: S.UIntField, sz: number, showDec?: boo
         name,
         value: showDec ? `${hex} (${formatDec(f.value)})` : hex,
     }
-}
-
-function formatDec(v: number): string {
-    return v.toLocaleString();
 }

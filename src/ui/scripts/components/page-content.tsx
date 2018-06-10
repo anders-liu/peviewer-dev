@@ -6,6 +6,8 @@ import * as S from "../store/state";
 import { OpenFilePage } from "./open-file-page";
 import { HeadersPage } from "./headers-page";
 import { MetadataHeadersPage } from "./md-headers-page";
+import { MdsTablePage } from "./mds-table-page";
+import { PagedItemListPage } from "./paged-item-list-page";
 
 interface ConnectedProps {
     pageData?: W.PageData;
@@ -40,6 +42,13 @@ class PageContentClass extends React.Component<ConnectedProps> {
                 return <HeadersPage data={pageData as W.HeadersPageData} />;
             case W.PageID.MD_HEADERS:
                 return <MetadataHeadersPage data={pageData as W.MetadataHeadersPageData} />;
+            case W.PageID.MDS_TABLE:
+                return <MdsTablePage data={pageData as W.MdsTablePageData} />;
+            case W.PageID.MDS_STRINGS:
+            case W.PageID.MDS_US:
+            case W.PageID.MDS_GUID:
+            case W.PageID.MDS_BLOB:
+                return <PagedItemListPage data={pageData as W.PagedItemListPageData} />;
             default:
                 return <div>Page not found.</div>;
         }

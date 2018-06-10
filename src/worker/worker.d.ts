@@ -47,14 +47,23 @@ declare namespace W {
     //
 
     export interface NavTarget {
-        title: KnownTitle;
+        title: KnownTitle | string;
         pageID: PageID;
+        pageNum?: number; // 0-based
         elemID?: KnownElemID | string;
     }
 
     export interface NavData {
         target: NavTarget;
         children?: NavData[];
+    }
+
+    //
+    // Paging
+    //
+    export interface Paging {
+        currentPageNumber: number;
+        pageNavList: NavTarget[];
     }
 
     //
@@ -66,6 +75,11 @@ declare namespace W {
         NOTFOUND = "NOTFOUND",
         HEADERS = "HEADERS",
         MD_HEADERS = "MD_HEADERS",
+        MDS_TABLE = "MDS_TABLE",
+        MDS_STRINGS = "MDS_STRINGS",
+        MDS_US = "MDS_US",
+        MDS_GUID = "MDS_GUID",
+        MDS_BLOB = "MDS_BLOB",
     }
 
     export const enum KnownElemID {
@@ -80,6 +94,10 @@ declare namespace W {
         CLI_HEADER = "cli-hdr",
         MD_ROOT = "md-root",
         MDS_HEADERS = "md-hdrs",
+        SN_SIG = "sn-sig",
+
+        MDT_HEADER = "mdt-hdr",
+        MDT_LIST = "mdt-lst",
     }
 
     export const enum KnownTitle {
@@ -98,6 +116,16 @@ declare namespace W {
         CLI_HEADER = "CLI Header",
         MD_ROOT = "Metadata Root",
         MDS_HEADERS = "Stream Headers",
+        SN_SIG = "Strong Name Signature",
+
+        MDS_TABLE = "#~ Stream",
+        MDT_HEADER = "Metadata Table Header",
+        MDT_LIST = "Metadata Table List",
+
+        MDS_STRINGS = "#String Stream",
+        MDS_US = "#US",
+        MDS_GUID = "#GUID",
+        MDS_BLOB = "#Blob",
     }
 
     export interface PageData {
@@ -156,5 +184,24 @@ declare namespace W {
         cliHeader: SimpleStruct;
         metadataRoot?: SimpleStruct;
         streamHeaders?: GroupedStruct;
+        snSignature?: SimpleStruct;
+    }
+
+    export interface MdsTablePageData extends PageData {
+        tableHeader: GroupedStruct;
+        tableInfo: MdTableInfo[];
+    }
+
+    export interface MdTableInfo {
+        index: string;
+        name: string;
+        valid: boolean;
+        sorted: boolean;
+        rows: string;
+    }
+
+    export interface PagedItemListPageData extends PageData {
+        items: GroupedStruct;
+        paging?: Paging;
     }
 }

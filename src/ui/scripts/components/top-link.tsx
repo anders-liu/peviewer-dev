@@ -30,7 +30,7 @@ class TopLinkClass extends React.Component<ConnectedProps> {
 
             return (
                 <div className="top-lnk">
-                    <NavLink target={target} />
+                    <NavLink target={target} title="Back to top" />
                 </div>
             );
         }

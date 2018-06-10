@@ -1,10 +1,14 @@
 import { PEImage } from "../pe/image";
+import * as F from "../pe/image-flags";
 
 export function generateNavList(pe: PEImage): W.NavData[] {
     let navList: W.NavData[] = [generateHeadersNavData(pe)];
 
     const navMD = generateMDHeadersNavData(pe);
     if (navMD) navList.push(navMD);
+
+    const navMDT = generateMDTablesNavData(pe);
+    if (navMDT) navList.push(navMDT);
 
     return navList;
 }
@@ -48,8 +52,48 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
         });
     }
 
+    if (pe.hasStrongNameSignature()) {
+        children.push({
+            target: { pageID, title: W.KnownTitle.SN_SIG, elemID: W.KnownElemID.SN_SIG }
+        });
+    }
+
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.Strings)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_STRINGS, title: W.KnownTitle.MDS_STRINGS, pageNum: 0 }
+        });
+    }
+
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.US)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_US, title: W.KnownTitle.MDS_US, pageNum: 0 }
+        });
+    }
+
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.GUID)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_GUID, title: W.KnownTitle.MDS_GUID, pageNum: 0 }
+        });
+    }
+
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.Blob)) {
+        children.push({
+            target: { pageID: W.PageID.MDS_BLOB, title: W.KnownTitle.MDS_BLOB, pageNum: 0 }
+        });
+    }
+
     return {
         target: { pageID, title: W.KnownTitle.MD_HEADERS },
         children
+    };
+}
+
+function generateMDTablesNavData(pe: PEImage): W.NavData | undefined {
+    const pageID = W.PageID.MDS_TABLE;
+    const h = pe.getMetadataTableHeader();
+    if (!h) return undefined;
+
+    return {
+        target: { pageID, title: W.KnownTitle.MDS_TABLE },
     };
 }

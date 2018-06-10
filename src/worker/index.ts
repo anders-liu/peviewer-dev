@@ -1,6 +1,6 @@
 import * as M from "./message";
 import { PEImage } from "./pe/image";
-import { generatePageData } from "./page-data/generator";
+import { generatePageData, clearGeneratorCache } from "./page-data/generator";
 import { generateNavList } from "./page-data/nav-data";
 
 let pe: PEImage | null = null;
@@ -25,6 +25,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
         try {
             const buf = <ArrayBuffer>(<FileReader>ev.target).result;
             pe = PEImage.load(buf);
+            clearGeneratorCache();
 
             // Response with page data.
             const pageData = generatePageData(pe, W.PageID.HEADERS);
@@ -59,8 +60,9 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
 
 function handleReqOpenNav(msg: W.ReqOpenNavMessage): void {
     if (pe != null) {
-        const pageData = generatePageData(pe, msg.target.pageID);
-        pageData.nav.elemID = msg.target.elemID;
+        const { pageID, pageNum, elemID } = msg.target;
+        const pageData = generatePageData(pe, pageID, pageNum);
+        pageData.nav.elemID = elemID;
         const res = M.createResPageDataMessage(pageData);
         postMessage(res);
     }

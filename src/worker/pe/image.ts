@@ -1,7 +1,9 @@
 import * as S from "./structures";
+import * as A from "./aux-structures";
 import * as L from "./loader";
 import * as F from "./image-flags";
 import * as E from "./error";
+import * as U from "./utils";
 
 export class PEImage implements L.FileDataProvider {
     public static load(buf: ArrayBuffer): PEImage {
@@ -71,6 +73,33 @@ export class PEImage implements L.FileDataProvider {
         return h != null && this.isDataDirectoryValid(h.StrongNameSignature);
     }
 
+    public isMetadataTableValid(id: F.MetadataTableIndex): boolean {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].valid;
+        } else {
+            return false;
+        }
+    }
+
+    public isMetadataTableSorted(id: F.MetadataTableIndex): boolean {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].sorted;
+        } else {
+            return false;
+        }
+    }
+
+    public getMetadataTableRows(id: F.MetadataTableIndex): number {
+        const info = this.metadataTableInfo;
+        if (info && info[id]) {
+            return info[id].rows;
+        } else {
+            return 0;
+        }
+    }
+
     //
     // Image headers.
     //
@@ -104,7 +133,7 @@ export class PEImage implements L.FileDataProvider {
     //
 
     public getCliHeader(): S.CliHeader | undefined {
-        if (this.cliHeader != null) return this.cliHeader;
+        if (this.cliHeader) return this.cliHeader;
         if (!this.isManaged()) return undefined;
 
         const offset = this.rvaToOffset(this.dataDirectories!
@@ -116,7 +145,7 @@ export class PEImage implements L.FileDataProvider {
     }
 
     public getMetadataRoot(): S.MetadataRoot | undefined {
-        if (this.metadataRoot != null) return this.metadataRoot;
+        if (this.metadataRoot) return this.metadataRoot;
 
         const cliHeader = this.getCliHeader();
         if (!cliHeader) return undefined;
@@ -129,7 +158,7 @@ export class PEImage implements L.FileDataProvider {
     }
 
     public getMetadataStreamHeaders(): S.StructArray<S.MetadataStreamHeader> | undefined {
-        if (this.metadataStreamHeaders != null) return this.metadataStreamHeaders;
+        if (this.metadataStreamHeaders) return this.metadataStreamHeaders;
 
         const mdRoot = this.getMetadataRoot();
         if (!mdRoot || !mdRoot.Streams.value) return undefined;
@@ -141,6 +170,104 @@ export class PEImage implements L.FileDataProvider {
             mdRoot.Streams.value
         );
         return this.metadataStreamHeaders;
+    }
+
+    public getMetadataStreamHeader(name: F.MetadataStreamName): S.MetadataStreamHeader | undefined {
+        const headers = this.getMetadataStreamHeaders();
+        if (!headers) return undefined;
+
+        return headers.items.filter(v => v.Name.value == name).shift();
+    }
+
+    public getStrongNameSignature(): S.Field | undefined {
+        if (this.strongNameSignature) return this.strongNameSignature;
+
+        const cliHeader = this.getCliHeader();
+        if (!cliHeader) return undefined;
+
+        const offset = this.rvaToOffset(cliHeader.StrongNameSignature.VirtualAddress.value);
+        if (!offset) return undefined;
+
+        this.strongNameSignature = L.loadFixedSizeByteArrayField(
+            this, offset,
+            cliHeader.StrongNameSignature.Size.value);
+        return this.strongNameSignature;
+    }
+
+    public getMetadataTableHeader(): S.MetadataTableHeader | undefined {
+        if (this.metadataTableHeader) return this.metadataTableHeader;
+
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Table);
+        if (!sh) return undefined;
+
+        const offset = mdRoot._offset + sh.Offset.value;
+        this.metadataTableHeader = L.loadMetadataTableHeader(this, offset);
+        this.fillMetadataTableInfo();
+
+        return this.metadataTableHeader;
+    }
+
+    public getMdsStringsItem(offset: number): S.StringField | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Strings);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadNullTerminatedStringField(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
+    }
+
+    public getMdsUSItem(offset: number): S.MetadataUSItem | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.US);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadMetadataUSItem(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
+    }
+
+    public getMdsGuidItems(): S.StructArray<S.Field> | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.GUID);
+        if (!sh) return undefined;
+
+        const count = sh.Size.value / 16;
+        return L.loadStructArrayByCount(
+            this,
+            mdRoot._offset + sh.Offset.value,
+            (d, p) => L.loadFixedSizeByteArrayField(d, p, 16),
+            count);
+    }
+
+    public getMdsBlobItem(offset: number): S.MetadataBlobItem | undefined {
+        const mdRoot = this.getMetadataRoot();
+        if (!mdRoot) return undefined;
+
+        const sh = this.getMetadataStreamHeader(F.MetadataStreamName.Blob);
+        if (!sh) return undefined;
+
+        if (offset < 0 || offset >= sh.Size.value) {
+            return undefined;
+        } else {
+            return L.loadMetadataBlobItem(this,
+                mdRoot._offset + sh.Offset.value + offset);
+        }
     }
 
     //
@@ -245,6 +372,21 @@ export class PEImage implements L.FileDataProvider {
         return (dd && dd.VirtualAddress.value > 0 && dd.Size.value > 0) || false;
     }
 
+    private fillMetadataTableInfo(): void {
+        const h = this.metadataTableHeader;
+        if (!h) return;
+
+        let info: A.MetadataTableInfo = {};
+        let nValid = 0;
+        for (let id = 0; id < F.NumberOfMdTables; id++) {
+            const valid = U.isSetLong(h.Valid.high, h.Valid.low, id);
+            const sorted = U.isSetLong(h.Sorted.high, h.Sorted.low, id);
+            const rows = valid ? h.Rows.items[nValid++].value : 0;
+            info[id] = { valid, sorted, rows };
+        }
+        this.metadataTableInfo = info;
+    }
+
     private readonly data: DataView;
 
     private dosHeader?: S.ImageDosHeader;
@@ -257,4 +399,8 @@ export class PEImage implements L.FileDataProvider {
     private cliHeader?: S.CliHeader;
     private metadataRoot?: S.MetadataRoot;
     private metadataStreamHeaders?: S.StructArray<S.MetadataStreamHeader>;
+    private strongNameSignature?: S.Field;
+
+    private metadataTableHeader?: S.MetadataTableHeader;
+    private metadataTableInfo?: A.MetadataTableInfo;
 }

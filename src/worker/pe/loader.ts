@@ -40,6 +40,14 @@ export function loadU8Field(d: FileDataProvider, p: number): S.U8Field {
     };
 }
 
+export function loadCompressedUIntField(d: FileDataProvider, p: number): S.CompressedUIntField {
+    const sz = U.getCompressedIntSize(d.getU1(p));
+    const data = new Uint8Array(d.getData(p, sz));
+    const value = U.decompressUint(data);
+
+    return { _offset: p, _size: sz, data, value };
+}
+
 export function loadU1EnumField<T>(d: FileDataProvider, p: number): S.U1EnumField<T> {
     return {
         _offset: p, _size: 1, data: d.getData(p, 1), value: d.getU1(p) as any as T
@@ -82,10 +90,21 @@ export function loadNullTerminatedStringField(d: FileDataProvider, p: number): S
         b = d.getU1(ptr++);
         bytes.push(b);
     } while (b != 0);
-    const value = String.fromCharCode.apply(null, bytes.slice(0, bytes.length - 1));
+    const str = bytes.slice(0, bytes.length - 1).map(v => `%${v.toString(16)}`).join("");
+    const value = decodeURIComponent(str);
 
     return {
         _offset: p, _size: ptr - p, data: Uint8Array.from(bytes), value
+    };
+}
+
+export function loadFixedSizeUnicodeStringField(d: FileDataProvider, p: number, sz: number): S.StringField {
+    const data = d.getData(p, sz);
+    const arr = new Uint16Array(data.buffer);
+    const value = String.fromCodePoint.apply(null, arr);
+
+    return {
+        _offset: p, _size: sz, data, value
     };
 }
 
@@ -673,5 +692,86 @@ export function loadMetadataStreamHeader(d: FileDataProvider, p: number): S.Meta
         Size,
         Name,
         Padding,
+    };
+}
+
+export function loadMetadataTableHeader(d: FileDataProvider, p: number): S.MetadataTableHeader {
+    let ptr = p;
+
+    const Reserved = loadU4Field(d, ptr);
+    ptr += Reserved._size;
+
+    const MajorVersion = loadU1Field(d, ptr);
+    ptr += MajorVersion._size;
+
+    const MinorVersion = loadU1Field(d, ptr);
+    ptr += MinorVersion._size;
+
+    const HeapSizes = loadU1Field(d, ptr);
+    ptr += HeapSizes._size;
+
+    const Reserved2 = loadU1Field(d, ptr);
+    ptr += Reserved2._size;
+
+    const Valid = loadU8Field(d, ptr);
+    ptr += Valid._size;
+
+    const Sorted = loadU8Field(d, ptr);
+    ptr += Sorted._size;
+
+    const tables = U.count1(Valid.high) + U.count1(Valid.low);
+    const Rows = loadStructArrayByCount(d, ptr, loadU4Field, tables);
+    ptr += Rows._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Reserved,
+        MajorVersion,
+        MinorVersion,
+        HeapSizes,
+        Reserved2,
+        Valid,
+        Sorted,
+        Rows,
+    };
+}
+
+export function loadMetadataUSItem(d: FileDataProvider, p: number): S.MetadataUSItem {
+    let ptr = p;
+
+    const Size = loadCompressedUIntField(d, ptr);
+    ptr += Size._size;
+
+    const sz = Size.value;
+    const strSize = sz > 0 ? sz - 1 : 0;
+    const suffixSize = sz > 0 ? 1 : 0;
+
+    const Value = loadFixedSizeUnicodeStringField(d, ptr, strSize);
+    ptr += Value._size;
+
+    const Suffix = loadFixedSizeByteArrayField(d, ptr, suffixSize);
+    ptr += Suffix._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Size,
+        Value,
+        Suffix,
+    };
+}
+
+export function loadMetadataBlobItem(d: FileDataProvider, p: number): S.MetadataBlobItem {
+    let ptr = p;
+
+    const Size = loadCompressedUIntField(d, ptr);
+    ptr += Size._size;
+
+    const Value = loadFixedSizeByteArrayField(d, ptr, Size.value);
+    ptr += Value._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Size,
+        Value,
     };
 }
