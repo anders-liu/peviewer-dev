@@ -28,7 +28,7 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
             clearGeneratorCache();
 
             // Response with page data.
-            const pageData = generatePageData(pe, W.PageID.MDS_US);
+            const pageData = generatePageData(pe, W.PageID.HEADERS);
             const pageDataMsg = M.createResPageDataMessage(pageData);
             postMessage(pageDataMsg);
 
