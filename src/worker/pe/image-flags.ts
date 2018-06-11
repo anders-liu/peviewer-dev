@@ -181,7 +181,7 @@ export const enum MetadataStreamName {
     Blob = "#Blob",
 }
 
-export const enum MetadataTableHeapSize {
+export const enum MetadataHeapSizeID {
     String = 0,
     GUID = 1,
     Blob = 2,
@@ -238,3 +238,123 @@ export enum MetadataTableIndex {
 }
 
 export const NumberOfMdTables = 45;
+
+export enum MetadataCodedTokenIndex {
+    TypeDefOrRef = 0,
+    HasConstant = 1,
+    HasCustomAttribute = 2,
+    HasFieldMarshall = 3,
+    HasDeclSecurity = 4,
+    MemberRefParent = 5,
+    HasSemantics = 6,
+    MethodDefOrRef = 7,
+    MemberForwarded = 8,
+    Implementation = 9,
+    CustomAttributeType = 10,
+    ResolutionScope = 11,
+    TypeOrMethodDef = 12,
+}
+
+export interface MetadataCodedTokenInfo {
+    tagSize: number;
+    tables: MetadataTableIndex[];
+}
+
+export const ctc: MetadataCodedTokenInfo[] = [{
+    tagSize: 2, tables: [  // TypeDefOrRef
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeSpec,
+    ]
+}, {
+    tagSize: 2, tables: [  // HasConstant
+        MetadataTableIndex.Field,
+        MetadataTableIndex.Param,
+        MetadataTableIndex.Property,
+    ]
+}, {
+    tagSize: 5, tables: [  // HasCustomAttribute
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.Field,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.Param,
+        MetadataTableIndex.InterfaceImpl,
+        MetadataTableIndex.MemberRef,
+        MetadataTableIndex.Module,
+        MetadataTableIndex.DeclSecurity,
+        MetadataTableIndex.Property,
+        MetadataTableIndex.Event,
+        MetadataTableIndex.StandAloneSig,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.TypeSpec,
+        MetadataTableIndex.Assembly,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.File,
+        MetadataTableIndex.ExportedType,
+        MetadataTableIndex.ManifestResource,
+        MetadataTableIndex.GenericParam,
+        MetadataTableIndex.GenericParamConstraint,
+        MetadataTableIndex.MethodSpec,
+    ]
+}, {
+    tagSize: 1, tables: [  // HasFieldMarshall
+        MetadataTableIndex.Field,
+        MetadataTableIndex.Param,
+    ]
+}, {
+    tagSize: 2, tables: [  // HasDeclSecurity
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.Assembly,
+    ]
+}, {
+    tagSize: 3, tables: [  // MemberRefParent
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.TypeSpec,
+    ]
+}, {
+    tagSize: 1, tables: [  // HasSemantics
+        MetadataTableIndex.Event,
+        MetadataTableIndex.Property,
+    ]
+}, {
+    tagSize: 1, tables: [  // MethodDefOrRef
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.MemberRef,
+    ]
+}, {
+    tagSize: 1, tables: [  // MemberForwarded
+        MetadataTableIndex.Field,
+        MetadataTableIndex.MethodDef,
+    ]
+}, {
+    tagSize: 2, tables: [  // Implementation
+        MetadataTableIndex.File,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.ExportedType,
+    ]
+}, {
+    tagSize: 3, tables: [  // CustomAttributeType
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.MemberRef,
+        MetadataTableIndex.String,
+    ]
+}, {
+    tagSize: 2, tables: [  // ResolutionScope
+        MetadataTableIndex.Module,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.TypeRef,
+    ]
+}, {
+    tagSize: 1, tables: [  // TypeOrMethodDef
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+    ]
+}];

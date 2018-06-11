@@ -5,7 +5,7 @@ import * as F from "./image-flags";
 import * as E from "./error";
 import * as U from "./utils";
 
-export class PEImage implements L.FileDataProvider {
+export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
     public static load(buf: ArrayBuffer): PEImage {
         return new PEImage(buf);
     }
@@ -271,6 +271,65 @@ export class PEImage implements L.FileDataProvider {
     }
 
     //
+    // Metadata sizing.
+    //
+
+    public getHeapSize(heap: F.MetadataHeapSizeID): number {
+        if (this.metadataSizingCache.heap) {
+            return this.metadataSizingCache.heap[heap];
+        }
+
+        const h = this.getMetadataTableHeader();
+        if (!h) return 0;
+
+        const getHeapSizeFunc = (heap: F.MetadataHeapSizeID) =>
+            (h.HeapSizes.value & (1 << heap)) != 0 ? 4 : 2;
+
+        this.metadataSizingCache.heap = [
+            F.MetadataHeapSizeID.String,
+            F.MetadataHeapSizeID.GUID,
+            F.MetadataHeapSizeID.Blob]
+            .map(v => (h.HeapSizes.value & (1 << v)) != 0 ? 4 : 2);
+
+        return this.metadataSizingCache.heap[heap];
+    }
+
+    public getTableIDSize(t: F.MetadataTableIndex): number {
+        if (this.metadataSizingCache.tableID) {
+            return this.metadataSizingCache.tableID[t];
+        }
+
+        this.metadataSizingCache.tableID = {};
+        for (let key in F.MetadataTableIndex) {
+            if (typeof key === "number" && key < F.NumberOfMdTables) {
+                this.metadataSizingCache.tableID[key] =
+                    this.getMetadataTableRows(key) > 0xFFFF ? 4 : 2;
+            }
+        }
+
+        return this.metadataSizingCache.tableID[t];
+    }
+
+    public getCodedTokenSize(t: F.MetadataCodedTokenIndex): number {
+        if (this.metadataSizingCache.codedToken) {
+            return this.metadataSizingCache.codedToken[t];
+        }
+
+        this.metadataSizingCache.codedToken = F.ctc.map(c => {
+            const maxRows = 0xFFFF >> c.tagSize;
+            for (let tid of c.tables) {
+                if (this.getMetadataTableRows(tid) > maxRows) {
+                    return 4;
+                }
+            }
+            return 2;
+        });
+
+        return this.metadataSizingCache.codedToken[t];
+    }
+
+
+    //
     // Utilities.
     //
 
@@ -403,4 +462,16 @@ export class PEImage implements L.FileDataProvider {
 
     private metadataTableHeader?: S.MetadataTableHeader;
     private metadataTableInfo?: A.MetadataTableInfo;
+
+    private metadataSizingCache: {
+        heap?: {
+            [key: number /* F.MetadataHeapSizeID */]: number;
+        };
+        tableID?: {
+            [key: number /* F.MetadataTableIndex */]: number;
+        };
+        codedToken?: {
+            [key: number /* F.MetadataCodedTokenIndex */]: number;
+        }
+    } = {};
 }

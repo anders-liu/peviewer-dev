@@ -9,6 +9,12 @@ export interface FileDataProvider {
     getData(p: number, sz: number): Uint8Array;
 }
 
+export interface MetadataSizingProvider {
+    getHeapSize(heap: F.MetadataHeapSizeID): number;
+    getTableIDSize(t: F.MetadataTableIndex): number;
+    getCodedTokenSize(t: F.MetadataCodedTokenIndex): number;
+}
+
 //
 // Basic structures.
 //
