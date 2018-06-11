@@ -781,3 +781,64 @@ export function loadMetadataBlobItem(d: FileDataProvider, p: number): S.Metadata
         Value,
     };
 }
+
+export function loadMdsStringsField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsStringsField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.String) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdsGuidField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsGuidField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.GUID) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdsBlobField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsBlobField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.Blob) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdtRidField(
+    d: FileDataProvider & MetadataSizingProvider,
+    t: F.MetadataTableIndex, p: number): S.MdtRidField {
+
+    return d.getTableIDSize(t) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdCodedTokenField(
+    d: FileDataProvider & MetadataSizingProvider,
+    t: F.MetadataCodedTokenIndex, p: number): S.MdCodedTokenField {
+
+    const baseField = d.getCodedTokenSize(t) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+    const codedTokenInfo = decodeCodedToken(baseField.value, t);
+
+    return {
+        ...baseField, ...codedTokenInfo
+    };
+}
+
+export function loadMdTokenField(d: FileDataProvider, p: number): S.MdTokenField {
+    const baseField = loadU4Field(d, p);
+    const tid: F.MetadataTableIndex = (baseField.value & 0xFF000000) >> 24;
+    const rid = baseField.value & 0x00FFFFFF;
+    return {
+        ...baseField, tid, rid
+    };
+}
+
+export function decodeCodedToken(token: number, t: F.MetadataCodedTokenIndex): { tid: F.MetadataTableIndex, rid: number } {
+    const cti = F.ctc[t];
+    const tid = cti.tables[token & ((1 << cti.tagSize) - 1)];
+    const rid = token >> cti.tagSize;
+    return { tid, rid };
+}
