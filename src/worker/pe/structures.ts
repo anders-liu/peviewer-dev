@@ -257,9 +257,9 @@ export interface MdtTypeDefItem extends FileData {
     Flags: U4EnumField<F.CorTypeAttr>;
     Name: MdsStringsField;
     Namespace: MdsStringsField;
-    Extends: MdCodedTokenField;
-    FieldList: MdtRidField;
-    MethodList: MdtRidField;
+    Extends: MdCodedTokenField;  // TypeDefOrRef
+    FieldList: MdtRidField;  // Field
+    MethodList: MdtRidField;  // MethodDef
 }
 
 export interface MdtFieldPtrItem extends FileData {
@@ -282,7 +282,7 @@ export interface MdtMethodDefItem extends FileData {
     Flags: U2EnumField<F.CorMethodAttr>;
     Name: MdsStringsField;
     Signature: MdsBlobField;
-    ParamList: MdtRidField;
+    ParamList: MdtRidField;  // Param
 }
 
 export interface MdtParamPtrItem extends FileData {
@@ -296,12 +296,12 @@ export interface MdtParamItem extends FileData {
 }
 
 export interface MdtInterfaceImplItem extends FileData {
-    Class: MdtRidField;
-    Interface: MdCodedTokenField;
+    Class: MdtRidField;  // TypeDef
+    Interface: MdCodedTokenField;  // TypeDefOrRef
 }
 
 export interface MdtMemberRefItem extends FileData {
-    Class: MdCodedTokenField;
+    Class: MdCodedTokenField;  // MemberRefParent
     Name: MdsStringsField;
     Signature: MdsBlobField;
 }
@@ -309,36 +309,36 @@ export interface MdtMemberRefItem extends FileData {
 export interface MdtConstantItem extends FileData {
     Type: U1EnumField<F.CorElementType>;
     PaddingZero: U1Field;
-    Parent: MdCodedTokenField;
+    Parent: MdCodedTokenField;  // HasConstant
     Value: MdsBlobField;
 }
 
 export interface MdtCustomAttributeItem extends FileData {
-    Parent: MdCodedTokenField;
-    Type: MdCodedTokenField;
+    Parent: MdCodedTokenField;  // HasCustomAttribute
+    Type: MdCodedTokenField;  // CustomAttributeType
     Value: MdsBlobField;
 }
 
 export interface MdtFieldMarshalItem extends FileData {
-    Parent: MdCodedTokenField;
+    Parent: MdCodedTokenField;  // HasFieldMarshal
     NativeType: MdsBlobField;
 }
 
 export interface MdtDeclSecurityItem extends FileData {
     Action: U2EnumField<F.CorDeclSecurity>;
-    Parent: MdCodedTokenField;
+    Parent: MdCodedTokenField;  // HasDeclSecurity
     PermissionSet: MdsBlobField;
 }
 
 export interface MdtClassLayoutItem extends FileData {
     PackingSize: U2Field;
     ClassSize: U4Field;
-    Parent: MdtRidField;
+    Parent: MdtRidField;  // TypeDef
 }
 
 export interface MdtFieldLayoutItem extends FileData {
     OffSet: U4Field;
-    Field: MdtRidField;
+    Field: MdtRidField;  // Field
 }
 
 export interface MdtStandAloneSigItem extends FileData {
@@ -346,8 +346,8 @@ export interface MdtStandAloneSigItem extends FileData {
 }
 
 export interface MdtEventMapItem extends FileData {
-    Parent: MdtRidField;
-    EventList: MdtRidField;
+    Parent: MdtRidField;  // TypeDef
+    EventList: MdtRidField;  // Event
 }
 
 export interface MdtEventPtrItem extends FileData {
@@ -357,12 +357,12 @@ export interface MdtEventPtrItem extends FileData {
 export interface MdtEventItem extends FileData {
     EventFlags: U2EnumField<F.CorEventAttr>;
     Name: MdsStringsField;
-    EventType: MdCodedTokenField;
+    EventType: MdCodedTokenField;  // TypeDefOrRef
 }
 
 export interface MdtPropertyMapItem extends FileData {
-    Parent: MdtRidField;
-    PropertyList: MdtRidField;
+    Parent: MdtRidField;  // TypeDef
+    PropertyList: MdtRidField;  // Property
 }
 
 export interface MdtPropertyPtrItem extends FileData {
@@ -377,14 +377,14 @@ export interface MdtPropertyItem extends FileData {
 
 export interface MdtMethodSemanticsItem extends FileData {
     Semantic: U2EnumField<F.CorMethodSemanticsAttr>;
-    Method: MdtRidField;
-    Association: MdCodedTokenField;
+    Method: MdtRidField;  // MethodDef
+    Association: MdCodedTokenField;  // HasSemantics
 }
 
 export interface MdtMethodImplItem extends FileData {
-    Class: MdtRidField;
-    MethodBody: MdCodedTokenField;
-    MethodDeclaration: MdCodedTokenField;
+    Class: MdtRidField;  // TypeDef
+    MethodBody: MdCodedTokenField;  // MethodDefOrRef
+    MethodDeclaration: MdCodedTokenField;  // MethodDefOrRef
 }
 
 export interface MdtModuleRefItem extends FileData {
@@ -397,14 +397,14 @@ export interface MdtTypeSpecItem extends FileData {
 
 export interface MdtImplMapItem extends FileData {
     MappingFlags: U2EnumField<F.CorPinvokeMap>;
-    MemberForwarded: MdCodedTokenField;
+    MemberForwarded: MdCodedTokenField;  // MemberForwarded
     ImportName: MdsStringsField;
-    ImportScope: MdtRidField;
+    ImportScope: MdtRidField;  // ModuleRef
 }
 
 export interface MdtFieldRVAItem extends FileData {
     RVA: U4Field;
-    Field: MdtRidField;
+    Field: MdtRidField;  // Field
 }
 
 export interface MdtENCLogItem extends FileData {
@@ -473,34 +473,34 @@ export interface MdtExportedTypeItem extends FileData {
     TypeDefId: U4Field;
     TypeName: MdsStringsField;
     TypeNamespace: MdsStringsField;
-    Implementation: MdCodedTokenField;
+    Implementation: MdCodedTokenField;  // Implementation
 }
 
 export interface MdtManifestResourceItem extends FileData {
     Offset: U4Field;
     Flags: U4EnumField<F.CorManifestResourceFlags>;
     Name: MdsStringsField;
-    Implementation: MdCodedTokenField;
+    Implementation: MdCodedTokenField;  // Implementation
 }
 
 export interface MdtNestedClassItem extends FileData {
-    NestedClass: MdtRidField;
-    EnclosingClass: MdtRidField;
+    NestedClass: MdtRidField;  // TypeDef
+    EnclosingClass: MdtRidField;  // TypeDef
 }
 
 export interface MdtGenericParamItem extends FileData {
     Number: U2Field;
     Flags: U2EnumField<F.CorGenericParamAttr>;
-    Owner: MdCodedTokenField;
+    Owner: MdCodedTokenField;  // TypeOrMethodDef
     Name: MdsStringsField;
 }
 
 export interface MdtMethodSpecItem extends FileData {
-    Method: MdCodedTokenField;
+    Method: MdCodedTokenField;  // MethodDefOrRef
     Instantiation: MdsBlobField;
 }
 
 export interface MdtGenericParamConstraintItem extends FileData {
-    Owner: MdtRidField;
-    Constraint: MdCodedTokenField;
+    Owner: MdtRidField;  // GenericParam
+    Constraint: MdCodedTokenField;  // TypeDefOrRef
 }

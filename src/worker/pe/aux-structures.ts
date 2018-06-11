@@ -5,6 +5,9 @@ export interface MetadataTableInfo {
         valid: boolean;
         sorted: boolean;
         rows: number;
+        idSize: number;
+        baseOffset: number;
+        rowSize: number;
     }
 }
 

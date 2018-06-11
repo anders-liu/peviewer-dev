@@ -206,6 +206,7 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
         const offset = mdRoot._offset + sh.Offset.value;
         this.metadataTableHeader = L.loadMetadataTableHeader(this, offset);
         this.fillMetadataTableInfo();
+        this.fillMetadataTableInfoExtra();
 
         return this.metadataTableHeader;
     }
@@ -295,19 +296,12 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
     }
 
     public getTableIDSize(t: F.MetadataTableIndex): number {
-        if (this.metadataSizingCache.tableID) {
-            return this.metadataSizingCache.tableID[t];
+        const info = this.metadataTableInfo;
+        if (info && info[t]) {
+            return info[t].idSize;
+        } else {
+            return 0;
         }
-
-        this.metadataSizingCache.tableID = {};
-        for (let key in F.MetadataTableIndex) {
-            if (typeof key === "number" && key < F.NumberOfMdTables) {
-                this.metadataSizingCache.tableID[key] =
-                    this.getMetadataTableRows(key) > 0xFFFF ? 4 : 2;
-            }
-        }
-
-        return this.metadataSizingCache.tableID[t];
     }
 
     public getCodedTokenSize(t: F.MetadataCodedTokenIndex): number {
@@ -441,9 +435,350 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
             const valid = U.isSetLong(h.Valid.high, h.Valid.low, id);
             const sorted = U.isSetLong(h.Sorted.high, h.Sorted.low, id);
             const rows = valid ? h.Rows.items[nValid++].value : 0;
-            info[id] = { valid, sorted, rows };
+            info[id] = {
+                valid,
+                sorted,
+                rows,
+                idSize: valid ? (rows > 0xFFFF ? 4 : 2) : 0,
+                baseOffset: 0,
+                rowSize: 0
+            };
         }
         this.metadataTableInfo = info;
+    }
+
+    private fillMetadataTableInfoExtra(): void {
+        const h = this.metadataTableHeader;
+        if (!h) return;
+
+        const ti = this.metadataTableInfo;
+        if (!ti) return;
+
+        const ctid = F.MetadataCodedTokenIndex;
+        const ctsz = this.getCodedTokenSize;
+
+        const tid = F.MetadataTableIndex;
+
+        const stringsSize = this.getHeapSize(F.MetadataHeapSizeID.String);
+        const guidSize = this.getHeapSize(F.MetadataHeapSizeID.GUID);
+        const blobSize = this.getHeapSize(F.MetadataHeapSizeID.Blob);
+
+        let baseOffset = h._offset + h._size;
+
+        let tbli = ti[tid.Module];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + 3 * guidSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.ResolutionScope) + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeDef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 * stringsSize + ctsz(ctid.TypeDefOrRef) + ti[tid.Field].idSize + ti[tid.MethodDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Field];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.MethodDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodDef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 + 2 + stringsSize + blobSize + ti[tid.Param].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ParamPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Param].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Param];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.InterfaceImpl];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MemberRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.MemberRefParent) + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Constant];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 1 + 1 + ctsz(ctid.HasConstant) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.CustomAttribute];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.HasCustomAttribute) + ctsz(ctid.CustomAttributeType) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldMarshal];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.HasFieldMarshall) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.DeclSecurity];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ctsz(ctid.HasDeclSecurity) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ClassLayout];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 4 + ti[tid.TypeDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldLayout];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.StandAloneSig];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.EventMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ti[tid.Event].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.EventPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Event].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Event];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.PropertyMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ti[tid.Property].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.PropertyPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Property].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Property];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodSemantics];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ti[tid.MethodDef].idSize + ctsz(ctid.HasSemantics);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodImpl];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + 2 * ctsz(ctid.MethodDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ModuleRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeSpec];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ImplMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ctsz(ctid.MemberForwarded) + stringsSize + ti[tid.ModuleRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldRVA];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ENCLog];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ENCMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Assembly];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 + 2 + 2 + 2 + 4 + blobSize + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyProcessor];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyOS];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + 2 + 2 + 4 + 2 * blobSize + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRefProcessor];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.AssemblyRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRefOS];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 4 + ti[tid.AssemblyRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.File];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ExportedType];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 2 * stringsSize + ctsz(ctid.Implementation);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ManifestResource];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + stringsSize + ctsz(ctid.Implementation);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.NestedClass];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 * ti[tid.TypeDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.GenericParam];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + ctsz(ctid.TypeOrMethodDef) + stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodSpec];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.MethodDefOrRef) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.GenericParamConstraint];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.GenericParam].idSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
     }
 
     private readonly data: DataView;
@@ -466,9 +801,6 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
     private metadataSizingCache: {
         heap?: {
             [key: number /* F.MetadataHeapSizeID */]: number;
-        };
-        tableID?: {
-            [key: number /* F.MetadataTableIndex */]: number;
         };
         codedToken?: {
             [key: number /* F.MetadataCodedTokenIndex */]: number;

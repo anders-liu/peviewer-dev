@@ -847,7 +847,7 @@ export function decodeCodedToken(token: number, t: F.MetadataCodedTokenIndex): {
 // Metadata tables.
 //
 
-function loadMdtModule(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleItem {
+export function loadMdtModule(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleItem {
     let ptr = p;
 
     const Generation = loadU2Field(d, ptr);
@@ -875,7 +875,7 @@ function loadMdtModule(d: FileDataProvider & MetadataSizingProvider, p: number):
     };
 }
 
-function loadMdtTypeRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeRefItem {
+export function loadMdtTypeRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeRefItem {
     let ptr = p;
 
     const ResolutionScope = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.ResolutionScope, ptr);
@@ -895,7 +895,7 @@ function loadMdtTypeRef(d: FileDataProvider & MetadataSizingProvider, p: number)
     };
 }
 
-function loadMdtTypeDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeDefItem {
+export function loadMdtTypeDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeDefItem {
     let ptr = p;
 
     const Flags = loadU4EnumField<F.CorTypeAttr>(d, ptr);
@@ -927,7 +927,7 @@ function loadMdtTypeDef(d: FileDataProvider & MetadataSizingProvider, p: number)
     };
 }
 
-function loadMdtFieldPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldPtrItem {
+export function loadMdtFieldPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldPtrItem {
     let ptr = p;
 
     const Field = loadMdtRidField(d, F.MetadataTableIndex.Field, ptr);
@@ -939,7 +939,7 @@ function loadMdtFieldPtr(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtField(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldItem {
+export function loadMdtField(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldItem {
     let ptr = p;
 
     const Flags = loadU2EnumField<F.CorFieldAttr>(d, ptr);
@@ -959,7 +959,7 @@ function loadMdtField(d: FileDataProvider & MetadataSizingProvider, p: number): 
     };
 }
 
-function loadMdtMethodPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodPtrItem {
+export function loadMdtMethodPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodPtrItem {
     let ptr = p;
 
     const Method = loadMdtRidField(d, F.MetadataTableIndex.MethodDef, ptr);
@@ -971,7 +971,7 @@ function loadMdtMethodPtr(d: FileDataProvider & MetadataSizingProvider, p: numbe
     };
 }
 
-function loadMdtMethodDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodDefItem {
+export function loadMdtMethodDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodDefItem {
     let ptr = p;
 
     const RVA = loadU4Field(d, ptr);
@@ -1003,7 +1003,7 @@ function loadMdtMethodDef(d: FileDataProvider & MetadataSizingProvider, p: numbe
     };
 }
 
-function loadMdtParamPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamPtrItem {
+export function loadMdtParamPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamPtrItem {
     let ptr = p;
 
     const Param = loadMdtRidField(d, F.MetadataTableIndex.Param, ptr);
@@ -1015,7 +1015,7 @@ function loadMdtParamPtr(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamItem {
+export function loadMdtParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamItem {
     let ptr = p;
 
     const Flags = loadU2EnumField<F.CorParamAttr>(d, ptr);
@@ -1035,7 +1035,7 @@ function loadMdtParam(d: FileDataProvider & MetadataSizingProvider, p: number): 
     };
 }
 
-function loadMdtInterfaceImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtInterfaceImplItem {
+export function loadMdtInterfaceImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtInterfaceImplItem {
     let ptr = p;
 
     const Class = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
@@ -1051,7 +1051,7 @@ function loadMdtInterfaceImpl(d: FileDataProvider & MetadataSizingProvider, p: n
     };
 }
 
-function loadMdtMemberRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMemberRefItem {
+export function loadMdtMemberRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMemberRefItem {
     let ptr = p;
 
     const Class = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MemberRefParent, ptr);
@@ -1071,7 +1071,7 @@ function loadMdtMemberRef(d: FileDataProvider & MetadataSizingProvider, p: numbe
     };
 }
 
-function loadMdtConstant(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtConstantItem {
+export function loadMdtConstant(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtConstantItem {
     let ptr = p;
 
     const Type = loadU1EnumField<F.CorElementType>(d, ptr);
@@ -1095,7 +1095,7 @@ function loadMdtConstant(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtCustomAttribute(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtCustomAttributeItem {
+export function loadMdtCustomAttribute(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtCustomAttributeItem {
     let ptr = p;
 
     const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasCustomAttribute, ptr);
@@ -1115,7 +1115,7 @@ function loadMdtCustomAttribute(d: FileDataProvider & MetadataSizingProvider, p:
     };
 }
 
-function loadMdtFieldMarshal(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldMarshalItem {
+export function loadMdtFieldMarshal(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldMarshalItem {
     let ptr = p;
 
     const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasFieldMarshall, ptr);
@@ -1131,7 +1131,7 @@ function loadMdtFieldMarshal(d: FileDataProvider & MetadataSizingProvider, p: nu
     };
 }
 
-function loadMdtDeclSecurity(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtDeclSecurityItem {
+export function loadMdtDeclSecurity(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtDeclSecurityItem {
     let ptr = p;
 
     const Action = loadU2EnumField<F.CorDeclSecurity>(d, ptr);
@@ -1151,7 +1151,7 @@ function loadMdtDeclSecurity(d: FileDataProvider & MetadataSizingProvider, p: nu
     };
 }
 
-function loadMdtClassLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtClassLayoutItem {
+export function loadMdtClassLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtClassLayoutItem {
     let ptr = p;
 
     const PackingSize = loadU2Field(d, ptr);
@@ -1171,7 +1171,7 @@ function loadMdtClassLayout(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtFieldLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldLayoutItem {
+export function loadMdtFieldLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldLayoutItem {
     let ptr = p;
 
     const OffSet = loadU4Field(d, ptr);
@@ -1187,7 +1187,7 @@ function loadMdtFieldLayout(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtStandAloneSig(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtStandAloneSigItem {
+export function loadMdtStandAloneSig(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtStandAloneSigItem {
     let ptr = p;
 
     const Signature = loadMdsBlobField(d, ptr);
@@ -1199,7 +1199,7 @@ function loadMdtStandAloneSig(d: FileDataProvider & MetadataSizingProvider, p: n
     };
 }
 
-function loadMdtEventMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventMapItem {
+export function loadMdtEventMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventMapItem {
     let ptr = p;
 
     const Parent = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
@@ -1215,7 +1215,7 @@ function loadMdtEventMap(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtEventPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventPtrItem {
+export function loadMdtEventPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventPtrItem {
     let ptr = p;
 
     const Event = loadMdtRidField(d, F.MetadataTableIndex.Event, ptr);
@@ -1227,7 +1227,7 @@ function loadMdtEventPtr(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtEvent(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventItem {
+export function loadMdtEvent(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventItem {
     let ptr = p;
 
     const EventFlags = loadU2EnumField<F.CorEventAttr>(d, ptr);
@@ -1247,7 +1247,7 @@ function loadMdtEvent(d: FileDataProvider & MetadataSizingProvider, p: number): 
     };
 }
 
-function loadMdtPropertyMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyMapItem {
+export function loadMdtPropertyMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyMapItem {
     let ptr = p;
 
     const Parent = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
@@ -1263,7 +1263,7 @@ function loadMdtPropertyMap(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtPropertyPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyPtrItem {
+export function loadMdtPropertyPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyPtrItem {
     let ptr = p;
 
     const Property = loadMdtRidField(d, F.MetadataTableIndex.Property, ptr);
@@ -1275,7 +1275,7 @@ function loadMdtPropertyPtr(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtProperty(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyItem {
+export function loadMdtProperty(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyItem {
     let ptr = p;
 
     const PropFlags = loadU2EnumField<F.CorPropertyAttr>(d, ptr);
@@ -1295,7 +1295,7 @@ function loadMdtProperty(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtMethodSemantics(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSemanticsItem {
+export function loadMdtMethodSemantics(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSemanticsItem {
     let ptr = p;
 
     const Semantic = loadU2EnumField<F.CorMethodSemanticsAttr>(d, ptr);
@@ -1315,7 +1315,7 @@ function loadMdtMethodSemantics(d: FileDataProvider & MetadataSizingProvider, p:
     };
 }
 
-function loadMdtMethodImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodImplItem {
+export function loadMdtMethodImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodImplItem {
     let ptr = p;
 
     const Class = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
@@ -1335,7 +1335,7 @@ function loadMdtMethodImpl(d: FileDataProvider & MetadataSizingProvider, p: numb
     };
 }
 
-function loadMdtModuleRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleRefItem {
+export function loadMdtModuleRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleRefItem {
     let ptr = p;
 
     const Name = loadMdsStringsField(d, ptr);
@@ -1347,7 +1347,7 @@ function loadMdtModuleRef(d: FileDataProvider & MetadataSizingProvider, p: numbe
     };
 }
 
-function loadMdtTypeSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeSpecItem {
+export function loadMdtTypeSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeSpecItem {
     let ptr = p;
 
     const Signature = loadMdsBlobField(d, ptr);
@@ -1359,7 +1359,7 @@ function loadMdtTypeSpec(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtImplMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtImplMapItem {
+export function loadMdtImplMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtImplMapItem {
     let ptr = p;
 
     const MappingFlags = loadU2EnumField<F.CorPinvokeMap>(d, ptr);
@@ -1383,7 +1383,7 @@ function loadMdtImplMap(d: FileDataProvider & MetadataSizingProvider, p: number)
     };
 }
 
-function loadMdtFieldRVA(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldRVAItem {
+export function loadMdtFieldRVA(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldRVAItem {
     let ptr = p;
 
     const RVA = loadU4Field(d, ptr);
@@ -1399,7 +1399,7 @@ function loadMdtFieldRVA(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtENCLog(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCLogItem {
+export function loadMdtENCLog(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCLogItem {
     let ptr = p;
 
     const Token = loadU4Field(d, ptr);
@@ -1415,7 +1415,7 @@ function loadMdtENCLog(d: FileDataProvider & MetadataSizingProvider, p: number):
     };
 }
 
-function loadMdtENCMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCMapItem {
+export function loadMdtENCMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCMapItem {
     let ptr = p;
 
     const Token = loadU4Field(d, ptr);
@@ -1427,7 +1427,7 @@ function loadMdtENCMap(d: FileDataProvider & MetadataSizingProvider, p: number):
     };
 }
 
-function loadMdtAssembly(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyItem {
+export function loadMdtAssembly(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyItem {
     let ptr = p;
 
     const HashAlgId = loadU4EnumField<F.AssemblyHashAlgorithm>(d, ptr);
@@ -1471,7 +1471,7 @@ function loadMdtAssembly(d: FileDataProvider & MetadataSizingProvider, p: number
     };
 }
 
-function loadMdtAssemblyProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyProcessorItem {
+export function loadMdtAssemblyProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyProcessorItem {
     let ptr = p;
 
     const Processor = loadU4Field(d, ptr);
@@ -1483,7 +1483,7 @@ function loadMdtAssemblyProcessor(d: FileDataProvider & MetadataSizingProvider, 
     };
 }
 
-function loadMdtAssemblyOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyOSItem {
+export function loadMdtAssemblyOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyOSItem {
     let ptr = p;
 
     const OSPlatformID = loadU4Field(d, ptr);
@@ -1503,7 +1503,7 @@ function loadMdtAssemblyOS(d: FileDataProvider & MetadataSizingProvider, p: numb
     };
 }
 
-function loadMdtAssemblyRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefItem {
+export function loadMdtAssemblyRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefItem {
     let ptr = p;
 
     const MajorVersion = loadU2Field(d, ptr);
@@ -1547,7 +1547,7 @@ function loadMdtAssemblyRef(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtAssemblyRefProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefProcessorItem {
+export function loadMdtAssemblyRefProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefProcessorItem {
     let ptr = p;
 
     const Processor = loadU4Field(d, ptr);
@@ -1563,7 +1563,7 @@ function loadMdtAssemblyRefProcessor(d: FileDataProvider & MetadataSizingProvide
     };
 }
 
-function loadMdtAssemblyRefOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefOSItem {
+export function loadMdtAssemblyRefOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefOSItem {
     let ptr = p;
 
     const OSPlatformID = loadU4Field(d, ptr);
@@ -1587,7 +1587,7 @@ function loadMdtAssemblyRefOS(d: FileDataProvider & MetadataSizingProvider, p: n
     };
 }
 
-function loadMdtFile(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFileItem {
+export function loadMdtFile(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFileItem {
     let ptr = p;
 
     const Flags = loadU4EnumField<F.CorFileFlags>(d, ptr);
@@ -1607,7 +1607,7 @@ function loadMdtFile(d: FileDataProvider & MetadataSizingProvider, p: number): S
     };
 }
 
-function loadMdtExportedType(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtExportedTypeItem {
+export function loadMdtExportedType(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtExportedTypeItem {
     let ptr = p;
 
     const Flags = loadU4EnumField<F.CorTypeAttr>(d, ptr);
@@ -1635,7 +1635,7 @@ function loadMdtExportedType(d: FileDataProvider & MetadataSizingProvider, p: nu
     };
 }
 
-function loadMdtManifestResource(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtManifestResourceItem {
+export function loadMdtManifestResource(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtManifestResourceItem {
     let ptr = p;
 
     const Offset = loadU4Field(d, ptr);
@@ -1659,7 +1659,7 @@ function loadMdtManifestResource(d: FileDataProvider & MetadataSizingProvider, p
     };
 }
 
-function loadMdtNestedClass(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtNestedClassItem {
+export function loadMdtNestedClass(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtNestedClassItem {
     let ptr = p;
 
     const NestedClass = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
@@ -1675,7 +1675,7 @@ function loadMdtNestedClass(d: FileDataProvider & MetadataSizingProvider, p: num
     };
 }
 
-function loadMdtGenericParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamItem {
+export function loadMdtGenericParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamItem {
     let ptr = p;
 
     const Number = loadU2Field(d, ptr);
@@ -1699,7 +1699,7 @@ function loadMdtGenericParam(d: FileDataProvider & MetadataSizingProvider, p: nu
     };
 }
 
-function loadMdtMethodSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSpecItem {
+export function loadMdtMethodSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSpecItem {
     let ptr = p;
 
     const Method = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MethodDefOrRef, ptr);
@@ -1715,7 +1715,7 @@ function loadMdtMethodSpec(d: FileDataProvider & MetadataSizingProvider, p: numb
     };
 }
 
-function loadMdtGenericParamConstraint(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamConstraintItem {
+export function loadMdtGenericParamConstraint(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamConstraintItem {
     let ptr = p;
 
     const Owner = loadMdtRidField(d, F.MetadataTableIndex.GenericParam, ptr);
