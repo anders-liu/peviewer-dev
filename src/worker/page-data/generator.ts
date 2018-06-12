@@ -39,11 +39,13 @@ export function clearGeneratorCache(): void {
 }
 
 export interface GeneratorConfig {
-    mdsOffsetListPageSize: number;
+    mdsOffsetListPageSize: number;  // Total bytes per page.
+    mdtPageSize: number;  // Total items per page.
 }
 
 let cache: GeneratorCache = {};
 
 const cfg: GeneratorConfig = {
-    mdsOffsetListPageSize: 5000,  // Total bytes per page.
+    mdsOffsetListPageSize: 5000,
+    mdtPageSize: 200,
 }

@@ -2,6 +2,8 @@ import { PEImage } from "../pe/image";
 import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
+import * as U from "../pe/utils";
+import * as G from "./generator";
 
 export function generateMdsTablePageData(pe: PEImage): W.MdsTablePageData {
     return {
@@ -54,4 +56,19 @@ function generateMDTableList(pe: PEImage): W.MdTableInfo[] {
         });
     }
     return s;
+}
+
+export function generateMdtModulePageData(
+    pe: PEImage,
+    cfg: G.GeneratorConfig,
+    pgNum: number): W.PagedItemListPageData {
+    return {
+        nav: {
+            pageID: W.PageID.MDT_MODULE,
+            title: W.KnownTitle.MDT_MODULE
+        },
+        items: {
+            title: W.KnownTitle.MDT_MODULE,
+        }
+    };
 }

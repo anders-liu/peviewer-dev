@@ -860,7 +860,7 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
         if (!ti) return;
 
         const ctid = F.MetadataCodedTokenIndex;
-        const ctsz = this.getCodedTokenSize;
+        const ctsz = this.getCodedTokenSize.bind(this);
 
         const tid = F.MetadataTableIndex;
 
