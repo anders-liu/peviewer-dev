@@ -1,4 +1,3 @@
-import * as L from "./loader";
 import * as F from "./image-flags";
 
 //

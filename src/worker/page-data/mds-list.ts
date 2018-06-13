@@ -1,5 +1,4 @@
 import { PEImage } from "../pe/image";
-import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as U from "../pe/utils";
 import * as FM from "./formatter";

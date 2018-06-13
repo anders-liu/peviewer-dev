@@ -1,5 +1,3 @@
-import * as F from "./image-flags";
-
 export interface MetadataTableInfo {
     [key: number /* F.MetadataTableIndex */]: {
         valid: boolean;

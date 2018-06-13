@@ -1,8 +1,6 @@
 import { PEImage } from "../pe/image";
-import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
-import * as U from "../pe/utils";
 import * as G from "./generator";
 
 export function generateMdsTablePageData(pe: PEImage): W.MdsTablePageData {
