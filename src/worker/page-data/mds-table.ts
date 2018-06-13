@@ -56,17 +56,27 @@ function generateMDTableList(pe: PEImage): W.MdTableInfo[] {
     return s;
 }
 
-export function generateMdtModulePageData(
+export function generateMdtPageData(
     pe: PEImage,
+    tid: F.MetadataTableIndex,
     cfg: G.GeneratorConfig,
     pgNum: number): W.PagedItemListPageData {
+    const ti = F.MetadataTableIndex;
+    const title = ti[tid] + " Table";
+
     return {
         nav: {
-            pageID: W.PageID.MDT_MODULE,
-            title: W.KnownTitle.MDT_MODULE
+            pageID: W.PageID.MDT_TBL,
+            subID: ti[tid],
+            title,
         },
         items: {
-            title: W.KnownTitle.MDT_MODULE,
+            title,
+            groups: []
+        },
+        paging: {
+            currentPageNumber: pgNum,
+            pageNavList: []
         }
     };
 }
