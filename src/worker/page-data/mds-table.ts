@@ -74,9 +74,43 @@ export function generateMdtPageData(
             title,
             groups: []
         },
-        paging: {
-            currentPageNumber: pgNum,
-            pageNavList: []
-        }
+        paging: generateMdtPaging(pe, tid, cfg, pgNum)
     };
+}
+
+function generateMdtPaging(
+    pe: PEImage,
+    tid: F.MetadataTableIndex,
+    cfg: G.GeneratorConfig,
+    pgNum: number): W.Paging {
+    const paging: W.Paging = {
+        currentPageNumber: pgNum,
+        pageNavList: []
+    };
+
+    const psz = cfg.mdtPageSize;
+    const rows = pe.getMetadataTableRows(tid);
+    const pages = Math.floor((rows + psz - 1) / psz);
+    for (let p = 0; p < pages; p++) {
+        const tblName = F.MetadataTableIndex[tid];
+        const titleOf = (r: number) => `${tblName}[${FM.formatHexDec(r)}]`;
+        const { start, end } = getRidOnPage(rows, psz, p);
+        const target: W.NavTarget = {
+            title: `Page[${p + 1}] (${titleOf(start)} - ${titleOf(end)})`,
+            pageID: W.PageID.MDT_TBL,
+            subID: tblName,
+            pageNum: p,
+        };
+        paging.pageNavList.push(target);
+    }
+
+    return paging;
+}
+
+function getRidOnPage(rows: number, pgSize: number, pgNum: number)
+    : { start: number, end: number } {
+    const start = pgNum * pgSize + 1;
+    let end = start + pgSize - 1;
+    if (end > rows) end = rows;
+    return { start, end };
 }
