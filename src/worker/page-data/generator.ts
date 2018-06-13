@@ -52,6 +52,6 @@ export interface GeneratorConfig {
 let cache: GeneratorCache = {};
 
 const cfg: GeneratorConfig = {
-    mdsOffsetListPageSize: 5000,
-    mdtPageSize: 200,
+    mdsOffsetListPageSize: 4000,
+    mdtPageSize: 100,
 }

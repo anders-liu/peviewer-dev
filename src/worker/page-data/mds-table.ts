@@ -1,5 +1,6 @@
 import { PEImage } from "../pe/image";
 import * as F from "../pe/image-flags";
+import * as S from "../pe/structures";
 import * as FM from "./formatter";
 import * as G from "./generator";
 
@@ -70,11 +71,70 @@ export function generateMdtPageData(
             subID: ti[tid],
             title,
         },
-        items: {
-            title,
-            groups: []
-        },
+        items: generateTalbeItems(pe, tid, cfg, pgNum, title),
         paging: generateMdtPaging(pe, tid, cfg, pgNum)
+    };
+}
+
+function generateTalbeItems(
+    pe: PEImage,
+    tid: F.MetadataTableIndex,
+    cfg: G.GeneratorConfig,
+    pgNum: number,
+    title: string): W.GroupedStruct {
+    const { start, end } = getRidOnPage(pe, tid, cfg, pgNum);
+    switch (tid) {
+        case F.MetadataTableIndex.Module:
+            return generateMdtModuleItems(pe, title, start, end);
+        case F.MetadataTableIndex.TypeDef:
+            return generateMdtTypeDefItems(pe, title, start, end);
+        default:
+            return { title };
+    }
+}
+
+function generateMdtModuleItems(
+    pe: PEImage, title: string, start: number, end: number): W.GroupedStruct {
+    let items: S.MdtModuleItem[] = [];
+    for (let rid = start; rid <= end; rid++) {
+        items.push(pe.getMdtModuleItem(rid)!);
+    }
+
+    return {
+        title,
+        groups: items.map((v, i) => ({
+            title: `Module[${FM.formatHexDec(start + i)}]`,
+            items: [
+                FM.formatU2Field("Generation", v.Generation),
+                FM.formatU4Field("Name", v.Name),
+                FM.formatU4Field("Mvid", v.Mvid),
+                FM.formatU4Field("EncId", v.EncId),
+                FM.formatU4Field("EncBaseId", v.EncBaseId),
+            ]
+        }))
+    };
+}
+
+function generateMdtTypeDefItems(
+    pe: PEImage, title: string, start: number, end: number): W.GroupedStruct {
+    let items: S.MdtTypeDefItem[] = [];
+    for (let rid = start; rid <= end; rid++) {
+        items.push(pe.getMdtTypeDefItem(rid)!);
+    }
+
+    return {
+        title,
+        groups: items.map((v, i) => ({
+            title: `TypeDef[${FM.formatHexDec(start + i)}]`,
+            items: [
+                FM.formatU4Field("Flags", v.Flags),
+                FM.formatU4Field("Name", v.Name),
+                FM.formatU4Field("Namespace", v.Namespace),
+                FM.formatU4Field("Extends", v.Extends),
+                FM.formatU4Field("FieldList", v.FieldList),
+                FM.formatU4Field("MethodList", v.MethodList),
+            ]
+        }))
     };
 }
 
@@ -94,7 +154,7 @@ function generateMdtPaging(
     for (let p = 0; p < pages; p++) {
         const tblName = F.MetadataTableIndex[tid];
         const titleOf = (r: number) => `${tblName}[${FM.formatHexDec(r)}]`;
-        const { start, end } = getRidOnPage(rows, psz, p);
+        const { start, end } = getRidOnPage(pe, tid, cfg, p);
         const target: W.NavTarget = {
             title: `Page[${p + 1}] (${titleOf(start)} - ${titleOf(end)})`,
             pageID: W.PageID.MDT_TBL,
@@ -107,10 +167,15 @@ function generateMdtPaging(
     return paging;
 }
 
-function getRidOnPage(rows: number, pgSize: number, pgNum: number)
-    : { start: number, end: number } {
-    const start = pgNum * pgSize + 1;
-    let end = start + pgSize - 1;
+function getRidOnPage(
+    pe: PEImage,
+    tid: F.MetadataTableIndex,
+    cfg: G.GeneratorConfig,
+    pgNum: number): { start: number, end: number } {
+    const psz = cfg.mdtPageSize;
+    const rows = pe.getMetadataTableRows(tid);
+    const start = pgNum * psz + 1;
+    let end = start + psz - 1;
     if (end > rows) end = rows;
     return { start, end };
 }
