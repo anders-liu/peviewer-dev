@@ -25,6 +25,9 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
         return (
             <header id="app-header">
                 {fileInfo ? this.renderFileInfo(fileInfo) : this.renderWelcome()}
+                {!fileInfo && (
+                    <div>PE Viewer is a simple single-page web application for viewing content of a PE (Portable Executable) file, which is the executabule file on Windows operating system and Microsoft .NET.</div>
+                )}
             </header>
         )
     }
