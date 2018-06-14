@@ -98,7 +98,7 @@ function generateMDTablesNavData(pe: PEImage): W.NavData {
     const buildMdtNav = (t: F.MetadataTableIndex) => ({
         target: {
             pageID: W.PageID.MDT_TBL,
-            title: `${ti[t]} (${pe.getMetadataTableRows(t)})`,
+            title: `${ti[t]} (${pe.getMetadataTableRows(t).toLocaleString()})`,
             subID: ti[t],
             pageNum: 0
         }
