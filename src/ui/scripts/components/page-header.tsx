@@ -44,17 +44,6 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
         const { name, size, is32Bit, isManaged } = fileInfo;
 
         return (
-            <React.Fragment>
-                {this.renderTitleLine(fileInfo)}
-                {this.renderNavList()}
-            </React.Fragment>
-        );
-    }
-
-    private renderTitleLine(fileInfo: S.FileInfo): JSX.Element {
-        const { name, size, is32Bit, isManaged } = fileInfo;
-
-        return (
             <div className="pg-title-line">
                 <h1 className="pg-title">{name}</h1>
                 <div className="pg-finfo">
@@ -74,32 +63,6 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
                         </React.Fragment>
                     )}
                 </div>
-            </div>
-        );
-    }
-
-    private renderNavList(): JSX.Element | null {
-        const { navList } = this.props;
-        if (!navList) {
-            return null;
-        }
-
-        return (
-            <div className="pg-navlst">
-                <table>
-                    <tbody>
-                        {navList.map((v, i) => (
-                            <tr key={i}>
-                                <th><NavLink target={v.target} /></th>
-                                <td>
-                                    {v.children && v.children.map((cv, ci) => (
-                                        <NavLink key={ci} target={cv.target} />
-                                    ))}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
             </div>
         );
     }
