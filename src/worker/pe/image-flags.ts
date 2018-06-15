@@ -181,7 +181,7 @@ export const enum MetadataStreamName {
     Blob = "#Blob",
 }
 
-export const enum MetadataTableHeapSize {
+export const enum MetadataHeapSizeID {
     String = 0,
     GUID = 1,
     Blob = 2,
@@ -238,3 +238,415 @@ export enum MetadataTableIndex {
 }
 
 export const NumberOfMdTables = 45;
+
+export enum MetadataCodedTokenIndex {
+    TypeDefOrRef = 0,
+    HasConstant = 1,
+    HasCustomAttribute = 2,
+    HasFieldMarshall = 3,
+    HasDeclSecurity = 4,
+    MemberRefParent = 5,
+    HasSemantics = 6,
+    MethodDefOrRef = 7,
+    MemberForwarded = 8,
+    Implementation = 9,
+    CustomAttributeType = 10,
+    ResolutionScope = 11,
+    TypeOrMethodDef = 12,
+}
+
+export interface MetadataCodedTokenInfo {
+    tagSize: number;
+    tables: MetadataTableIndex[];
+}
+
+export const ctc: MetadataCodedTokenInfo[] = [{
+    tagSize: 2, tables: [  // TypeDefOrRef
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeSpec,
+    ]
+}, {
+    tagSize: 2, tables: [  // HasConstant
+        MetadataTableIndex.Field,
+        MetadataTableIndex.Param,
+        MetadataTableIndex.Property,
+    ]
+}, {
+    tagSize: 5, tables: [  // HasCustomAttribute
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.Field,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.Param,
+        MetadataTableIndex.InterfaceImpl,
+        MetadataTableIndex.MemberRef,
+        MetadataTableIndex.Module,
+        MetadataTableIndex.DeclSecurity,
+        MetadataTableIndex.Property,
+        MetadataTableIndex.Event,
+        MetadataTableIndex.StandAloneSig,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.TypeSpec,
+        MetadataTableIndex.Assembly,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.File,
+        MetadataTableIndex.ExportedType,
+        MetadataTableIndex.ManifestResource,
+        MetadataTableIndex.GenericParam,
+        MetadataTableIndex.GenericParamConstraint,
+        MetadataTableIndex.MethodSpec,
+    ]
+}, {
+    tagSize: 1, tables: [  // HasFieldMarshall
+        MetadataTableIndex.Field,
+        MetadataTableIndex.Param,
+    ]
+}, {
+    tagSize: 2, tables: [  // HasDeclSecurity
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.Assembly,
+    ]
+}, {
+    tagSize: 3, tables: [  // MemberRefParent
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.TypeSpec,
+    ]
+}, {
+    tagSize: 1, tables: [  // HasSemantics
+        MetadataTableIndex.Event,
+        MetadataTableIndex.Property,
+    ]
+}, {
+    tagSize: 1, tables: [  // MethodDefOrRef
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.MemberRef,
+    ]
+}, {
+    tagSize: 1, tables: [  // MemberForwarded
+        MetadataTableIndex.Field,
+        MetadataTableIndex.MethodDef,
+    ]
+}, {
+    tagSize: 2, tables: [  // Implementation
+        MetadataTableIndex.File,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.ExportedType,
+    ]
+}, {
+    tagSize: 3, tables: [  // CustomAttributeType
+        MetadataTableIndex.TypeRef,
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+        MetadataTableIndex.MemberRef,
+        MetadataTableIndex.String,
+    ]
+}, {
+    tagSize: 2, tables: [  // ResolutionScope
+        MetadataTableIndex.Module,
+        MetadataTableIndex.ModuleRef,
+        MetadataTableIndex.AssemblyRef,
+        MetadataTableIndex.TypeRef,
+    ]
+}, {
+    tagSize: 1, tables: [  // TypeOrMethodDef
+        MetadataTableIndex.TypeDef,
+        MetadataTableIndex.MethodDef,
+    ]
+}];
+
+export enum AssemblyHashAlgorithm {
+    None = 0x0000,
+    MD5 = 0x8003,  // Reserved
+    SHA1 = 0x8004,
+}
+
+export enum CorAssemblyFlags {
+    PublicKey = 0x0001,
+
+    pa__Mask = 0x0070,
+    pa_ProcessorArchitectureNone = 0x0000,
+    pa_ProcessorArchitectureMsil = 0x0010,
+    pa_ProcessorArchitectureX86 = 0x0020,
+    pa_ProcessorArchitectureIa64 = 0x0030,
+    pa_ProcessorArchitectureAmd64 = 0x0040,
+
+    ProcessorArchitectureSpecified = 0x0080,
+
+    EnableJitcompileTracking = 0x8000,
+    DisableJitcompileOptimizer = 0x4000,
+
+    Retargetable = 0x0100,
+}
+
+export enum CorEventAttr {
+    SpecialName = 0x0200,
+    RtSpecialName = 0x0400,
+}
+
+export enum CorFieldAttr {
+    fa__Mask = 0x0007,
+    fa_PrivateScope = 0x0000,
+    fa_Private = 0x0001,
+    fa_FamAndAssem = 0x0002,
+    fa_Assembly = 0x0003,
+    fa_Family = 0x0004,
+    fa_FamOrAssem = 0x0005,
+    fa_Public = 0x0006,
+
+    Static = 0x0010,
+    InitOnly = 0x0020,
+    Literal = 0x0040,
+    NotSerialized = 0x0080,
+
+    SpecialName = 0x0200,
+
+    PinvokeImpl = 0x2000,
+
+    RtSpecialName = 0x0400,
+    HasFieldMarshal = 0x1000,
+    HasDefault = 0x8000,
+    HasFieldRva = 0x0100,
+}
+
+export enum CorFileFlags {
+    ContainsMetaData = 0x0000,
+    ContainsNoMetaData = 0x0001,
+}
+
+export enum CorGenericParamAttr {
+    v__Mask = 0x0003,
+    v_NonVariant = 0x0000,
+    v_Covariant = 0x0001,
+    v_Contravariant = 0x0002,
+
+    NoSpecialConstraint = 0x0000,
+    ReferenceTypeConstraint = 0x0004,
+    NotNullableValueTypeConstraint = 0x0008,
+    DefaultConstructorConstraint = 0x0010,
+}
+
+export enum CorPinvokeMap {
+    NoMangle = 0x0001,
+    cs__Mask = 0x0006,
+    cs_CharSetNotSpec = 0x0000,
+    cs_CharSetAnsi = 0x0002,
+    cs_CharSetUnicode = 0x0004,
+    cs_CharSetAuto = 0x0006,
+
+    bf__Mask = 0x0030,
+    bf_BestFitUseAssem = 0x0000,
+    bf_BestFitEnabled = 0x0010,
+    bf_BestFitDisabled = 0x0020,
+
+    touc__Mask = 0x3000,
+    touc_ThrowOnUnmappableCharUseAssem = 0x0000,
+    touc_ThrowOnUnmappableCharEnabled = 0x1000,
+    touc_ThrowOnUnmappableCharDisabled = 0x2000,
+
+    SupportsLastError = 0x0040,
+
+    cc__Mask = 0x0700,
+    cc_CallConvWinapi = 0x0100,
+    cc_CallConvCdecl = 0x0200,
+    cc_CallConvStdcall = 0x0300,
+    cc_CallConvThiscall = 0x0400,
+    cc_CallConvFastcall = 0x0500,
+}
+
+export enum CorManifestResourceFlags {
+    v__Mask = 0x0007,
+    v_Public = 0x0001,
+    v_Private = 0x0002,
+}
+
+export enum CorMethodAttr {
+    ma__Mask = 0x0007,
+    ma_PrivateScope = 0x0000,
+    ma_Private = 0x0001,
+    ma_FamAndAssem = 0x0002,
+    ma_Assem = 0x0003,
+    ma_Family = 0x0004,
+    ma_FamOrAssem = 0x0005,
+    ma_Public = 0x0006,
+
+    Static = 0x0010,
+    Final = 0x0020,
+    Virtual = 0x0040,
+    HideBySig = 0x0080,
+
+    vl__Mask = 0x0100,
+    vl_ReuseSlot = 0x0000,
+    vl_NewSlot = 0x0100,
+
+    CheckAccessOnOverride = 0x0200,
+    Abstract = 0x0400,
+    SpecialName = 0x0800,
+
+    PInvokeImpl = 0x2000,
+    UnmanagedExport = 0x0008,
+
+    RtSpecialName = 0x1000,
+    HasSecurity = 0x4000,
+    RequireSecObject = 0x8000,
+}
+
+export enum CorMethodImpl {
+    ct__Mask = 0x0003,
+    ct_IL = 0x0000,
+    ct_Native = 0x0001,
+    ct_OptIL = 0x0002,
+    ct_Runtime = 0x0003,
+
+    m__Mask = 0x0004,
+    m_Unmanaged = 0x0004,
+    m_Managed = 0x0000,
+
+    ForwardRef = 0x0010,
+    PreserveSig = 0x0080,
+
+    InternalCall = 0x1000,
+
+    Synchronized = 0x0020,
+    NoInlining = 0x0008,
+}
+
+export enum CorMethodSemanticsAttr {
+    Setter = 0x0001,
+    Getter = 0x0002,
+    Other = 0x0004,
+    AddOn = 0x0008,
+    RemoveOn = 0x0010,
+    Fire = 0x0020,
+}
+
+export enum CorParamAttr {
+    In = 0x0001,
+    Out = 0x0002,
+    Optional = 0x0010,
+
+    HasDefault = 0x1000,
+    HasFieldMarshal = 0x2000,
+
+    Unused = 0xcfe0,
+}
+
+export enum CorPropertyAttr {
+    SpecialName = 0x0200,
+
+    RtSpecialName = 0x0400,
+    HasDefault = 0x1000,
+
+    Unused = 0xe9ff,
+}
+
+export enum CorTypeAttr {
+    v__Mask = 0x00000007,
+    v_NotPublic = 0x00000000,
+    v_Public = 0x00000001,
+    v_NestedPublic = 0x00000002,
+    v_NestedPrivate = 0x00000003,
+    v_NestedFamily = 0x00000004,
+    v_NestedAssembly = 0x00000005,
+    v_NestedFamAndAssem = 0x00000006,
+    v_NestedFamOrAssem = 0x00000007,
+
+    l__Mask = 0x00000018,
+    l_AutoLayout = 0x00000000,
+    l_SequentialLayout = 0x00000008,
+    l_ExplicitLayout = 0x00000010,
+
+    cs__Mask = 0x00000060,
+    cs_Class = 0x00000000,
+    cs_Interface = 0x00000020,
+
+    Abstract = 0x00000080,
+    Sealed = 0x00000100,
+    SpecialName = 0x00000400,
+
+    Import = 0x00001000,
+    Serializable = 0x00002000,
+    WindowsRuntime = 0x00004000,
+
+    sf__Mask = 0x00030000,
+    sf_AnsiClass = 0x00000000,
+    sf_UnicodeClass = 0x00010000,
+    sf_AutoClass = 0x00020000,
+    sf_CustomFormatClass = 0x00030000,
+    CustomFormatMask = 0x00C00000,
+
+    BeforeFieldInit = 0x00100000,
+    Forwarder = 0x00200000,
+
+    RtSpecialName = 0x00000800,
+    HasSecurity = 0x00040000,
+}
+
+export enum CorDeclSecurity {
+    ActionNil = 0x0000,
+    Request = 0x0001,
+    Demand = 0x0002,
+    Assert = 0x0003,
+    Deny = 0x0004,
+    PermitOnly = 0x0005,
+    LinktimeCheck = 0x0006,
+    InheritanceCheck = 0x0007,
+    RequestMinimum = 0x0008,
+    RequestOptional = 0x0009,
+    RequestRefuse = 0x000a,
+    PrejitGrant = 0x000b,
+    PrejitDenied = 0x000c,
+    NonCasDemand = 0x000d,
+    NonCasLinkDemand = 0x000e,
+    NonCasInheritance = 0x000f,
+}
+
+export enum CorElementType {
+    End = 0x00,
+    Void = 0x01,
+    Boolean = 0x02,
+    Char = 0x03,
+    I1 = 0x04,
+    U1 = 0x05,
+    I2 = 0x06,
+    U2 = 0x07,
+    I4 = 0x08,
+    U4 = 0x09,
+    I8 = 0x0A,
+    U8 = 0x0B,
+    R4 = 0x0C,
+    R8 = 0x0D,
+    String = 0x0E,
+
+    Ptr = 0x0F,
+    ByRef = 0x10,
+
+    ValueType = 0x11,
+    Class = 0x12,
+    Var = 0x13,
+    Array = 0x14,
+    GenericInst = 0x15,
+    TypedByRef = 0x16,
+
+    I = 0x18,
+    U = 0x19,
+    FnPtr = 0x1B,
+    Object = 0x1C,
+    SzArray = 0x1D,
+
+    MVar = 0x1E,
+
+    CModReqd = 0x1F,
+    CModOpt = 0x20,
+    Internal = 0x21,
+
+    Modifier = 0x40,
+    Sentinel = 0x01 | Modifier,
+    Pinned = 0x05 | Modifier,
+    R4HFA = 0x06 | Modifier,
+    R8HFA = 0x07 | Modifier,
+}

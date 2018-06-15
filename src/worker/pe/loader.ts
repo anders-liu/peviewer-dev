@@ -9,6 +9,12 @@ export interface FileDataProvider {
     getData(p: number, sz: number): Uint8Array;
 }
 
+export interface MetadataSizingProvider {
+    getHeapSize(heap: F.MetadataHeapSizeID): number;
+    getTableIDSize(t: F.MetadataTableIndex): number;
+    getCodedTokenSize(t: F.MetadataCodedTokenIndex): number;
+}
+
 //
 // Basic structures.
 //
@@ -773,5 +779,954 @@ export function loadMetadataBlobItem(d: FileDataProvider, p: number): S.Metadata
         _offset: p, _size: ptr - p,
         Size,
         Value,
+    };
+}
+
+export function loadMdsStringsField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsStringsField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.String) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdsGuidField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsGuidField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.GUID) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdsBlobField(
+    d: FileDataProvider & MetadataSizingProvider,
+    p: number): S.MdsBlobField {
+
+    return d.getHeapSize(F.MetadataHeapSizeID.Blob) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdtRidField(
+    d: FileDataProvider & MetadataSizingProvider,
+    t: F.MetadataTableIndex, p: number): S.MdtRidField {
+
+    return d.getTableIDSize(t) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+}
+
+export function loadMdCodedTokenField(
+    d: FileDataProvider & MetadataSizingProvider,
+    t: F.MetadataCodedTokenIndex, p: number): S.MdCodedTokenField {
+
+    const baseField = d.getCodedTokenSize(t) == 4
+        ? loadU4Field(d, p) : loadU2Field(d, p);
+    const codedTokenInfo = decodeCodedToken(baseField.value, t);
+
+    return {
+        ...baseField, ...codedTokenInfo
+    };
+}
+
+export function loadMdTokenField(d: FileDataProvider, p: number): S.MdTokenField {
+    const baseField = loadU4Field(d, p);
+    const tid: F.MetadataTableIndex = (baseField.value & 0xFF000000) >> 24;
+    const rid = baseField.value & 0x00FFFFFF;
+    return {
+        ...baseField, tid, rid
+    };
+}
+
+export function decodeCodedToken(token: number, t: F.MetadataCodedTokenIndex): { tid: F.MetadataTableIndex, rid: number } {
+    const cti = F.ctc[t];
+    const tid = cti.tables[token & ((1 << cti.tagSize) - 1)];
+    const rid = token >> cti.tagSize;
+    return { tid, rid };
+}
+
+//
+// Metadata tables.
+//
+
+export function loadMdtModule(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleItem {
+    let ptr = p;
+
+    const Generation = loadU2Field(d, ptr);
+    ptr += Generation._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Mvid = loadMdsGuidField(d, ptr);
+    ptr += Mvid._size;
+
+    const EncId = loadMdsGuidField(d, ptr);
+    ptr += EncId._size;
+
+    const EncBaseId = loadMdsGuidField(d, ptr);
+    ptr += EncBaseId._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Generation,
+        Name,
+        Mvid,
+        EncId,
+        EncBaseId,
+    };
+}
+
+export function loadMdtTypeRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeRefItem {
+    let ptr = p;
+
+    const ResolutionScope = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.ResolutionScope, ptr);
+    ptr += ResolutionScope._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Namespace = loadMdsStringsField(d, ptr);
+    ptr += Namespace._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        ResolutionScope,
+        Name,
+        Namespace,
+    };
+}
+
+export function loadMdtTypeDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeDefItem {
+    let ptr = p;
+
+    const Flags = loadU4EnumField<F.CorTypeAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Namespace = loadMdsStringsField(d, ptr);
+    ptr += Namespace._size;
+
+    const Extends = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.TypeDefOrRef, ptr);
+    ptr += Extends._size;
+
+    const FieldList = loadMdtRidField(d, F.MetadataTableIndex.Field, ptr);
+    ptr += FieldList._size;
+
+    const MethodList = loadMdtRidField(d, F.MetadataTableIndex.MethodDef, ptr);
+    ptr += MethodList._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Flags,
+        Name,
+        Namespace,
+        Extends,
+        FieldList,
+        MethodList,
+    };
+}
+
+export function loadMdtFieldPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldPtrItem {
+    let ptr = p;
+
+    const Field = loadMdtRidField(d, F.MetadataTableIndex.Field, ptr);
+    ptr += Field._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Field,
+    };
+}
+
+export function loadMdtField(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldItem {
+    let ptr = p;
+
+    const Flags = loadU2EnumField<F.CorFieldAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Signature = loadMdsBlobField(d, ptr);
+    ptr += Signature._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Flags,
+        Name,
+        Signature,
+    };
+}
+
+export function loadMdtMethodPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodPtrItem {
+    let ptr = p;
+
+    const Method = loadMdtRidField(d, F.MetadataTableIndex.MethodDef, ptr);
+    ptr += Method._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Method,
+    };
+}
+
+export function loadMdtMethodDef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodDefItem {
+    let ptr = p;
+
+    const RVA = loadU4Field(d, ptr);
+    ptr += RVA._size;
+
+    const ImplFlags = loadU2EnumField<F.CorMethodImpl>(d, ptr);
+    ptr += ImplFlags._size;
+
+    const Flags = loadU2EnumField<F.CorMethodAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Signature = loadMdsBlobField(d, ptr);
+    ptr += Signature._size;
+
+    const ParamList = loadMdtRidField(d, F.MetadataTableIndex.Param, ptr);
+    ptr += ParamList._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        RVA,
+        ImplFlags,
+        Flags,
+        Name,
+        Signature,
+        ParamList,
+    };
+}
+
+export function loadMdtParamPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamPtrItem {
+    let ptr = p;
+
+    const Param = loadMdtRidField(d, F.MetadataTableIndex.Param, ptr);
+    ptr += Param._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Param,
+    };
+}
+
+export function loadMdtParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtParamItem {
+    let ptr = p;
+
+    const Flags = loadU2EnumField<F.CorParamAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const Sequence = loadU2Field(d, ptr);
+    ptr += Sequence._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Flags,
+        Sequence,
+        Name,
+    };
+}
+
+export function loadMdtInterfaceImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtInterfaceImplItem {
+    let ptr = p;
+
+    const Class = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += Class._size;
+
+    const Interface = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.TypeDefOrRef, ptr);
+    ptr += Interface._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Class,
+        Interface,
+    };
+}
+
+export function loadMdtMemberRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMemberRefItem {
+    let ptr = p;
+
+    const Class = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MemberRefParent, ptr);
+    ptr += Class._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Signature = loadMdsBlobField(d, ptr);
+    ptr += Signature._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Class,
+        Name,
+        Signature,
+    };
+}
+
+export function loadMdtConstant(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtConstantItem {
+    let ptr = p;
+
+    const Type = loadU1EnumField<F.CorElementType>(d, ptr);
+    ptr += Type._size;
+
+    const PaddingZero = loadU1Field(d, ptr);
+    ptr += PaddingZero._size;
+
+    const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasConstant, ptr);
+    ptr += Parent._size;
+
+    const Value = loadMdsBlobField(d, ptr);
+    ptr += Value._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Type,
+        PaddingZero,
+        Parent,
+        Value,
+    };
+}
+
+export function loadMdtCustomAttribute(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtCustomAttributeItem {
+    let ptr = p;
+
+    const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasCustomAttribute, ptr);
+    ptr += Parent._size;
+
+    const Type = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.CustomAttributeType, ptr);
+    ptr += Type._size;
+
+    const Value = loadMdsBlobField(d, ptr);
+    ptr += Value._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Parent,
+        Type,
+        Value,
+    };
+}
+
+export function loadMdtFieldMarshal(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldMarshalItem {
+    let ptr = p;
+
+    const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasFieldMarshall, ptr);
+    ptr += Parent._size;
+
+    const NativeType = loadMdsBlobField(d, ptr);
+    ptr += NativeType._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Parent,
+        NativeType,
+    };
+}
+
+export function loadMdtDeclSecurity(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtDeclSecurityItem {
+    let ptr = p;
+
+    const Action = loadU2EnumField<F.CorDeclSecurity>(d, ptr);
+    ptr += Action._size;
+
+    const Parent = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasDeclSecurity, ptr);
+    ptr += Parent._size;
+
+    const PermissionSet = loadMdsBlobField(d, ptr);
+    ptr += PermissionSet._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Action,
+        Parent,
+        PermissionSet,
+    };
+}
+
+export function loadMdtClassLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtClassLayoutItem {
+    let ptr = p;
+
+    const PackingSize = loadU2Field(d, ptr);
+    ptr += PackingSize._size;
+
+    const ClassSize = loadU4Field(d, ptr);
+    ptr += ClassSize._size;
+
+    const Parent = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += Parent._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        PackingSize,
+        ClassSize,
+        Parent,
+    };
+}
+
+export function loadMdtFieldLayout(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldLayoutItem {
+    let ptr = p;
+
+    const OffSet = loadU4Field(d, ptr);
+    ptr += OffSet._size;
+
+    const Field = loadMdtRidField(d, F.MetadataTableIndex.Field, ptr);
+    ptr += Field._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        OffSet,
+        Field,
+    };
+}
+
+export function loadMdtStandAloneSig(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtStandAloneSigItem {
+    let ptr = p;
+
+    const Signature = loadMdsBlobField(d, ptr);
+    ptr += Signature._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Signature,
+    };
+}
+
+export function loadMdtEventMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventMapItem {
+    let ptr = p;
+
+    const Parent = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += Parent._size;
+
+    const EventList = loadMdtRidField(d, F.MetadataTableIndex.Event, ptr);
+    ptr += EventList._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Parent,
+        EventList,
+    };
+}
+
+export function loadMdtEventPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventPtrItem {
+    let ptr = p;
+
+    const Event = loadMdtRidField(d, F.MetadataTableIndex.Event, ptr);
+    ptr += Event._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Event,
+    };
+}
+
+export function loadMdtEvent(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtEventItem {
+    let ptr = p;
+
+    const EventFlags = loadU2EnumField<F.CorEventAttr>(d, ptr);
+    ptr += EventFlags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const EventType = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.TypeDefOrRef, ptr);
+    ptr += EventType._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        EventFlags,
+        Name,
+        EventType,
+    };
+}
+
+export function loadMdtPropertyMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyMapItem {
+    let ptr = p;
+
+    const Parent = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += Parent._size;
+
+    const PropertyList = loadMdtRidField(d, F.MetadataTableIndex.Property, ptr);
+    ptr += PropertyList._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Parent,
+        PropertyList,
+    };
+}
+
+export function loadMdtPropertyPtr(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyPtrItem {
+    let ptr = p;
+
+    const Property = loadMdtRidField(d, F.MetadataTableIndex.Property, ptr);
+    ptr += Property._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Property,
+    };
+}
+
+export function loadMdtProperty(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtPropertyItem {
+    let ptr = p;
+
+    const PropFlags = loadU2EnumField<F.CorPropertyAttr>(d, ptr);
+    ptr += PropFlags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Type = loadMdsBlobField(d, ptr);
+    ptr += Type._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        PropFlags,
+        Name,
+        Type,
+    };
+}
+
+export function loadMdtMethodSemantics(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSemanticsItem {
+    let ptr = p;
+
+    const Semantic = loadU2EnumField<F.CorMethodSemanticsAttr>(d, ptr);
+    ptr += Semantic._size;
+
+    const Method = loadMdtRidField(d, F.MetadataTableIndex.MethodDef, ptr);
+    ptr += Method._size;
+
+    const Association = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.HasSemantics, ptr);
+    ptr += Association._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Semantic,
+        Method,
+        Association,
+    };
+}
+
+export function loadMdtMethodImpl(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodImplItem {
+    let ptr = p;
+
+    const Class = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += Class._size;
+
+    const MethodBody = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MethodDefOrRef, ptr);
+    ptr += MethodBody._size;
+
+    const MethodDeclaration = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MethodDefOrRef, ptr);
+    ptr += MethodDeclaration._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Class,
+        MethodBody,
+        MethodDeclaration,
+    };
+}
+
+export function loadMdtModuleRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtModuleRefItem {
+    let ptr = p;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Name,
+    };
+}
+
+export function loadMdtTypeSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtTypeSpecItem {
+    let ptr = p;
+
+    const Signature = loadMdsBlobField(d, ptr);
+    ptr += Signature._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Signature,
+    };
+}
+
+export function loadMdtImplMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtImplMapItem {
+    let ptr = p;
+
+    const MappingFlags = loadU2EnumField<F.CorPinvokeMap>(d, ptr);
+    ptr += MappingFlags._size;
+
+    const MemberForwarded = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MemberForwarded, ptr);
+    ptr += MemberForwarded._size;
+
+    const ImportName = loadMdsStringsField(d, ptr);
+    ptr += ImportName._size;
+
+    const ImportScope = loadMdtRidField(d, F.MetadataTableIndex.ModuleRef, ptr);
+    ptr += ImportScope._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        MappingFlags,
+        MemberForwarded,
+        ImportName,
+        ImportScope,
+    };
+}
+
+export function loadMdtFieldRVA(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFieldRVAItem {
+    let ptr = p;
+
+    const RVA = loadU4Field(d, ptr);
+    ptr += RVA._size;
+
+    const Field = loadMdtRidField(d, F.MetadataTableIndex.Field, ptr);
+    ptr += Field._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        RVA,
+        Field,
+    };
+}
+
+export function loadMdtENCLog(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCLogItem {
+    let ptr = p;
+
+    const Token = loadU4Field(d, ptr);
+    ptr += Token._size;
+
+    const FuncCode = loadU4Field(d, ptr);
+    ptr += FuncCode._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Token,
+        FuncCode,
+    };
+}
+
+export function loadMdtENCMap(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtENCMapItem {
+    let ptr = p;
+
+    const Token = loadU4Field(d, ptr);
+    ptr += Token._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Token,
+    };
+}
+
+export function loadMdtAssembly(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyItem {
+    let ptr = p;
+
+    const HashAlgId = loadU4EnumField<F.AssemblyHashAlgorithm>(d, ptr);
+    ptr += HashAlgId._size;
+
+    const MajorVersion = loadU2Field(d, ptr);
+    ptr += MajorVersion._size;
+
+    const MinorVersion = loadU2Field(d, ptr);
+    ptr += MinorVersion._size;
+
+    const BuildNumber = loadU2Field(d, ptr);
+    ptr += BuildNumber._size;
+
+    const RevisionNumber = loadU2Field(d, ptr);
+    ptr += RevisionNumber._size;
+
+    const Flags = loadU4EnumField<F.CorAssemblyFlags>(d, ptr);
+    ptr += Flags._size;
+
+    const PublicKey = loadMdsBlobField(d, ptr);
+    ptr += PublicKey._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Locale = loadMdsStringsField(d, ptr);
+    ptr += Locale._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        HashAlgId,
+        MajorVersion,
+        MinorVersion,
+        BuildNumber,
+        RevisionNumber,
+        Flags,
+        PublicKey,
+        Name,
+        Locale,
+    };
+}
+
+export function loadMdtAssemblyProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyProcessorItem {
+    let ptr = p;
+
+    const Processor = loadU4Field(d, ptr);
+    ptr += Processor._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Processor,
+    };
+}
+
+export function loadMdtAssemblyOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyOSItem {
+    let ptr = p;
+
+    const OSPlatformID = loadU4Field(d, ptr);
+    ptr += OSPlatformID._size;
+
+    const OSMajorVersion = loadU4Field(d, ptr);
+    ptr += OSMajorVersion._size;
+
+    const OSMinorVersion = loadU4Field(d, ptr);
+    ptr += OSMinorVersion._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        OSPlatformID,
+        OSMajorVersion,
+        OSMinorVersion,
+    };
+}
+
+export function loadMdtAssemblyRef(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefItem {
+    let ptr = p;
+
+    const MajorVersion = loadU2Field(d, ptr);
+    ptr += MajorVersion._size;
+
+    const MinorVersion = loadU2Field(d, ptr);
+    ptr += MinorVersion._size;
+
+    const BuildNumber = loadU2Field(d, ptr);
+    ptr += BuildNumber._size;
+
+    const RevisionNumber = loadU2Field(d, ptr);
+    ptr += RevisionNumber._size;
+
+    const Flags = loadU4EnumField<F.CorAssemblyFlags>(d, ptr);
+    ptr += Flags._size;
+
+    const PublicKeyOrToken = loadMdsBlobField(d, ptr);
+    ptr += PublicKeyOrToken._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Locale = loadMdsStringsField(d, ptr);
+    ptr += Locale._size;
+
+    const HashValue = loadMdsBlobField(d, ptr);
+    ptr += HashValue._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        MajorVersion,
+        MinorVersion,
+        BuildNumber,
+        RevisionNumber,
+        Flags,
+        PublicKeyOrToken,
+        Name,
+        Locale,
+        HashValue,
+    };
+}
+
+export function loadMdtAssemblyRefProcessor(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefProcessorItem {
+    let ptr = p;
+
+    const Processor = loadU4Field(d, ptr);
+    ptr += Processor._size;
+
+    const AssemblyRef = loadMdtRidField(d, F.MetadataTableIndex.AssemblyRef, ptr);
+    ptr += AssemblyRef._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Processor,
+        AssemblyRef,
+    };
+}
+
+export function loadMdtAssemblyRefOS(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtAssemblyRefOSItem {
+    let ptr = p;
+
+    const OSPlatformID = loadU4Field(d, ptr);
+    ptr += OSPlatformID._size;
+
+    const OSMajorVersion = loadU4Field(d, ptr);
+    ptr += OSMajorVersion._size;
+
+    const OSMinorVersion = loadU4Field(d, ptr);
+    ptr += OSMinorVersion._size;
+
+    const AssemblyRef = loadMdtRidField(d, F.MetadataTableIndex.AssemblyRef, ptr);
+    ptr += AssemblyRef._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        OSPlatformID,
+        OSMajorVersion,
+        OSMinorVersion,
+        AssemblyRef,
+    };
+}
+
+export function loadMdtFile(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtFileItem {
+    let ptr = p;
+
+    const Flags = loadU4EnumField<F.CorFileFlags>(d, ptr);
+    ptr += Flags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const HashValue = loadMdsBlobField(d, ptr);
+    ptr += HashValue._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Flags,
+        Name,
+        HashValue,
+    };
+}
+
+export function loadMdtExportedType(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtExportedTypeItem {
+    let ptr = p;
+
+    const Flags = loadU4EnumField<F.CorTypeAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const TypeDefId = loadU4Field(d, ptr);
+    ptr += TypeDefId._size;
+
+    const TypeName = loadMdsStringsField(d, ptr);
+    ptr += TypeName._size;
+
+    const TypeNamespace = loadMdsStringsField(d, ptr);
+    ptr += TypeNamespace._size;
+
+    const Implementation = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.Implementation, ptr);
+    ptr += Implementation._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Flags,
+        TypeDefId,
+        TypeName,
+        TypeNamespace,
+        Implementation,
+    };
+}
+
+export function loadMdtManifestResource(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtManifestResourceItem {
+    let ptr = p;
+
+    const Offset = loadU4Field(d, ptr);
+    ptr += Offset._size;
+
+    const Flags = loadU4EnumField<F.CorManifestResourceFlags>(d, ptr);
+    ptr += Flags._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    const Implementation = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.Implementation, ptr);
+    ptr += Implementation._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Offset,
+        Flags,
+        Name,
+        Implementation,
+    };
+}
+
+export function loadMdtNestedClass(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtNestedClassItem {
+    let ptr = p;
+
+    const NestedClass = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += NestedClass._size;
+
+    const EnclosingClass = loadMdtRidField(d, F.MetadataTableIndex.TypeDef, ptr);
+    ptr += EnclosingClass._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        NestedClass,
+        EnclosingClass,
+    };
+}
+
+export function loadMdtGenericParam(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamItem {
+    let ptr = p;
+
+    const Number = loadU2Field(d, ptr);
+    ptr += Number._size;
+
+    const Flags = loadU2EnumField<F.CorGenericParamAttr>(d, ptr);
+    ptr += Flags._size;
+
+    const Owner = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.TypeOrMethodDef, ptr);
+    ptr += Owner._size;
+
+    const Name = loadMdsStringsField(d, ptr);
+    ptr += Name._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Number,
+        Flags,
+        Owner,
+        Name,
+    };
+}
+
+export function loadMdtMethodSpec(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtMethodSpecItem {
+    let ptr = p;
+
+    const Method = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.MethodDefOrRef, ptr);
+    ptr += Method._size;
+
+    const Instantiation = loadMdsBlobField(d, ptr);
+    ptr += Instantiation._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Method,
+        Instantiation,
+    };
+}
+
+export function loadMdtGenericParamConstraint(d: FileDataProvider & MetadataSizingProvider, p: number): S.MdtGenericParamConstraintItem {
+    let ptr = p;
+
+    const Owner = loadMdtRidField(d, F.MetadataTableIndex.GenericParam, ptr);
+    ptr += Owner._size;
+
+    const Constraint = loadMdCodedTokenField(d, F.MetadataCodedTokenIndex.TypeDefOrRef, ptr);
+    ptr += Constraint._size;
+
+    return {
+        _offset: p, _size: ptr - p,
+        Owner,
+        Constraint,
     };
 }

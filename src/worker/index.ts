@@ -60,8 +60,8 @@ function handleReqOpenFile(msg: W.ReqOpenFileMessage): void {
 
 function handleReqOpenNav(msg: W.ReqOpenNavMessage): void {
     if (pe != null) {
-        const { pageID, pageNum, elemID } = msg.target;
-        const pageData = generatePageData(pe, pageID, pageNum);
+        const { pageID, subID, pageNum, elemID } = msg.target;
+        const pageData = generatePageData(pe, pageID, subID, pageNum);
         pageData.nav.elemID = elemID;
         const res = M.createResPageDataMessage(pageData);
         postMessage(res);

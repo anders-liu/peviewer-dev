@@ -39,7 +39,7 @@ class PaginateClass extends React.Component<ConnectedProps & ConnectedEvents> {
 
     public render(): JSX.Element | null {
         const { paging, pageData } = this.props;
-        if (!paging || !pageData || paging.pageNavList.length == 1) {
+        if (!paging || !pageData || paging.pageNavList.length <= 1) {
             return null;
         }
 

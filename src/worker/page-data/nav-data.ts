@@ -7,9 +7,6 @@ export function generateNavList(pe: PEImage): W.NavData[] {
     const navMD = generateMDHeadersNavData(pe);
     if (navMD) navList.push(navMD);
 
-    const navMDT = generateMDTablesNavData(pe);
-    if (navMDT) navList.push(navMDT);
-
     return navList;
 }
 
@@ -82,18 +79,39 @@ function generateMDHeadersNavData(pe: PEImage): W.NavData | undefined {
         });
     }
 
+    if (pe.getMetadataStreamHeader(F.MetadataStreamName.Table)) {
+        children.push(generateMDTablesNavData(pe));
+    }
+
     return {
         target: { pageID, title: W.KnownTitle.MD_HEADERS },
         children
     };
 }
 
-function generateMDTablesNavData(pe: PEImage): W.NavData | undefined {
+function generateMDTablesNavData(pe: PEImage): W.NavData {
     const pageID = W.PageID.MDS_TABLE;
     const h = pe.getMetadataTableHeader();
-    if (!h) return undefined;
+
+    let children: W.NavData[] = [];
+    const ti = F.MetadataTableIndex;
+    const buildMdtNav = (t: F.MetadataTableIndex) => ({
+        target: {
+            pageID: W.PageID.MDT_TBL,
+            title: `${ti[t]} (${pe.getMetadataTableRows(t).toLocaleString()})`,
+            subID: ti[t],
+            pageNum: 0
+        }
+    } as W.NavData);
+
+    for (let tid = 0; tid < F.NumberOfMdTables; tid++) {
+        if (pe.isMetadataTableValid(tid)) {
+            children.push(buildMdtNav(tid));
+        }
+    }
 
     return {
         target: { pageID, title: W.KnownTitle.MDS_TABLE },
+        children
     };
 }

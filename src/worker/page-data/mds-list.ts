@@ -1,5 +1,4 @@
 import { PEImage } from "../pe/image";
-import * as S from "../pe/structures";
 import * as F from "../pe/image-flags";
 import * as U from "../pe/utils";
 import * as FM from "./formatter";
@@ -12,7 +11,7 @@ export function generateMdsStringsPageData(pe: PEImage,
     checkAndBuildCacheForMdsStrings(pe, cache, cfg);
     const items = cache.mdsStrings && cache.mdsStrings.pages[pgNum];
 
-    const titleOf = (i: number) => `#String[${FM.formatHexDec(i)}]`;
+    const titleOf = (i: number) => `#String [${FM.formatHexDec(i)}]`;
 
     return {
         nav: {
@@ -31,7 +30,7 @@ export function generateMdsStringsPageData(pe: PEImage,
         paging: {
             currentPageNumber: pgNum,
             pageNavList: cache.mdsStrings!.pages.map((v, i) => ({
-                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
+                title: `Page [${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
                 pageID: W.PageID.MDS_STRINGS,
                 pageNum: i
             }))
@@ -46,7 +45,7 @@ export function generateMdsUSPageData(pe: PEImage,
     checkAndBuildCacheForMdsUS(pe, cache, cfg);
     const items = cache.mdsUS && cache.mdsUS.pages[pgNum];
 
-    const titleOf = (i: number) => `#US[${FM.formatHexDec(i)}]`;
+    const titleOf = (i: number) => `#US [${FM.formatHexDec(i)}]`;
 
     return {
         nav: {
@@ -70,7 +69,7 @@ export function generateMdsUSPageData(pe: PEImage,
         paging: {
             currentPageNumber: pgNum,
             pageNavList: cache.mdsUS!.pages.map((v, i) => ({
-                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
+                title: `Page [${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
                 pageID: W.PageID.MDS_US,
                 pageNum: i
             }))
@@ -85,7 +84,7 @@ export function generateMdsBlobPageData(pe: PEImage,
     checkAndBuildCacheForMdsBlob(pe, cache, cfg);
     const items = cache.mdsBlob && cache.mdsBlob.pages[pgNum];
 
-    const titleOf = (i: number) => `#Blob[${FM.formatHexDec(i)}]`;
+    const titleOf = (i: number) => `#Blob [${FM.formatHexDec(i)}]`;
 
     return {
         nav: {
@@ -108,7 +107,7 @@ export function generateMdsBlobPageData(pe: PEImage,
         paging: {
             currentPageNumber: pgNum,
             pageNavList: cache.mdsBlob!.pages.map((v, i) => ({
-                title: `Page[${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
+                title: `Page [${i + 1}] (${titleOf(v[0])} - ${titleOf(v[v.length - 1])}})`,
                 pageID: W.PageID.MDS_BLOB,
                 pageNum: i
             }))

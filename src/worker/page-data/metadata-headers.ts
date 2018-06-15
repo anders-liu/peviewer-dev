@@ -1,6 +1,4 @@
 import { PEImage } from "../pe/image";
-import * as S from "../pe/structures";
-import * as F from "../pe/image-flags";
 import * as FM from "./formatter";
 
 export function generateMetadataHeadersPageData(pe: PEImage): W.MetadataHeadersPageData {

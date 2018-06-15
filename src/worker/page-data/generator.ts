@@ -1,7 +1,9 @@
 import { PEImage } from "../pe/image";
+import * as F from "../pe/image-flags";
+
 import { generateHeadersPageData } from "./headers";
 import { generateMetadataHeadersPageData } from "./metadata-headers";
-import { generateMdsTablePageData } from "./mds-table";
+import { generateMdsTablePageData, generateMdtPageData } from "./mds-table";
 import {
     generateMdsStringsPageData,
     generateMdsUSPageData,
@@ -9,7 +11,7 @@ import {
     generateMdsBlobPageData
 } from "./mds-list";
 
-export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number): W.PageData {
+export function generatePageData(pe: PEImage, pageID: W.PageID, subID?: string, pageNum?: number): W.PageData {
     switch (pageID) {
         case W.PageID.HEADERS: return generateHeadersPageData(pe);
         case W.PageID.MD_HEADERS: return generateMetadataHeadersPageData(pe);
@@ -18,6 +20,10 @@ export function generatePageData(pe: PEImage, pageID: W.PageID, pageNum?: number
         case W.PageID.MDS_US: return generateMdsUSPageData(pe, cache, cfg, pageNum || 0);
         case W.PageID.MDS_GUID: return generateMdsGuidPageData(pe);
         case W.PageID.MDS_BLOB: return generateMdsBlobPageData(pe, cache, cfg, pageNum || 0);
+        case W.PageID.MDT_TBL: {
+            const tid = F.MetadataTableIndex[subID! as any] as any as F.MetadataTableIndex;
+            return generateMdtPageData(pe, tid, cfg, pageNum || 0);
+        }
         default: return { nav: { pageID: W.PageID.NOTFOUND, title: W.KnownTitle.NOTFOUND } };
     }
 }
@@ -39,11 +45,13 @@ export function clearGeneratorCache(): void {
 }
 
 export interface GeneratorConfig {
-    mdsOffsetListPageSize: number;
+    mdsOffsetListPageSize: number;  // Total bytes per page.
+    mdtPageSize: number;  // Total items per page.
 }
 
 let cache: GeneratorCache = {};
 
 const cfg: GeneratorConfig = {
-    mdsOffsetListPageSize: 5000,  // Total bytes per page.
+    mdsOffsetListPageSize: 4000,
+    mdtPageSize: 100,
 }

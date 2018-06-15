@@ -22,10 +22,10 @@ class PageFooterClass extends React.Component<ConnectedProps> {
         return (
             <footer id="app-footer">
                 <div><strong>{title}</strong></div>
-                <div>Coypright &copy; {author} {year}</div>
+                <div>&copy; {year} {author}</div>
                 <div>Version {version}</div>
                 <div>Last build: {buildTimeLocal}</div>
-                <div><a href={`${releaseNotesUrl}#${version}`} target="_blank">Release Notes</a></div>
+                <div><a href={`${releaseNotesUrl}#${version.replace(/\./g, "")}`} target="_blank">Release Notes</a></div>
                 <div><a href="/latest" target="_blank">Try Latest Build</a></div>
                 <div><a href={homepage} target="_blank">View on GitHub</a></div>
                 <div><a href={bugsUrl} target="_blank">Report Issue</a></div>

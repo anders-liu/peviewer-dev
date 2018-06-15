@@ -5,7 +5,7 @@ import * as F from "./image-flags";
 import * as E from "./error";
 import * as U from "./utils";
 
-export class PEImage implements L.FileDataProvider {
+export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
     public static load(buf: ArrayBuffer): PEImage {
         return new PEImage(buf);
     }
@@ -206,6 +206,7 @@ export class PEImage implements L.FileDataProvider {
         const offset = mdRoot._offset + sh.Offset.value;
         this.metadataTableHeader = L.loadMetadataTableHeader(this, offset);
         this.fillMetadataTableInfo();
+        this.fillMetadataTableInfoExtra();
 
         return this.metadataTableHeader;
     }
@@ -269,6 +270,463 @@ export class PEImage implements L.FileDataProvider {
                 mdRoot._offset + sh.Offset.value + offset);
         }
     }
+
+    public getMdtModuleItem(rid /* 1-based */: number): S.MdtModuleItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Module, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Module];
+        return L.loadMdtModule(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtTypeRefItem(rid /* 1-based */: number): S.MdtTypeRefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.TypeRef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Module];
+        return L.loadMdtTypeRef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtTypeDefItem(rid /* 1-based */: number): S.MdtTypeDefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.TypeDef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.TypeDef];
+        return L.loadMdtTypeDef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFieldPtrItem(rid /* 1-based */: number): S.MdtFieldPtrItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.FieldPtr, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.FieldPtr];
+        return L.loadMdtFieldPtr(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFieldItem(rid /* 1-based */: number): S.MdtFieldItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Field, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Field];
+        return L.loadMdtField(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMethodPtrItem(rid /* 1-based */: number): S.MdtMethodPtrItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MethodPtr, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MethodPtr];
+        return L.loadMdtMethodPtr(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMethodDefItem(rid /* 1-based */: number): S.MdtMethodDefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MethodDef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MethodDef];
+        return L.loadMdtMethodDef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtParamPtrItem(rid /* 1-based */: number): S.MdtParamPtrItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ParamPtr, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ParamPtr];
+        return L.loadMdtParamPtr(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtParamItem(rid /* 1-based */: number): S.MdtParamItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Param, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Param];
+        return L.loadMdtParam(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtInterfaceImplItem(rid /* 1-based */: number): S.MdtInterfaceImplItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.InterfaceImpl, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.InterfaceImpl];
+        return L.loadMdtInterfaceImpl(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMemberRefItem(rid /* 1-based */: number): S.MdtMemberRefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MemberRef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MemberRef];
+        return L.loadMdtMemberRef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtConstantItem(rid /* 1-based */: number): S.MdtConstantItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Constant, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Constant];
+        return L.loadMdtConstant(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtCustomAttributeItem(rid /* 1-based */: number): S.MdtCustomAttributeItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.CustomAttribute, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.CustomAttribute];
+        return L.loadMdtCustomAttribute(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFieldMarshalItem(rid /* 1-based */: number): S.MdtFieldMarshalItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.FieldMarshal, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.FieldMarshal];
+        return L.loadMdtFieldMarshal(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtDeclSecurityItem(rid /* 1-based */: number): S.MdtDeclSecurityItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.DeclSecurity, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.DeclSecurity];
+        return L.loadMdtDeclSecurity(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtClassLayoutItem(rid /* 1-based */: number): S.MdtClassLayoutItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ClassLayout, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ClassLayout];
+        return L.loadMdtClassLayout(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFieldLayoutItem(rid /* 1-based */: number): S.MdtFieldLayoutItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.FieldLayout, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.FieldLayout];
+        return L.loadMdtFieldLayout(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtStandAloneSigItem(rid /* 1-based */: number): S.MdtStandAloneSigItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.StandAloneSig, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.StandAloneSig];
+        return L.loadMdtStandAloneSig(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtEventMapItem(rid /* 1-based */: number): S.MdtEventMapItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.EventMap, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.EventMap];
+        return L.loadMdtEventMap(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtEventPtrItem(rid /* 1-based */: number): S.MdtEventPtrItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.EventPtr, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.EventPtr];
+        return L.loadMdtEventPtr(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtEventItem(rid /* 1-based */: number): S.MdtEventItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Event, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Event];
+        return L.loadMdtEvent(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtPropertyMapItem(rid /* 1-based */: number): S.MdtPropertyMapItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.PropertyMap, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.PropertyMap];
+        return L.loadMdtPropertyMap(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtPropertyPtrItem(rid /* 1-based */: number): S.MdtPropertyPtrItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.PropertyPtr, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.PropertyPtr];
+        return L.loadMdtPropertyPtr(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtPropertyItem(rid /* 1-based */: number): S.MdtPropertyItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Property, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Property];
+        return L.loadMdtProperty(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMethodSemanticsItem(rid /* 1-based */: number): S.MdtMethodSemanticsItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MethodSemantics, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MethodSemantics];
+        return L.loadMdtMethodSemantics(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMethodImplItem(rid /* 1-based */: number): S.MdtMethodImplItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MethodImpl, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MethodImpl];
+        return L.loadMdtMethodImpl(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtModuleRefItem(rid /* 1-based */: number): S.MdtModuleRefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ModuleRef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ModuleRef];
+        return L.loadMdtModuleRef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtTypeSpecItem(rid /* 1-based */: number): S.MdtTypeSpecItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.TypeSpec, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.TypeSpec];
+        return L.loadMdtTypeSpec(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtImplMapItem(rid /* 1-based */: number): S.MdtImplMapItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ImplMap, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ImplMap];
+        return L.loadMdtImplMap(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFieldRVAItem(rid /* 1-based */: number): S.MdtFieldRVAItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.FieldRVA, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.FieldRVA];
+        return L.loadMdtFieldRVA(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtENCLogItem(rid /* 1-based */: number): S.MdtENCLogItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ENCLog, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ENCLog];
+        return L.loadMdtENCLog(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtENCMapItem(rid /* 1-based */: number): S.MdtENCMapItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ENCMap, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ENCMap];
+        return L.loadMdtENCMap(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyItem(rid /* 1-based */: number): S.MdtAssemblyItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.Assembly, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.Assembly];
+        return L.loadMdtAssembly(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyProcessorItem(rid /* 1-based */: number): S.MdtAssemblyProcessorItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.AssemblyProcessor, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.AssemblyProcessor];
+        return L.loadMdtAssemblyProcessor(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyOSItem(rid /* 1-based */: number): S.MdtAssemblyOSItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.AssemblyOS, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.AssemblyOS];
+        return L.loadMdtAssemblyOS(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyRefItem(rid /* 1-based */: number): S.MdtAssemblyRefItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.AssemblyRef, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.AssemblyRef];
+        return L.loadMdtAssemblyRef(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyRefProcessorItem(rid /* 1-based */: number): S.MdtAssemblyRefProcessorItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.AssemblyRefProcessor, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.AssemblyRefProcessor];
+        return L.loadMdtAssemblyRefProcessor(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtAssemblyRefOSItem(rid /* 1-based */: number): S.MdtAssemblyRefOSItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.AssemblyRefOS, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.AssemblyRefOS];
+        return L.loadMdtAssemblyRefOS(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtFileItem(rid /* 1-based */: number): S.MdtFileItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.File, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.File];
+        return L.loadMdtFile(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtExportedTypeItem(rid /* 1-based */: number): S.MdtExportedTypeItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ExportedType, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ExportedType];
+        return L.loadMdtExportedType(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtManifestResourceItem(rid /* 1-based */: number): S.MdtManifestResourceItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.ManifestResource, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.ManifestResource];
+        return L.loadMdtManifestResource(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtNestedClassItem(rid /* 1-based */: number): S.MdtNestedClassItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.NestedClass, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.NestedClass];
+        return L.loadMdtNestedClass(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtGenericParamItem(rid /* 1-based */: number): S.MdtGenericParamItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.GenericParam, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.GenericParam];
+        return L.loadMdtGenericParam(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtMethodSpecItem(rid /* 1-based */: number): S.MdtMethodSpecItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.MethodSpec, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.MethodSpec];
+        return L.loadMdtMethodSpec(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    public getMdtGenericParamConstraintItem(rid /* 1-based */: number): S.MdtGenericParamConstraintItem | undefined {
+        if (!this.checkMdt(F.MetadataTableIndex.GenericParamConstraint, rid)) {
+            return undefined;
+        }
+
+        const ti = this.metadataTableInfo![F.MetadataTableIndex.GenericParamConstraint];
+        return L.loadMdtGenericParamConstraint(this, ti.baseOffset + ti.rowSize * (rid - 1));
+    }
+
+    //
+    // Metadata sizing.
+    //
+
+    public getHeapSize(heap: F.MetadataHeapSizeID): number {
+        if (this.metadataSizingCache.heap) {
+            return this.metadataSizingCache.heap[heap];
+        }
+
+        const h = this.getMetadataTableHeader();
+        if (!h) return 0;
+
+        const getHeapSizeFunc = (heap: F.MetadataHeapSizeID) =>
+            (h.HeapSizes.value & (1 << heap)) != 0 ? 4 : 2;
+
+        this.metadataSizingCache.heap = [
+            F.MetadataHeapSizeID.String,
+            F.MetadataHeapSizeID.GUID,
+            F.MetadataHeapSizeID.Blob]
+            .map(v => (h.HeapSizes.value & (1 << v)) != 0 ? 4 : 2);
+
+        return this.metadataSizingCache.heap[heap];
+    }
+
+    public getTableIDSize(t: F.MetadataTableIndex): number {
+        const info = this.metadataTableInfo;
+        if (info && info[t]) {
+            return info[t].idSize;
+        } else {
+            return 0;
+        }
+    }
+
+    public getCodedTokenSize(t: F.MetadataCodedTokenIndex): number {
+        if (this.metadataSizingCache.codedToken) {
+            return this.metadataSizingCache.codedToken[t];
+        }
+
+        this.metadataSizingCache.codedToken = F.ctc.map(c => {
+            const maxRows = 0xFFFF >> c.tagSize;
+            for (let tid of c.tables) {
+                if (this.getMetadataTableRows(tid) > maxRows) {
+                    return 4;
+                }
+            }
+            return 2;
+        });
+
+        return this.metadataSizingCache.codedToken[t];
+    }
+
 
     //
     // Utilities.
@@ -382,9 +840,359 @@ export class PEImage implements L.FileDataProvider {
             const valid = U.isSetLong(h.Valid.high, h.Valid.low, id);
             const sorted = U.isSetLong(h.Sorted.high, h.Sorted.low, id);
             const rows = valid ? h.Rows.items[nValid++].value : 0;
-            info[id] = { valid, sorted, rows };
+            info[id] = {
+                valid,
+                sorted,
+                rows,
+                idSize: valid ? (rows > 0xFFFF ? 4 : 2) : 0,
+                baseOffset: 0,
+                rowSize: 0
+            };
         }
         this.metadataTableInfo = info;
+    }
+
+    private fillMetadataTableInfoExtra(): void {
+        const h = this.metadataTableHeader;
+        if (!h) return;
+
+        const ti = this.metadataTableInfo;
+        if (!ti) return;
+
+        const ctid = F.MetadataCodedTokenIndex;
+        const ctsz = this.getCodedTokenSize.bind(this);
+
+        const tid = F.MetadataTableIndex;
+
+        const stringsSize = this.getHeapSize(F.MetadataHeapSizeID.String);
+        const guidSize = this.getHeapSize(F.MetadataHeapSizeID.GUID);
+        const blobSize = this.getHeapSize(F.MetadataHeapSizeID.Blob);
+
+        let baseOffset = h._offset + h._size;
+
+        let tbli = ti[tid.Module];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + 3 * guidSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.ResolutionScope) + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeDef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 * stringsSize + ctsz(ctid.TypeDefOrRef) + ti[tid.Field].idSize + ti[tid.MethodDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Field];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.MethodDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodDef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 + 2 + stringsSize + blobSize + ti[tid.Param].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ParamPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Param].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Param];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.InterfaceImpl];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MemberRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.MemberRefParent) + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Constant];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 1 + 1 + ctsz(ctid.HasConstant) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.CustomAttribute];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.HasCustomAttribute) + ctsz(ctid.CustomAttributeType) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldMarshal];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.HasFieldMarshall) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.DeclSecurity];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ctsz(ctid.HasDeclSecurity) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ClassLayout];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 4 + ti[tid.TypeDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldLayout];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.StandAloneSig];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.EventMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ti[tid.Event].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.EventPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Event].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Event];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.PropertyMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + ti[tid.Property].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.PropertyPtr];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.Property].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Property];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodSemantics];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ti[tid.MethodDef].idSize + ctsz(ctid.HasSemantics);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodImpl];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.TypeDef].idSize + 2 * ctsz(ctid.MethodDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ModuleRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.TypeSpec];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ImplMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + ctsz(ctid.MemberForwarded) + stringsSize + ti[tid.ModuleRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.FieldRVA];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.Field].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ENCLog];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ENCMap];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.Assembly];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 2 + 2 + 2 + 2 + 4 + blobSize + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyProcessor];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyOS];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 4;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRef];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + 2 + 2 + 4 + 2 * blobSize + 2 * stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRefProcessor];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + ti[tid.AssemblyRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.AssemblyRefOS];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 4 + ti[tid.AssemblyRef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.File];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + stringsSize + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ExportedType];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + 2 * stringsSize + ctsz(ctid.Implementation);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.ManifestResource];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 4 + 4 + stringsSize + ctsz(ctid.Implementation);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.NestedClass];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 * ti[tid.TypeDef].idSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.GenericParam];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = 2 + 2 + ctsz(ctid.TypeOrMethodDef) + stringsSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.MethodSpec];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ctsz(ctid.MethodDefOrRef) + blobSize;
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+
+        tbli = ti[tid.GenericParamConstraint];
+        if (tbli.valid) {
+            tbli.baseOffset = baseOffset;
+            tbli.rowSize = ti[tid.GenericParam].idSize + ctsz(ctid.TypeDefOrRef);
+        }
+        baseOffset += tbli.rows * tbli.rowSize;
+    }
+
+    private checkMdt(tid: F.MetadataTableIndex, rid: number): boolean {
+        if (!this.metadataTableInfo) {
+            return false;
+        }
+
+        const ti = this.metadataTableInfo[tid];
+        return ti != null && ti.valid && rid > 0 && rid <= ti.rows;
     }
 
     private readonly data: DataView;
@@ -403,4 +1211,13 @@ export class PEImage implements L.FileDataProvider {
 
     private metadataTableHeader?: S.MetadataTableHeader;
     private metadataTableInfo?: A.MetadataTableInfo;
+
+    private metadataSizingCache: {
+        heap?: {
+            [key: number /* F.MetadataHeapSizeID */]: number;
+        };
+        codedToken?: {
+            [key: number /* F.MetadataCodedTokenIndex */]: number;
+        }
+    } = {};
 }

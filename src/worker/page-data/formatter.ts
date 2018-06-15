@@ -25,7 +25,7 @@ export function formatU4Hex(d: number): string {
 }
 
 export function formatHexDec(d: number): string {
-    return `${d.toString(16).toUpperCase()}h (${d})`;
+    return `${d.toString(16).toUpperCase()}h (${d.toLocaleString()})`;
 }
 
 export function formatDec(v: number): string {

@@ -1,4 +1,3 @@
-import * as L from "./loader";
 import * as F from "./image-flags";
 
 //
@@ -224,4 +223,283 @@ export interface MetadataUSItem extends FileData {
 export interface MetadataBlobItem extends FileData {
     Size: CompressedUIntField;
     Value: Field;
+}
+
+export interface MdtRidField extends UIntField { }
+export interface MdsStringsField extends UIntField { }
+export interface MdsGuidField extends UIntField { }
+export interface MdsBlobField extends UIntField { }
+export interface MdCodedTokenField extends UIntField {
+    tid: F.MetadataTableIndex;
+    rid: number;
+}
+export interface MdTokenField extends UIntField {
+    tid: F.MetadataTableIndex;
+    rid: number;
+}
+
+export interface MdtModuleItem extends FileData {
+    Generation: U2Field;
+    Name: MdsStringsField;
+    Mvid: MdsGuidField;
+    EncId: MdsGuidField;
+    EncBaseId: MdsGuidField;
+}
+
+export interface MdtTypeRefItem extends FileData {
+    ResolutionScope: MdCodedTokenField;  // ResolutionScope
+    Name: MdsStringsField;
+    Namespace: MdsStringsField;
+}
+
+export interface MdtTypeDefItem extends FileData {
+    Flags: U4EnumField<F.CorTypeAttr>;
+    Name: MdsStringsField;
+    Namespace: MdsStringsField;
+    Extends: MdCodedTokenField;  // TypeDefOrRef
+    FieldList: MdtRidField;  // Field
+    MethodList: MdtRidField;  // MethodDef
+}
+
+export interface MdtFieldPtrItem extends FileData {
+    Field: MdtRidField;
+}
+
+export interface MdtFieldItem extends FileData {
+    Flags: U2EnumField<F.CorFieldAttr>;
+    Name: MdsStringsField;
+    Signature: MdsBlobField;
+}
+
+export interface MdtMethodPtrItem extends FileData {
+    Method: MdtRidField;
+}
+
+export interface MdtMethodDefItem extends FileData {
+    RVA: U4Field;
+    ImplFlags: U2EnumField<F.CorMethodImpl>;
+    Flags: U2EnumField<F.CorMethodAttr>;
+    Name: MdsStringsField;
+    Signature: MdsBlobField;
+    ParamList: MdtRidField;  // Param
+}
+
+export interface MdtParamPtrItem extends FileData {
+    Param: MdtRidField;
+}
+
+export interface MdtParamItem extends FileData {
+    Flags: U2EnumField<F.CorParamAttr>;
+    Sequence: U2Field;
+    Name: MdsStringsField;
+}
+
+export interface MdtInterfaceImplItem extends FileData {
+    Class: MdtRidField;  // TypeDef
+    Interface: MdCodedTokenField;  // TypeDefOrRef
+}
+
+export interface MdtMemberRefItem extends FileData {
+    Class: MdCodedTokenField;  // MemberRefParent
+    Name: MdsStringsField;
+    Signature: MdsBlobField;
+}
+
+export interface MdtConstantItem extends FileData {
+    Type: U1EnumField<F.CorElementType>;
+    PaddingZero: U1Field;
+    Parent: MdCodedTokenField;  // HasConstant
+    Value: MdsBlobField;
+}
+
+export interface MdtCustomAttributeItem extends FileData {
+    Parent: MdCodedTokenField;  // HasCustomAttribute
+    Type: MdCodedTokenField;  // CustomAttributeType
+    Value: MdsBlobField;
+}
+
+export interface MdtFieldMarshalItem extends FileData {
+    Parent: MdCodedTokenField;  // HasFieldMarshal
+    NativeType: MdsBlobField;
+}
+
+export interface MdtDeclSecurityItem extends FileData {
+    Action: U2EnumField<F.CorDeclSecurity>;
+    Parent: MdCodedTokenField;  // HasDeclSecurity
+    PermissionSet: MdsBlobField;
+}
+
+export interface MdtClassLayoutItem extends FileData {
+    PackingSize: U2Field;
+    ClassSize: U4Field;
+    Parent: MdtRidField;  // TypeDef
+}
+
+export interface MdtFieldLayoutItem extends FileData {
+    OffSet: U4Field;
+    Field: MdtRidField;  // Field
+}
+
+export interface MdtStandAloneSigItem extends FileData {
+    Signature: MdsBlobField;
+}
+
+export interface MdtEventMapItem extends FileData {
+    Parent: MdtRidField;  // TypeDef
+    EventList: MdtRidField;  // Event
+}
+
+export interface MdtEventPtrItem extends FileData {
+    Event: MdtRidField;
+}
+
+export interface MdtEventItem extends FileData {
+    EventFlags: U2EnumField<F.CorEventAttr>;
+    Name: MdsStringsField;
+    EventType: MdCodedTokenField;  // TypeDefOrRef
+}
+
+export interface MdtPropertyMapItem extends FileData {
+    Parent: MdtRidField;  // TypeDef
+    PropertyList: MdtRidField;  // Property
+}
+
+export interface MdtPropertyPtrItem extends FileData {
+    Property: MdtRidField;
+}
+
+export interface MdtPropertyItem extends FileData {
+    PropFlags: U2EnumField<F.CorPropertyAttr>;
+    Name: MdsStringsField;
+    Type: MdsBlobField;
+}
+
+export interface MdtMethodSemanticsItem extends FileData {
+    Semantic: U2EnumField<F.CorMethodSemanticsAttr>;
+    Method: MdtRidField;  // MethodDef
+    Association: MdCodedTokenField;  // HasSemantics
+}
+
+export interface MdtMethodImplItem extends FileData {
+    Class: MdtRidField;  // TypeDef
+    MethodBody: MdCodedTokenField;  // MethodDefOrRef
+    MethodDeclaration: MdCodedTokenField;  // MethodDefOrRef
+}
+
+export interface MdtModuleRefItem extends FileData {
+    Name: MdsStringsField;
+}
+
+export interface MdtTypeSpecItem extends FileData {
+    Signature: MdsBlobField;
+}
+
+export interface MdtImplMapItem extends FileData {
+    MappingFlags: U2EnumField<F.CorPinvokeMap>;
+    MemberForwarded: MdCodedTokenField;  // MemberForwarded
+    ImportName: MdsStringsField;
+    ImportScope: MdtRidField;  // ModuleRef
+}
+
+export interface MdtFieldRVAItem extends FileData {
+    RVA: U4Field;
+    Field: MdtRidField;  // Field
+}
+
+export interface MdtENCLogItem extends FileData {
+    Token: U4Field;
+    FuncCode: U4Field;
+}
+
+export interface MdtENCMapItem extends FileData {
+    Token: U4Field;
+}
+
+export interface MdtAssemblyItem extends FileData {
+    HashAlgId: U4EnumField<F.AssemblyHashAlgorithm>;
+    MajorVersion: U2Field;
+    MinorVersion: U2Field;
+    BuildNumber: U2Field;
+    RevisionNumber: U2Field;
+    Flags: U4EnumField<F.CorAssemblyFlags>;
+    PublicKey: MdsBlobField;
+    Name: MdsStringsField;
+    Locale: MdsStringsField;
+}
+
+export interface MdtAssemblyProcessorItem extends FileData {
+    Processor: U4Field;
+}
+
+export interface MdtAssemblyOSItem extends FileData {
+    OSPlatformID: U4Field;
+    OSMajorVersion: U4Field;
+    OSMinorVersion: U4Field;
+}
+
+export interface MdtAssemblyRefItem extends FileData {
+    MajorVersion: U2Field;
+    MinorVersion: U2Field;
+    BuildNumber: U2Field;
+    RevisionNumber: U2Field;
+    Flags: U4EnumField<F.CorAssemblyFlags>;
+    PublicKeyOrToken: MdsBlobField;
+    Name: MdsStringsField;
+    Locale: MdsStringsField;
+    HashValue: MdsBlobField;
+}
+
+export interface MdtAssemblyRefProcessorItem extends FileData {
+    Processor: U4Field;
+    AssemblyRef: MdtRidField;
+}
+
+export interface MdtAssemblyRefOSItem extends FileData {
+    OSPlatformID: U4Field;
+    OSMajorVersion: U4Field;
+    OSMinorVersion: U4Field;
+    AssemblyRef: MdtRidField;
+}
+
+export interface MdtFileItem extends FileData {
+    Flags: U4EnumField<F.CorFileFlags>;
+    Name: MdsStringsField;
+    HashValue: MdsBlobField;
+}
+
+export interface MdtExportedTypeItem extends FileData {
+    Flags: U4EnumField<F.CorTypeAttr>;
+    TypeDefId: U4Field;
+    TypeName: MdsStringsField;
+    TypeNamespace: MdsStringsField;
+    Implementation: MdCodedTokenField;  // Implementation
+}
+
+export interface MdtManifestResourceItem extends FileData {
+    Offset: U4Field;
+    Flags: U4EnumField<F.CorManifestResourceFlags>;
+    Name: MdsStringsField;
+    Implementation: MdCodedTokenField;  // Implementation
+}
+
+export interface MdtNestedClassItem extends FileData {
+    NestedClass: MdtRidField;  // TypeDef
+    EnclosingClass: MdtRidField;  // TypeDef
+}
+
+export interface MdtGenericParamItem extends FileData {
+    Number: U2Field;
+    Flags: U2EnumField<F.CorGenericParamAttr>;
+    Owner: MdCodedTokenField;  // TypeOrMethodDef
+    Name: MdsStringsField;
+}
+
+export interface MdtMethodSpecItem extends FileData {
+    Method: MdCodedTokenField;  // MethodDefOrRef
+    Instantiation: MdsBlobField;
+}
+
+export interface MdtGenericParamConstraintItem extends FileData {
+    Owner: MdtRidField;  // GenericParam
+    Constraint: MdCodedTokenField;  // TypeDefOrRef
 }
