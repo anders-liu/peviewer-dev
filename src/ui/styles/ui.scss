@@ -51,16 +51,21 @@ strong, .strong {
     background: $color-bg-mid;
     padding: $size-pad-lg;
 
-    .pg-title {
+    .pg-finame {
         display: inline-block;
         margin: 0 0 $size-pad-mid 0;
         font-size: $size-txt-lg;
+        &:not(:last-child) {
+            padding-right: $size-pad-lg;
+            border-right: 2px solid $color-bg-mid-dk;
+        }
     }
 
-    .pg-finfo {
+    .pg-title {
+        @include txt-normal;
         display: inline-block;
-        vertical-align: baseline;
-        margin-left: 2 * $size-pad-lg;
+        margin-left: $size-pad-lg;
+        font-size: $size-txt-mid-lg;
     }
 }
 

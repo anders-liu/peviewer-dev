@@ -125,9 +125,9 @@ declare namespace W {
         MDT_LIST = "Metadata Table List",
 
         MDS_STRINGS = "#String Stream",
-        MDS_US = "#US",
-        MDS_GUID = "#GUID",
-        MDS_BLOB = "#Blob",
+        MDS_US = "#US Stream",
+        MDS_GUID = "#GUID Stream",
+        MDS_BLOB = "#Blob Stream",
     }
 
     export interface PageData {

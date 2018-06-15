@@ -6,16 +6,13 @@ import { NavLink } from "./nav-link";
 
 interface ConnectedProps {
     fileInfo?: S.FileInfo;
+    pageData?: W.PageData;
     navList: W.NavData[];
 }
 
 function mapStateToProps(state: S.AppState): ConnectedProps {
-    const { fileInfo, navList } = state;
-
-    return {
-        fileInfo,
-        navList
-    };
+    const { fileInfo, pageData, navList } = state;
+    return { fileInfo, pageData, navList };
 }
 
 class PageHeaderClass extends React.Component<ConnectedProps> {
@@ -24,7 +21,7 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
 
         return (
             <header id="app-header">
-                {fileInfo ? this.renderFileInfo(fileInfo) : this.renderWelcome()}
+                {fileInfo ? this.renderFileInfo() : this.renderWelcome()}
                 {!fileInfo && (
                     <div>PE Viewer is a simple single-page web application for viewing content of a PE (Portable Executable) file, which is the executabule file on Windows operating system and Microsoft .NET.</div>
                 )}
@@ -35,17 +32,19 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
     private renderWelcome(): JSX.Element {
         return (
             <div className="pg-title-line">
-                <h1 className="pg-title">Welcome to PE Viewer.</h1>
+                <h1 className="pg-finame">Welcome to PE Viewer.</h1>
             </div>
         );
     }
 
-    private renderFileInfo(fileInfo: S.FileInfo): JSX.Element {
-        const { name, size, is32Bit, isManaged } = fileInfo;
+    private renderFileInfo(): JSX.Element {
+        const { fileInfo } = this.props;
+        const { name, size, is32Bit, isManaged } = fileInfo!;
 
         return (
             <div className="pg-title-line">
-                <h1 className="pg-title">{name}</h1>
+                <h1 className="pg-finame">{name}</h1>
+                {this.renderPageTitle()}
                 <div className="pg-finfo">
                     <span>{size.toLocaleString()} bytes.</span>
 
@@ -65,6 +64,16 @@ class PageHeaderClass extends React.Component<ConnectedProps> {
                 </div>
             </div>
         );
+    }
+
+    private renderPageTitle(): JSX.Element | null {
+        const { pageData } = this.props;
+
+        if (pageData && pageData.nav && pageData.nav.title) {
+            return <h1 className="pg-title">{pageData.nav.title}</h1>;
+        } else {
+            return null;
+        }
     }
 }
 
