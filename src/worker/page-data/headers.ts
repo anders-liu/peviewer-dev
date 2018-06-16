@@ -78,13 +78,13 @@ function generateFileHeader(pe: PEImage): W.SimpleStruct {
     if (!h) return s;
 
     s.items = [
-        FM.formatU2Field("Machine", h.Machine),
+        FM.formatEnumField("Machine", h.Machine, F.ImageFileMachine),
         FM.formatU2Field("NumberOfSections", h.NumberOfSections, true),
         FM.formatU4Field("TimeDateStamp", h.TimeDateStamp),
         FM.formatU4Field("PointerToSymbolTable", h.PointerToSymbolTable),
         FM.formatU4Field("NumberOfSymbols", h.NumberOfSymbols, true),
         FM.formatU2Field("SizeOfOptionalHeader", h.SizeOfOptionalHeader, true),
-        FM.formatU2Field("Characteristics", h.Characteristics),
+        FM.formatEnumField("Characteristics", h.Characteristics, F.ImageFile),
     ];
 
     return s;
@@ -144,8 +144,8 @@ function fillOptionalHeader32Fields(s: W.GroupedStruct, h: S.ImageOptionalHeader
             FM.formatU4Field("SizeOfImage", h.SizeOfImage, true),
             FM.formatU4Field("SizeOfHeaders", h.SizeOfHeaders, true),
             FM.formatU4Field("CheckSum", h.CheckSum),
-            FM.formatU2Field("Subsystem", h.Subsystem),
-            FM.formatU2Field("DllCharacteristics", h.DllCharacteristics),
+            FM.formatEnumField("Subsystem", h.Subsystem, F.ImageSubsystem),
+            FM.formatEnumField("DllCharacteristics", h.DllCharacteristics, F.ImageDllCharacteristics),
             FM.formatU4Field("SizeOfStackReserve", h.SizeOfStackReserve, true),
             FM.formatU4Field("SizeOfStackCommit", h.SizeOfStackCommit, true),
             FM.formatU4Field("SizeOfHeapReserve", h.SizeOfHeapReserve, true),
@@ -185,8 +185,8 @@ function fillOptionalHeader64Fields(s: W.GroupedStruct, h: S.ImageOptionalHeader
             FM.formatU4Field("SizeOfImage", h.SizeOfImage, true),
             FM.formatU4Field("SizeOfHeaders", h.SizeOfHeaders, true),
             FM.formatU4Field("CheckSum", h.CheckSum),
-            FM.formatU2Field("Subsystem", h.Subsystem),
-            FM.formatU2Field("DllCharacteristics", h.DllCharacteristics),
+            FM.formatEnumField("Subsystem", h.Subsystem, F.ImageSubsystem),
+            FM.formatEnumField("DllCharacteristics", h.DllCharacteristics, F.ImageDllCharacteristics),
             FM.formatU8Field("SizeOfStackReserve", h.SizeOfStackReserve, true),
             FM.formatU8Field("SizeOfStackCommit", h.SizeOfStackCommit, true),
             FM.formatU8Field("SizeOfHeapReserve", h.SizeOfHeapReserve, true),
@@ -238,7 +238,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
             FM.formatU4Field("PointerToLinenumbers", v.PointerToLinenumbers),
             FM.formatU2Field("NumberOfRelocations", v.NumberOfRelocations, true),
             FM.formatU2Field("NumberOfLinenumbers", v.NumberOfLinenumbers, true),
-            FM.formatU4Field("Characteristics", v.Characteristics),
+            FM.formatEnumField("Characteristics", v.Characteristics, F.ImageSection),
         ]
     }));
 

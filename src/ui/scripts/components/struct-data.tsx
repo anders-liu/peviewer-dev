@@ -45,13 +45,47 @@ function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
             <td>{rawData.map((v, i) => <div className="td-line" key={i}>{v}</div>)}</td>
             <td>{name}</td>
             <td className="wrap">{value}</td>
-            <td></td>
+            <td>{renderDescriptions(item.descriptions)}</td>
         </tr>
     );
 }
 
 function renderStructGroupTitleRow(title: string, key: string): JSX.Element | null {
     return title ? (<tr key={key} className="st-grphdr"><th colSpan={6}>{title}</th></tr>) : null;
+}
+
+function renderDescriptions(desc?: W.ItemDescription[]): JSX.Element | null {
+    return desc == null ? null : (
+        <React.Fragment>
+            {desc.map((v, i) => renderDescription(v, i))}
+        </React.Fragment>
+    );
+}
+
+function renderDescription(desc: W.ItemDescription, key: number): JSX.Element | null {
+    switch (desc.type) {
+        case W.ItemDescriptionType.STR:
+            return <div key={key} className="st-des st-des-str">{(desc as W.ItemSimpleDescription).content}</div>;
+        case W.ItemDescriptionType.GRPL:
+            return renderDescGrpl(desc as W.ItemGroupedLinesDescription, key);
+        default:
+            return null;
+    }
+}
+
+function renderDescGrpl(desc: W.ItemGroupedLinesDescription, key: number): JSX.Element {
+    return (
+        <div key={key} className="st-des st-des-grpl">
+            {desc.groups.map((v, i) => (
+                <div key={i} className="st-des-grp">
+                    {v.title && <div className="st-des-grp-t">{v.title}</div>}
+                    {v.lines.map((vl, il) => (
+                        <div key={il} className="st-des-grp-l">{vl}</div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
 }
 
 class StructTable extends React.Component {

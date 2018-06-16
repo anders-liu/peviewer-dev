@@ -22,6 +22,8 @@ export enum ImageFile {
     IMAGE_FILE_UP_SYSTEM_ONLY = 0x4000,
     IMAGE_FILE_BYTES_REVERSED_HI = 0x8000,
 }
+(ImageFile as any).__NAME__ = "ImageFile";
+(ImageFile as any).__FLAG__ = true;
 
 export enum ImageFileMachine {
     IMAGE_FILE_MACHINE_UNKNOWN = 0,
@@ -57,6 +59,7 @@ export enum ImageFileMachine {
     IMAGE_FILE_MACHINE_ARM64 = 0xAA64,
     IMAGE_FILE_MACHINE_CEE = 0xC0EE,
 }
+(ImageFileMachine as any).__NAME__ = "ImageFileMachine";
 
 export enum ImageSubsystem {
     IMAGE_SUBSYSTEM_UNKNOWN = 0,
@@ -75,6 +78,7 @@ export enum ImageSubsystem {
     IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION = 16,
     IMAGE_SUBSYSTEM_XBOX_CODE_CATALOG = 17,
 }
+(ImageSubsystem as any).__NAME__ = "ImageSubsystem";
 
 export enum ImageDllCharacteristics {
     IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA = 0x0020,
@@ -89,6 +93,8 @@ export enum ImageDllCharacteristics {
     IMAGE_DLLCHARACTERISTICS_GUARD_CF = 0x4000,
     IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE = 0x8000,
 }
+(ImageDllCharacteristics as any).__NAME__ = "ImageDllCharacteristics";
+(ImageDllCharacteristics as any).__FLAG__ = true;
 
 export enum ImageDirectoryEntry {
     IMAGE_DIRECTORY_ENTRY_EXPORT = 0,
@@ -107,6 +113,7 @@ export enum ImageDirectoryEntry {
     IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT = 13,
     IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR = 14,
 }
+(ImageDirectoryEntry as any).__NAME__ = "ImageDirectoryEntry";
 
 export const IMAGE_NUMBEROF_DIRECTORY_ENTRIES = 16;
 
@@ -130,20 +137,21 @@ export enum ImageSection {
     IMAGE_SCN_MEM_LOCKED = 0x00040000,
     IMAGE_SCN_MEM_PRELOAD = 0x00080000,
 
-    IMAGE_SCN_ALIGN_1BYTES = 0x00100000,
-    IMAGE_SCN_ALIGN_2BYTES = 0x00200000,
-    IMAGE_SCN_ALIGN_4BYTES = 0x00300000,
-    IMAGE_SCN_ALIGN_8BYTES = 0x00400000,
-    IMAGE_SCN_ALIGN_16BYTES = 0x00500000,
-    IMAGE_SCN_ALIGN_32BYTES = 0x00600000,
-    IMAGE_SCN_ALIGN_64BYTES = 0x00700000,
-    IMAGE_SCN_ALIGN_128BYTES = 0x00800000,
-    IMAGE_SCN_ALIGN_256BYTES = 0x00900000,
-    IMAGE_SCN_ALIGN_512BYTES = 0x00A00000,
-    IMAGE_SCN_ALIGN_1024BYTES = 0x00B00000,
-    IMAGE_SCN_ALIGN_2048BYTES = 0x00C00000,
-    IMAGE_SCN_ALIGN_4096BYTES = 0x00D00000,
-    IMAGE_SCN_ALIGN_8192BYTES = 0x00E00000,
+    al__Mask__IMAGE_SCN_ALIGN = 0x00F00000,
+    al_IMAGE_SCN_ALIGN_1BYTES = 0x00100000,
+    al_IMAGE_SCN_ALIGN_2BYTES = 0x00200000,
+    al_IMAGE_SCN_ALIGN_4BYTES = 0x00300000,
+    al_IMAGE_SCN_ALIGN_8BYTES = 0x00400000,
+    al_IMAGE_SCN_ALIGN_16BYTES = 0x00500000,
+    al_IMAGE_SCN_ALIGN_32BYTES = 0x00600000,
+    al_IMAGE_SCN_ALIGN_64BYTES = 0x00700000,
+    al_IMAGE_SCN_ALIGN_128BYTES = 0x00800000,
+    al_IMAGE_SCN_ALIGN_256BYTES = 0x00900000,
+    al_IMAGE_SCN_ALIGN_512BYTES = 0x00A00000,
+    al_IMAGE_SCN_ALIGN_1024BYTES = 0x00B00000,
+    al_IMAGE_SCN_ALIGN_2048BYTES = 0x00C00000,
+    al_IMAGE_SCN_ALIGN_4096BYTES = 0x00D00000,
+    al_IMAGE_SCN_ALIGN_8192BYTES = 0x00E00000,
 
     IMAGE_SCN_LNK_NRELOC_OVFL = 0x01000000,
     IMAGE_SCN_MEM_DISCARDABLE = 0x02000000,
@@ -156,6 +164,8 @@ export enum ImageSection {
 
     IMAGE_SCN_SCALE_INDEX = 0x00000001,
 }
+(ImageSection as any).__NAME__ = "ImageSection";
+(ImageSection as any).__FLAG__ = true;
 
 //
 // Metadata structures.
@@ -170,6 +180,8 @@ export enum ComImageFlags {
     COMIMAGE_FLAGS_TRACKDEBUGDATA = 0x00010000,
     COMIMAGE_FLAGS_32BITPREFERRED = 0x00020000,
 }
+(ComImageFlags as any).__NAME__ = "ComImageFlags";
+(ComImageFlags as any).__FLAG__ = true;
 
 export const MetadataSignature = 0x424A5342;
 
@@ -236,6 +248,7 @@ export enum MetadataTableIndex {
 
     String = 0x70,
 }
+(MetadataTableIndex as any).__NAME__ = "MetadataTableIndex";
 
 export const NumberOfMdTables = 45;
 
@@ -254,6 +267,7 @@ export enum MetadataCodedTokenIndex {
     ResolutionScope = 11,
     TypeOrMethodDef = 12,
 }
+(MetadataCodedTokenIndex as any).__NAME__ = "MetadataCodedTokenIndex";
 
 export interface MetadataCodedTokenInfo {
     tagSize: number;
@@ -364,11 +378,12 @@ export enum AssemblyHashAlgorithm {
     MD5 = 0x8003,  // Reserved
     SHA1 = 0x8004,
 }
+(AssemblyHashAlgorithm as any).__NAME__ = "AssemblyHashAlgorithm";
 
 export enum CorAssemblyFlags {
     PublicKey = 0x0001,
 
-    pa__Mask = 0x0070,
+    pa__Mask__ProcessorArchitecture = 0x0070,
     pa_ProcessorArchitectureNone = 0x0000,
     pa_ProcessorArchitectureMsil = 0x0010,
     pa_ProcessorArchitectureX86 = 0x0020,
@@ -382,14 +397,18 @@ export enum CorAssemblyFlags {
 
     Retargetable = 0x0100,
 }
+(CorAssemblyFlags as any).__NAME__ = "CorAssemblyFlags";
+(CorAssemblyFlags as any).__FLAG__ = true;
 
 export enum CorEventAttr {
     SpecialName = 0x0200,
     RtSpecialName = 0x0400,
 }
+(CorEventAttr as any).__NAME__ = "CorEventAttr";
+(CorEventAttr as any).__FLAG__ = true;
 
 export enum CorFieldAttr {
-    fa__Mask = 0x0007,
+    fa__Mask__FieldAccess = 0x0007,
     fa_PrivateScope = 0x0000,
     fa_Private = 0x0001,
     fa_FamAndAssem = 0x0002,
@@ -412,14 +431,18 @@ export enum CorFieldAttr {
     HasDefault = 0x8000,
     HasFieldRva = 0x0100,
 }
+(CorFieldAttr as any).__NAME__ = "CorFieldAttr";
+(CorFieldAttr as any).__FLAG__ = true;
 
 export enum CorFileFlags {
     ContainsMetaData = 0x0000,
     ContainsNoMetaData = 0x0001,
 }
+(CorFileFlags as any).__NAME__ = "CorFileFlags";
+(CorFileFlags as any).__FLAG__ = true;
 
 export enum CorGenericParamAttr {
-    v__Mask = 0x0003,
+    v__Mask__Variance = 0x0003,
     v_NonVariant = 0x0000,
     v_Covariant = 0x0001,
     v_Contravariant = 0x0002,
@@ -429,43 +452,49 @@ export enum CorGenericParamAttr {
     NotNullableValueTypeConstraint = 0x0008,
     DefaultConstructorConstraint = 0x0010,
 }
+(CorGenericParamAttr as any).__NAME__ = "CorGenericParamAttr";
+(CorGenericParamAttr as any).__FLAG__ = true;
 
 export enum CorPinvokeMap {
     NoMangle = 0x0001,
-    cs__Mask = 0x0006,
+    cs__Mask__CharSet = 0x0006,
     cs_CharSetNotSpec = 0x0000,
     cs_CharSetAnsi = 0x0002,
     cs_CharSetUnicode = 0x0004,
     cs_CharSetAuto = 0x0006,
 
-    bf__Mask = 0x0030,
+    bf__Mask__BestFit = 0x0030,
     bf_BestFitUseAssem = 0x0000,
     bf_BestFitEnabled = 0x0010,
     bf_BestFitDisabled = 0x0020,
 
-    touc__Mask = 0x3000,
+    touc__Mask__ThrowOnUnmappableChar = 0x3000,
     touc_ThrowOnUnmappableCharUseAssem = 0x0000,
     touc_ThrowOnUnmappableCharEnabled = 0x1000,
     touc_ThrowOnUnmappableCharDisabled = 0x2000,
 
     SupportsLastError = 0x0040,
 
-    cc__Mask = 0x0700,
+    cc__Mask__CallConv = 0x0700,
     cc_CallConvWinapi = 0x0100,
     cc_CallConvCdecl = 0x0200,
     cc_CallConvStdcall = 0x0300,
     cc_CallConvThiscall = 0x0400,
     cc_CallConvFastcall = 0x0500,
 }
+(CorPinvokeMap as any).__NAME__ = "CorPinvokeMap";
+(CorPinvokeMap as any).__FLAG__ = true;
 
 export enum CorManifestResourceFlags {
-    v__Mask = 0x0007,
+    v__Mask__Visibility = 0x0007,
     v_Public = 0x0001,
     v_Private = 0x0002,
 }
+(CorManifestResourceFlags as any).__NAME__ = "CorManifestResourceFlags";
+(CorManifestResourceFlags as any).__FLAG__ = true;
 
 export enum CorMethodAttr {
-    ma__Mask = 0x0007,
+    ma__Mask__MemberAccess = 0x0007,
     ma_PrivateScope = 0x0000,
     ma_Private = 0x0001,
     ma_FamAndAssem = 0x0002,
@@ -479,7 +508,7 @@ export enum CorMethodAttr {
     Virtual = 0x0040,
     HideBySig = 0x0080,
 
-    vl__Mask = 0x0100,
+    vl__Mask__VtableLayout = 0x0100,
     vl_ReuseSlot = 0x0000,
     vl_NewSlot = 0x0100,
 
@@ -494,15 +523,17 @@ export enum CorMethodAttr {
     HasSecurity = 0x4000,
     RequireSecObject = 0x8000,
 }
+(CorMethodAttr as any).__NAME__ = "CorMethodAttr";
+(CorMethodAttr as any).__FLAG__ = true;
 
 export enum CorMethodImpl {
-    ct__Mask = 0x0003,
+    ct__Mask__CodeType = 0x0003,
     ct_IL = 0x0000,
     ct_Native = 0x0001,
     ct_OptIL = 0x0002,
     ct_Runtime = 0x0003,
 
-    m__Mask = 0x0004,
+    m__Mask__Managed = 0x0004,
     m_Unmanaged = 0x0004,
     m_Managed = 0x0000,
 
@@ -514,6 +545,8 @@ export enum CorMethodImpl {
     Synchronized = 0x0020,
     NoInlining = 0x0008,
 }
+(CorMethodImpl as any).__NAME__ = "CorMethodImpl";
+(CorMethodImpl as any).__FLAG__ = true;
 
 export enum CorMethodSemanticsAttr {
     Setter = 0x0001,
@@ -523,6 +556,8 @@ export enum CorMethodSemanticsAttr {
     RemoveOn = 0x0010,
     Fire = 0x0020,
 }
+(CorMethodSemanticsAttr as any).__NAME__ = "CorMethodSemanticsAttr";
+(CorMethodSemanticsAttr as any).__FLAG__ = true;
 
 export enum CorParamAttr {
     In = 0x0001,
@@ -534,6 +569,8 @@ export enum CorParamAttr {
 
     Unused = 0xcfe0,
 }
+(CorParamAttr as any).__NAME__ = "CorParamAttr";
+(CorParamAttr as any).__FLAG__ = true;
 
 export enum CorPropertyAttr {
     SpecialName = 0x0200,
@@ -543,9 +580,11 @@ export enum CorPropertyAttr {
 
     Unused = 0xe9ff,
 }
+(CorPropertyAttr as any).__NAME__ = "CorPropertyAttr";
+(CorPropertyAttr as any).__FLAG__ = true;
 
 export enum CorTypeAttr {
-    v__Mask = 0x00000007,
+    v__Mask__Visibility = 0x00000007,
     v_NotPublic = 0x00000000,
     v_Public = 0x00000001,
     v_NestedPublic = 0x00000002,
@@ -555,12 +594,12 @@ export enum CorTypeAttr {
     v_NestedFamAndAssem = 0x00000006,
     v_NestedFamOrAssem = 0x00000007,
 
-    l__Mask = 0x00000018,
+    l__Mask__Layout = 0x00000018,
     l_AutoLayout = 0x00000000,
     l_SequentialLayout = 0x00000008,
     l_ExplicitLayout = 0x00000010,
 
-    cs__Mask = 0x00000060,
+    cs__Mask__Semantics = 0x00000060,
     cs_Class = 0x00000000,
     cs_Interface = 0x00000020,
 
@@ -572,7 +611,7 @@ export enum CorTypeAttr {
     Serializable = 0x00002000,
     WindowsRuntime = 0x00004000,
 
-    sf__Mask = 0x00030000,
+    sf__Mask__StringFormat = 0x00030000,
     sf_AnsiClass = 0x00000000,
     sf_UnicodeClass = 0x00010000,
     sf_AutoClass = 0x00020000,
@@ -585,6 +624,8 @@ export enum CorTypeAttr {
     RtSpecialName = 0x00000800,
     HasSecurity = 0x00040000,
 }
+(CorTypeAttr as any).__NAME__ = "CorTypeAttr";
+(CorTypeAttr as any).__FLAG__ = true;
 
 export enum CorDeclSecurity {
     ActionNil = 0x0000,
@@ -604,6 +645,7 @@ export enum CorDeclSecurity {
     NonCasLinkDemand = 0x000e,
     NonCasInheritance = 0x000f,
 }
+(CorDeclSecurity as any).__NAME__ = "CorDeclSecurity";
 
 export enum CorElementType {
     End = 0x00,
@@ -650,3 +692,4 @@ export enum CorElementType {
     R4HFA = 0x06 | Modifier,
     R8HFA = 0x07 | Modifier,
 }
+(CorElementType as any).__NAME__ = "CorElementType";

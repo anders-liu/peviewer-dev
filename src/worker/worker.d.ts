@@ -158,6 +158,7 @@ declare namespace W {
 
     export const enum ItemDescriptionType {
         STR = "STR",
+        GRPL = "GRPL",
         NAV = "NAV",
     }
 
@@ -167,6 +168,13 @@ declare namespace W {
 
     export interface ItemSimpleDescription extends ItemDescription {
         content: string;
+    }
+
+    export interface ItemGroupedLinesDescription extends ItemDescription {
+        groups: {
+            title?: string;
+            lines: string[];
+        }[]
     }
 
     export interface ItemNavDescription extends ItemDescription {
