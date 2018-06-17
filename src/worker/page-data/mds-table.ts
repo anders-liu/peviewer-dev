@@ -313,7 +313,7 @@ function generateMdtTypeRefItems(item: S.MdtTypeRefItem): W.StructItem[] {
 
 function generateMdtTypeDefItems(item: S.MdtTypeDefItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorTypeAttr),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Namespace", item.Namespace),
         FM.formatU4Field("Extends", item.Extends),
@@ -330,7 +330,7 @@ function generateMdtFieldPtrItems(item: S.MdtFieldPtrItem): W.StructItem[] {
 
 function generateMdtFieldItems(item: S.MdtFieldItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorFieldAttr),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Signature", item.Signature),
     ];
@@ -345,8 +345,8 @@ function generateMdtMethodPtrItems(item: S.MdtMethodPtrItem): W.StructItem[] {
 function generateMdtMethodDefItems(item: S.MdtMethodDefItem): W.StructItem[] {
     return [
         FM.formatU4Field("RVA", item.RVA),
-        FM.formatU4Field("ImplFlags", item.ImplFlags),
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("ImplFlags", item.ImplFlags, F.CorMethodImpl),
+        FM.formatEnumField("Flags", item.Flags, F.CorMethodAttr),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Signature", item.Signature),
         FM.formatU4Field("ParamList", item.ParamList),
@@ -361,7 +361,7 @@ function generateMdtParamPtrItems(item: S.MdtParamPtrItem): W.StructItem[] {
 
 function generateMdtParamItems(item: S.MdtParamItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorParamAttr),
         FM.formatU4Field("Sequence", item.Sequence),
         FM.formatU4Field("Name", item.Name),
     ];
@@ -384,7 +384,7 @@ function generateMdtMemberRefItems(item: S.MdtMemberRefItem): W.StructItem[] {
 
 function generateMdtConstantItems(item: S.MdtConstantItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Type", item.Type),
+        FM.formatEnumField("Type", item.Type, F.CorElementType),
         FM.formatU4Field("PaddingZero", item.PaddingZero),
         FM.formatU4Field("Parent", item.Parent),
         FM.formatU4Field("Value", item.Value),
@@ -408,7 +408,7 @@ function generateMdtFieldMarshalItems(item: S.MdtFieldMarshalItem): W.StructItem
 
 function generateMdtDeclSecurityItems(item: S.MdtDeclSecurityItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Action", item.Action),
+        FM.formatEnumField("Action", item.Action, F.CorDeclSecurity),
         FM.formatU4Field("Parent", item.Parent),
         FM.formatU4Field("PermissionSet", item.PermissionSet),
     ];
@@ -450,7 +450,7 @@ function generateMdtEventPtrItems(item: S.MdtEventPtrItem): W.StructItem[] {
 
 function generateMdtEventItems(item: S.MdtEventItem): W.StructItem[] {
     return [
-        FM.formatU4Field("EventFlags", item.EventFlags),
+        FM.formatEnumField("EventFlags", item.EventFlags, F.CorEventAttr),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("EventType", item.EventType),
     ];
@@ -471,7 +471,7 @@ function generateMdtPropertyPtrItems(item: S.MdtPropertyPtrItem): W.StructItem[]
 
 function generateMdtPropertyItems(item: S.MdtPropertyItem): W.StructItem[] {
     return [
-        FM.formatU4Field("PropFlags", item.PropFlags),
+        FM.formatEnumField("PropFlags", item.PropFlags, F.CorPropertyAttr),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Type", item.Type),
     ];
@@ -479,7 +479,7 @@ function generateMdtPropertyItems(item: S.MdtPropertyItem): W.StructItem[] {
 
 function generateMdtMethodSemanticsItems(item: S.MdtMethodSemanticsItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Semantic", item.Semantic),
+        FM.formatEnumField("Semantic", item.Semantic, F.CorMethodSemanticsAttr),
         FM.formatU4Field("Method", item.Method),
         FM.formatU4Field("Association", item.Association),
     ];
@@ -507,7 +507,7 @@ function generateMdtTypeSpecItems(item: S.MdtTypeSpecItem): W.StructItem[] {
 
 function generateMdtImplMapItems(item: S.MdtImplMapItem): W.StructItem[] {
     return [
-        FM.formatU4Field("MappingFlags", item.MappingFlags),
+        FM.formatEnumField("MappingFlags", item.MappingFlags, F.CorPinvokeMap),
         FM.formatU4Field("MemberForwarded", item.MemberForwarded),
         FM.formatU4Field("ImportName", item.ImportName),
         FM.formatU4Field("ImportScope", item.ImportScope),
@@ -536,12 +536,12 @@ function generateMdtENCMapItems(item: S.MdtENCMapItem): W.StructItem[] {
 
 function generateMdtAssemblyItems(item: S.MdtAssemblyItem): W.StructItem[] {
     return [
-        FM.formatU4Field("HashAlgId", item.HashAlgId),
+        FM.formatEnumField("HashAlgId", item.HashAlgId, F.AssemblyHashAlgorithm),
         FM.formatU4Field("MajorVersion", item.MajorVersion),
         FM.formatU4Field("MinorVersion", item.MinorVersion),
         FM.formatU4Field("BuildNumber", item.BuildNumber),
         FM.formatU4Field("RevisionNumber", item.RevisionNumber),
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorAssemblyFlags),
         FM.formatU4Field("PublicKey", item.PublicKey),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Locale", item.Locale),
@@ -568,7 +568,7 @@ function generateMdtAssemblyRefItems(item: S.MdtAssemblyRefItem): W.StructItem[]
         FM.formatU4Field("MinorVersion", item.MinorVersion),
         FM.formatU4Field("BuildNumber", item.BuildNumber),
         FM.formatU4Field("RevisionNumber", item.RevisionNumber),
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorAssemblyFlags),
         FM.formatU4Field("PublicKeyOrToken", item.PublicKeyOrToken),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Locale", item.Locale),
@@ -594,7 +594,7 @@ function generateMdtAssemblyRefOSItems(item: S.MdtAssemblyRefOSItem): W.StructIt
 
 function generateMdtFileItems(item: S.MdtFileItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorFileFlags),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("HashValue", item.HashValue),
     ];
@@ -602,7 +602,7 @@ function generateMdtFileItems(item: S.MdtFileItem): W.StructItem[] {
 
 function generateMdtExportedTypeItems(item: S.MdtExportedTypeItem): W.StructItem[] {
     return [
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorTypeAttr),
         FM.formatU4Field("TypeDefId", item.TypeDefId),
         FM.formatU4Field("TypeName", item.TypeName),
         FM.formatU4Field("TypeNamespace", item.TypeNamespace),
@@ -613,7 +613,7 @@ function generateMdtExportedTypeItems(item: S.MdtExportedTypeItem): W.StructItem
 function generateMdtManifestResourceItems(item: S.MdtManifestResourceItem): W.StructItem[] {
     return [
         FM.formatU4Field("Offset", item.Offset),
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorManifestResourceFlags),
         FM.formatU4Field("Name", item.Name),
         FM.formatU4Field("Implementation", item.Implementation),
     ];
@@ -629,7 +629,7 @@ function generateMdtNestedClassItems(item: S.MdtNestedClassItem): W.StructItem[]
 function generateMdtGenericParamItems(item: S.MdtGenericParamItem): W.StructItem[] {
     return [
         FM.formatU4Field("Number", item.Number),
-        FM.formatU4Field("Flags", item.Flags),
+        FM.formatEnumField("Flags", item.Flags, F.CorGenericParamAttr),
         FM.formatU4Field("Owner", item.Owner),
         FM.formatU4Field("Name", item.Name),
     ];

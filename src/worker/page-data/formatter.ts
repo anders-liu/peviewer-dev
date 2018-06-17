@@ -203,12 +203,11 @@ function formatFlagEnum<T>(enumType: any, v: T, sz: number): {
                 .filter(ev => (ev.value & (v as any as number)) != 0)
                 .forEach(ev => lines.push(ev.name));
         } else {
-            grpList[key].values
-                .filter(ev => ev.value == (v as any as number))
-                .forEach(ev => lines.push(ev.name));
+            const mv = grpList[key].mask & (v as any as number);
+            const sv = grpList[key].values.filter(ev => ev.value == mv).shift();
+            if (sv) lines.push(sv.name);
         }
     }
-    lines = lines.sort();
 
     return [{ lines }];
 }
@@ -295,4 +294,4 @@ interface FlagEnumGroupCache {
 
 let flagEnumGroupCache: FlagEnumGroupCache = {};
 
-const regexFlagEnumGroupMask = /^([^_]+_)_Mask__(.+)$/g;
+const regexFlagEnumGroupMask = /^([a-z]+_)_Mask__([a-zA-Z]+)$/;
