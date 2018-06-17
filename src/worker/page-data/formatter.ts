@@ -195,6 +195,45 @@ function formatFlagEnum<T>(enumType: any, v: T, sz: number): {
 }[] {
     let lines: string[] = [];
 
+    const grpList = getFlagEnumGroups(enumType, sz);
+
+    for (const key in grpList) {
+        if (grpList[key].mask == 0) {
+            grpList[key].values
+                .filter(ev => (ev.value & (v as any as number)) != 0)
+                .forEach(ev => lines.push(ev.name));
+        } else {
+            grpList[key].values
+                .filter(ev => ev.value == (v as any as number))
+                .forEach(ev => lines.push(ev.name));
+        }
+    }
+    lines = lines.sort();
+
+    return [{ lines }];
+}
+
+function getFlagEnumGroups(enumType: any, sz: number): FlagEnumGroupList {
+    if (!flagEnumGroupCache[enumType.__NAME__]) {
+        buildEnumGroups(enumType, sz);
+    }
+
+    return flagEnumGroupCache[enumType.__NAME__];
+}
+
+function buildEnumGroups(enumType: any, sz: number): void {
+    let allValues: { name: string, value: number }[] = [];
+
+    for (const key in enumType) {
+        if (typeof enumType[key] === "number") {
+            allValues.push({ name: key, value: enumType[key] });
+        }
+    }
+
+    let grpList: FlagEnumGroupList = {
+        "": { mask: 0, values: [] }
+    };
+
     let fmt: (d: number) => string;
     switch (sz) {
         case 1: fmt = formatU1Hex; break;
@@ -203,14 +242,57 @@ function formatFlagEnum<T>(enumType: any, v: T, sz: number): {
         default: fmt = formatHex; break;
     }
 
-    for (let key in enumType) {
-        if (typeof enumType[key] === "number") {
-            const val = enumType[key] as number;
-            if (((v as any as number) & val) != 0) {
-                lines.push(`(${fmt(val)}) ${key}`);
-            }
+    let grpName = "", grpPrefix = "", grpMask = 0;
+
+    for (const v of allValues) {
+        // If it's a valud of a group...
+        if (grpPrefix && v.name.startsWith(grpPrefix)) {
+            grpList[grpName] = grpList[grpName] || { mask: grpMask, values: [] };
+            grpList[grpName].values.push({
+                name: `(${fmt(v.value)}) ${v.name.substring(grpPrefix.length, v.name.length)}`,
+                value: v.value
+            });
+            continue;
         }
+
+        // If it's a group mask...
+        const rs = regexFlagEnumGroupMask.exec(v.name);
+        if (rs) {
+            grpName = rs[2];
+            grpPrefix = rs[1];
+            grpMask = v.value;
+            continue;
+        } else {
+            grpName = "";
+            grpPrefix = "";
+            grpMask = 0;
+        }
+
+        // If it's a non-grouped value...
+        grpList[""].values.push({
+            name: `(${fmt(v.value)}) ${v.name}`,
+            value: v.value
+        });
     }
 
-    return [{ lines }];
+    flagEnumGroupCache[enumType.__NAME__] = grpList;
 }
+
+interface FlagEnumGroup {
+    mask: number;
+    values: {
+        name: string, value: number
+    }[];
+}
+
+interface FlagEnumGroupList {
+    [key /* group name */: string]: FlagEnumGroup;
+}
+
+interface FlagEnumGroupCache {
+    [key /* enum name */: string]: FlagEnumGroupList;
+}
+
+let flagEnumGroupCache: FlagEnumGroupCache = {};
+
+const regexFlagEnumGroupMask = /^([^_]+_)_Mask__(.+)$/g;
