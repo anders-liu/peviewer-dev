@@ -1,5 +1,5 @@
 import * as S from "../pe/structures";
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from "constants";
+import { PEImage } from "../pe/image";
 
 export function formatU1RawHex(d: number): string {
     return padZeroLeft(d.toString(16).toUpperCase(), 2);
@@ -38,7 +38,7 @@ export function formatDec(v: number): string {
 }
 
 export function formatHexDec(d: number): string {
-    return `${formatHex(d)}h (${formatDec(d)})`;
+    return `${formatHex(d)} (${formatDec(d)})`;
 }
 
 export function formatBytes(bytes: Uint8Array, lineWidth: number = 16): string[] {
@@ -127,6 +127,36 @@ export function formatGuidField(name: string, f: S.Field): W.StructItem {
 export function formatEnumField<T>(name: string, f: S.EnumField<T>, enumType: any): W.StructItem {
     const desc = descEnum(enumType, f.value, f._size);
     return formatUIntField(name, f as any as S.UIntField, false, [desc]);
+}
+
+export function formatRvaField(name: string, f: S.U4Field, pe: PEImage, navTarget?: W.NavTarget): W.StructItem {
+    let descList: W.ItemDescription[] = [];
+
+    if (f.value > 0) {
+        const sh = pe.getSectionHeaderByRva(f.value);
+        const offset = pe.rvaToOffset(f.value);
+        if (sh != null && offset > 0) {
+            descList.push(<W.ItemRvaDescription>{
+                type: W.ItemDescriptionType.RVA,
+                sectionHeaderTarget: {
+                    title: sh.h.Name.value,
+                    pageID: W.PageID.HEADERS,
+                    elemID: `${W.KnownElemID.SECTION_HEADER}.${sh.i}`
+                },
+                fileOffset: formatU4Hex(offset),
+                sectionOffset: formatHex(f.value - sh.h.VirtualAddress.value)
+            });
+
+            if (navTarget) {
+                descList.push(<W.ItemNavDescription>{
+                    type: W.ItemDescriptionType.NAV,
+                    target: navTarget
+                });
+            }
+        }
+    }
+
+    return formatU4Field(name, f, false, descList);
 }
 
 export function descTimeStamp(value: number): W.ItemGroupedLinesDescription {

@@ -24,7 +24,7 @@ export function renderGroupedStruct(s: W.GroupedStruct): JSX.Element {
             <StructTable>
                 {s.groups && s.groups.map((gv, gi) => {
                     return [
-                        renderStructGroupTitleRow(gv.title, gi.toString())
+                        renderStructGroupTitleRow(gv.title, gi.toString(), gv.elemID)
                     ].concat(gv.items && gv.items.map((v, i) =>
                         renderStructItemRow(v, `${gi}.${i}`)) || []);
                 })}
@@ -51,14 +51,14 @@ function renderStructItemRow(item: W.StructItem, key: string): JSX.Element {
     );
 }
 
-function renderStructGroupTitleRow(title: string, key: string): JSX.Element | null {
-    return title ? (<tr key={key} className="st-grphdr"><th colSpan={6}>{title}</th></tr>) : null;
+function renderStructGroupTitleRow(title: string, key: string, elemID?: string): JSX.Element | null {
+    return title ? (<tr key={key} className="st-grphdr"><th id={elemID} colSpan={6}>{title}</th></tr>) : null;
 }
 
 function renderDescriptions(desc?: W.ItemDescription[]): JSX.Element | null {
     return desc == null ? null : (
         <React.Fragment>
-            {desc.map((v, i) => renderDescription(v, i))}
+            {desc.filter(v => v != null).map((v, i) => renderDescription(v, i))}
         </React.Fragment>
     );
 }
@@ -79,6 +79,15 @@ function renderDescription(desc: W.ItemDescription, key: number): JSX.Element | 
                     See: <NavLink target={(desc as W.ItemNavDescription).target} />
                 </div>
             );
+        case W.ItemDescriptionType.RVA: {
+            const { sectionHeaderTarget, fileOffset, sectionOffset } = desc as W.ItemRvaDescription;
+            return (
+                <div key={key} className="st-des st-des-rva">
+                    Offset={fileOffset},
+                    [<NavLink target={sectionHeaderTarget} />]+{sectionOffset}
+                </div>
+            );
+        }
         default:
             return null;
     }

@@ -27,21 +27,29 @@ function generateCliHeader(pe: PEImage): W.SimpleStruct {
         FM.formatU4Field("cb", h.cb, true),
         FM.formatU2Field("MajorRuntimeVersion", h.MajorRuntimeVersion, true),
         FM.formatU2Field("MinorRuntimeVersion", h.MinorRuntimeVersion, true),
-        FM.formatU4Field("MetaData.VirtualAddress", h.MetaData.VirtualAddress),
+        FM.formatRvaField("MetaData.VirtualAddress", h.MetaData.VirtualAddress, pe, {
+            title: W.KnownTitle.MD_ROOT,
+            pageID: W.PageID.MD_HEADERS,
+            elemID: W.KnownElemID.MD_ROOT
+        }),
         FM.formatU4Field("MetaData.Size", h.MetaData.Size, true),
         FM.formatU4Field("Flags", h.Flags),
         FM.formatU4Field("EntryPointToken", h.EntryPointToken),
-        FM.formatU4Field("Resources.VirtualAddress", h.Resources.VirtualAddress),
+        FM.formatRvaField("Resources.VirtualAddress", h.Resources.VirtualAddress, pe),
         FM.formatU4Field("Resources.Size", h.Resources.Size, true),
-        FM.formatU4Field("StrongNameSignature.VirtualAddress", h.StrongNameSignature.VirtualAddress),
+        FM.formatRvaField("StrongNameSignature.VirtualAddress", h.StrongNameSignature.VirtualAddress, pe, {
+            title: W.KnownTitle.SN_SIG,
+            pageID: W.PageID.MD_HEADERS,
+            elemID: W.KnownElemID.SN_SIG
+        }),
         FM.formatU4Field("StrongNameSignature.Size", h.StrongNameSignature.Size, true),
-        FM.formatU4Field("CodeManagerTable.VirtualAddress", h.CodeManagerTable.VirtualAddress),
+        FM.formatRvaField("CodeManagerTable.VirtualAddress", h.CodeManagerTable.VirtualAddress, pe),
         FM.formatU4Field("CodeManagerTable.Size", h.CodeManagerTable.Size, true),
-        FM.formatU4Field("VTableFixups.VirtualAddress", h.VTableFixups.VirtualAddress),
+        FM.formatRvaField("VTableFixups.VirtualAddress", h.VTableFixups.VirtualAddress, pe),
         FM.formatU4Field("VTableFixups.Size", h.VTableFixups.Size, true),
-        FM.formatU4Field("ExportAddressTableJumps.VirtualAddress", h.ExportAddressTableJumps.VirtualAddress),
+        FM.formatRvaField("ExportAddressTableJumps.VirtualAddress", h.ExportAddressTableJumps.VirtualAddress, pe),
         FM.formatU4Field("ExportAddressTableJumps.Size", h.ExportAddressTableJumps.Size, true),
-        FM.formatU4Field("ManagedNativeHeader.VirtualAddress", h.ManagedNativeHeader.VirtualAddress),
+        FM.formatRvaField("ManagedNativeHeader.VirtualAddress", h.ManagedNativeHeader.VirtualAddress, pe),
         FM.formatU4Field("ManagedNativeHeader.Size", h.ManagedNativeHeader.Size, true),
     ];
 

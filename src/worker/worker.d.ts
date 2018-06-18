@@ -160,6 +160,7 @@ declare namespace W {
         STR = "STR",
         GRPL = "GRPL",
         NAV = "NAV",
+        RVA = "RVA",
     }
 
     export interface ItemDescription {
@@ -179,6 +180,12 @@ declare namespace W {
 
     export interface ItemNavDescription extends ItemDescription {
         target: NavTarget;
+    }
+
+    export interface ItemRvaDescription extends ItemDescription {
+        sectionHeaderTarget: NavTarget;
+        fileOffset: string;
+        sectionOffset: string;
     }
 
     export interface HeadersPageData extends PageData {

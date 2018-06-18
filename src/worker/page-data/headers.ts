@@ -209,13 +209,23 @@ function generateDataDirectories(pe: PEImage): W.GroupedStruct {
     const h = pe.getDataDirectories();
     if (!h) return s;
 
-    s.groups = h.items.map((v, i) => ({
-        title: `[${i}] ${F.ImageDirectoryEntry[i] || ""}`,
-        items: [
-            FM.formatU4Field("VirtualAddress", v.VirtualAddress),
-            FM.formatU4Field("Size", v.Size, true),
-        ]
-    } as W.SimpleStruct));
+    s.groups = h.items.map((v, i) => {
+        let navTarget: W.NavTarget | undefined;
+        if (i == F.ImageDirectoryEntry.IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR) {
+            navTarget = {
+                title: W.KnownTitle.MD_HEADERS,
+                pageID: W.PageID.MD_HEADERS,
+            }
+        }
+
+        return <W.SimpleStruct>{
+            title: `[${i}] ${F.ImageDirectoryEntry[i] || ""}`,
+            items: [
+                FM.formatRvaField("VirtualAddress", v.VirtualAddress, pe, navTarget),
+                FM.formatU4Field("Size", v.Size, true),
+            ]
+        }
+    });
 
     return s;
 }
@@ -231,6 +241,7 @@ function generateSectionHeaders(pe: PEImage): W.GroupedStruct {
 
     s.groups = h.items.map((v, i) => ({
         title: `[${i}] (${v.Name.value})`,
+        elemID: `${W.KnownElemID.SECTION_HEADER}.${i}`,
         items: [
             FM.formatStringField("Name", v.Name),
             FM.formatU4Field("VirtualSize", v.VirtualSize, true),

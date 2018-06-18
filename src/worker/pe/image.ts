@@ -733,17 +733,27 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
     //
 
     public rvaToOffset(rva: number): number {
-        const sh = this.getSectionHeaderByRva(rva);
-        if (!sh) return 0;
+        const r = this.getSectionHeaderByRva(rva);
+        if (!r) return 0;
 
-        return rva - sh.VirtualAddress.value + sh.PointerToRawData.value;
+        const { h } = r;
+        return rva - h.VirtualAddress.value + h.PointerToRawData.value;
     }
 
-    public offsetToRva(offset: number): number {
-        const sh = this.getSectionHeaderByOffset(offset);
-        if (!sh) return 0;
+    public getSectionHeaderByRva(rva: number): {
+        h: S.ImageSectionHeader, i: number
+    } | undefined {
+        if (!this.sectionHeaders) return undefined;
 
-        return offset - sh.PointerToRawData.value + sh.VirtualAddress.value;
+        for (let i = 0; i < this.sectionHeaders.items.length; i++) {
+            const h = this.sectionHeaders.items[i];
+            const p = h.VirtualAddress.value;
+            const sz = h.VirtualSize.value;
+            if (rva >= p && rva < p + sz) {
+                return { h, i };
+            }
+        }
+        return undefined;
     }
 
     //
@@ -808,22 +818,6 @@ export class PEImage implements L.FileDataProvider, L.MetadataSizingProvider {
         this.sectionHeaders = L.loadStructArrayByCount(this, ptr,
             L.loadImageSectionHeader,
             this.fileHeader.NumberOfSections.value);
-    }
-
-    private getSectionHeaderByOffset(offset: number): S.ImageSectionHeader | undefined {
-        return this.sectionHeaders && this.sectionHeaders.items.filter(h => {
-            const p = h.PointerToRawData.value;
-            const sz = h.SizeOfRawData.value;
-            return offset >= p && offset < p + sz;
-        }).shift();
-    }
-
-    private getSectionHeaderByRva(rva: number): S.ImageSectionHeader | undefined {
-        return this.sectionHeaders && this.sectionHeaders.items.filter(h => {
-            const p = h.VirtualAddress.value;
-            const sz = h.VirtualSize.value;
-            return rva >= p && rva < p + sz;
-        }).shift();
     }
 
     private isDataDirectoryValid(dd?: S.ImageDataDirectory): boolean {
