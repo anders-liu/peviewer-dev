@@ -129,6 +129,19 @@ export function formatEnumField<T>(name: string, f: S.EnumField<T>, enumType: an
     return formatUIntField(name, f as any as S.UIntField, false, [desc]);
 }
 
+export function formatTimeStampDesc(value: number): W.ItemGroupedLinesDescription {
+    const time = new Date(value * 1000);
+    return {
+        type: W.ItemDescriptionType.GRPL,
+        groups: [{
+            lines: [
+                time.toString(),
+                time.toUTCString()
+            ]
+        }]
+    };
+}
+
 function padZeroLeft(str: string, len: number): string {
     if (str.length < len) {
         return "0".repeat(len - str.length) + str;

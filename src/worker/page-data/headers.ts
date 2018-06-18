@@ -80,7 +80,8 @@ function generateFileHeader(pe: PEImage): W.SimpleStruct {
     s.items = [
         FM.formatEnumField("Machine", h.Machine, F.ImageFileMachine),
         FM.formatU2Field("NumberOfSections", h.NumberOfSections, true),
-        FM.formatU4Field("TimeDateStamp", h.TimeDateStamp),
+        FM.formatU4Field("TimeDateStamp", h.TimeDateStamp, true,
+            [FM.formatTimeStampDesc(h.TimeDateStamp.value)]),
         FM.formatU4Field("PointerToSymbolTable", h.PointerToSymbolTable),
         FM.formatU4Field("NumberOfSymbols", h.NumberOfSymbols, true),
         FM.formatU2Field("SizeOfOptionalHeader", h.SizeOfOptionalHeader, true),
