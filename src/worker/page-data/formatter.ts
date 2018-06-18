@@ -125,11 +125,11 @@ export function formatGuidField(name: string, f: S.Field): W.StructItem {
 }
 
 export function formatEnumField<T>(name: string, f: S.EnumField<T>, enumType: any): W.StructItem {
-    const desc = formatEnumDesc(enumType, f.value, f._size);
+    const desc = descEnum(enumType, f.value, f._size);
     return formatUIntField(name, f as any as S.UIntField, false, [desc]);
 }
 
-export function formatTimeStampDesc(value: number): W.ItemGroupedLinesDescription {
+export function descTimeStamp(value: number): W.ItemGroupedLinesDescription {
     const time = new Date(value * 1000);
     return {
         type: W.ItemDescriptionType.GRPL,
@@ -139,6 +139,13 @@ export function formatTimeStampDesc(value: number): W.ItemGroupedLinesDescriptio
                 time.toUTCString()
             ]
         }]
+    };
+}
+
+export function descNav(target: W.NavTarget): W.ItemNavDescription {
+    return {
+        type: W.ItemDescriptionType.NAV,
+        target
     };
 }
 
@@ -169,7 +176,7 @@ function formatUIntField(name: string, f: S.UIntField, showDec?: boolean, desc?:
     }
 }
 
-function formatEnumDesc<T>(enumType: any, v: T, sz: number): W.ItemGroupedLinesDescription {
+function descEnum<T>(enumType: any, v: T, sz: number): W.ItemGroupedLinesDescription {
     const groups = !enumType.__FLAG__ ?
         [formatNonFlagEnum(enumType, v, sz)] : formatFlagEnum(enumType, v, sz);
 

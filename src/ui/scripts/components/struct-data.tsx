@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactRedux from "react-redux";
+import { NavLink } from "./nav-link";
 
 export function renderTableTitle(title: string, elemID?: string): JSX.Element {
     return <h2 id={elemID} className="struct-title">{title}</h2>;
@@ -65,9 +66,19 @@ function renderDescriptions(desc?: W.ItemDescription[]): JSX.Element | null {
 function renderDescription(desc: W.ItemDescription, key: number): JSX.Element | null {
     switch (desc.type) {
         case W.ItemDescriptionType.STR:
-            return <div key={key} className="st-des st-des-str">{(desc as W.ItemSimpleDescription).content}</div>;
+            return (
+                <div key={key} className="st-des st-des-str">
+                    {(desc as W.ItemSimpleDescription).content}
+                </div>
+            );
         case W.ItemDescriptionType.GRPL:
             return renderDescGrpl(desc as W.ItemGroupedLinesDescription, key);
+        case W.ItemDescriptionType.NAV:
+            return (
+                <div key={key} className="st-des st-des-nav">
+                    See: <NavLink target={(desc as W.ItemNavDescription).target} />
+                </div>
+            );
         default:
             return null;
     }

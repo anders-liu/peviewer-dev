@@ -46,7 +46,8 @@ function generateDosHeader(pe: PEImage): W.SimpleStruct {
         FM.formatU2Field("e_oemid", h.e_oemid),
         FM.formatU2Field("e_oeminfo", h.e_oeminfo),
         FM.formatBytesField("e_res2", h.e_res2),
-        FM.formatU4Field("e_lfanew", h.e_lfanew),
+        FM.formatU4Field("e_lfanew", h.e_lfanew, false,
+            [FM.descNav({ title: W.KnownTitle.PE_SIGNATURE, pageID: W.PageID.HEADERS, elemID: W.KnownElemID.PE_SIGNATURE })]),
     ];
 
     return s;
@@ -79,9 +80,10 @@ function generateFileHeader(pe: PEImage): W.SimpleStruct {
 
     s.items = [
         FM.formatEnumField("Machine", h.Machine, F.ImageFileMachine),
-        FM.formatU2Field("NumberOfSections", h.NumberOfSections, true),
+        FM.formatU2Field("NumberOfSections", h.NumberOfSections, true,
+            [FM.descNav({ title: W.KnownTitle.SECTION_HEADERS, pageID: W.PageID.HEADERS, elemID: W.KnownElemID.SECTION_HEADERS })]),
         FM.formatU4Field("TimeDateStamp", h.TimeDateStamp, true,
-            [FM.formatTimeStampDesc(h.TimeDateStamp.value)]),
+            [FM.descTimeStamp(h.TimeDateStamp.value)]),
         FM.formatU4Field("PointerToSymbolTable", h.PointerToSymbolTable),
         FM.formatU4Field("NumberOfSymbols", h.NumberOfSymbols, true),
         FM.formatU2Field("SizeOfOptionalHeader", h.SizeOfOptionalHeader, true),

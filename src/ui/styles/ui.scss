@@ -35,6 +35,10 @@ strong, .strong {
 
 .nav {
     cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .pgn {
@@ -88,10 +92,6 @@ strong, .strong {
 
     .nav {
         margin-left: $size-pad-lg;
-
-        &:hover {
-            text-decoration: underline;
-        }
     }
 
     &>ul {
