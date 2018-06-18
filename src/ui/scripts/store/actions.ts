@@ -50,3 +50,11 @@ export interface SetPEPropsAction extends Redux.Action {
 export function createSetPEPropsAction(is32Bit?: boolean, isManaged?: boolean): SetPEPropsAction {
     return { type: ActionType.SET_PE_PROPS, is32Bit, isManaged };
 }
+
+export interface SetWorkerErrorAction extends Redux.Action {
+    message: string;
+}
+
+export function createSetWorkerErrorAction(message: string): SetWorkerErrorAction {
+    return { type: ActionType.SET_WORKER_ERROR, message };
+}

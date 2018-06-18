@@ -51,6 +51,8 @@ function handleMessage(msg: W.WorkerMessage): void {
             break;
 
         case W.WorkerMessageType.RES_PE_ERROR:
+            const { error } = <W.ResPEErrorMessage>msg;
+            _store.dispatch(A.createSetWorkerErrorAction(error));
             break;
     }
 }

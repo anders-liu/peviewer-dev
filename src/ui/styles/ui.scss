@@ -14,13 +14,23 @@ strong, .strong {
     @include txt-bold;
 }
 
-.info {
-    color: $color-info-txt;
-    border: 1px solid $color-info-bdr;
+.info, .err {
+    border: 1px solid;
     border-radius: 5px;
-    background: $color-info-bg;
     padding: $size-pad-lg;
     margin: $size-pad-lg;
+}
+
+.info {
+    color: $color-info-txt;
+    border-color:  $color-info-bdr;
+    background: $color-info-bg;
+}
+
+.err {
+    color: $color-err-txt;
+    border-color: $color-err-bdr;
+    background: $color-err-bg;
 }
 
 .nav {
@@ -160,7 +170,7 @@ strong, .strong {
             font-size: $size-txt-mid-lg;
         }
 
-        .info {
+        .info, .err {
             margin-left: auto;
             margin-right: auto;
             width: fit-content;

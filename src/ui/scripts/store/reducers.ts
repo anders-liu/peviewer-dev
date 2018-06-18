@@ -7,6 +7,7 @@ export const appReducer = Redux.combineReducers({
     fileInfo,
     pageData,
     navList,
+    workerError,
 }) as Redux.Reducer<S.AppState>;
 
 function appInfo(state: S.AppInfo | null = null, action: Redux.Action): S.AppInfo | null {
@@ -20,12 +21,10 @@ function fileInfo(state: S.FileInfo | null = null, action: Redux.Action): S.File
             const { name, size } = file;
             return Object.assign({}, state, { name, size });
         }
-
         case A.ActionType.SET_PE_PROPS: {
             const { is32Bit, isManaged } = action as A.SetPEPropsAction;
             return Object.assign({}, state, { is32Bit, isManaged });
         }
-
         default: return state;
     }
 }
@@ -36,7 +35,9 @@ function pageData(state: W.PageData | null = null, action: Redux.Action): W.Page
             const { data } = action as A.SetPageDataAction;
             return data;
         }
-
+        case A.ActionType.SET_WORKER_ERROR: {
+            return null;
+        }
         default: return state;
     }
 }
@@ -47,7 +48,19 @@ function navList(state: W.NavData[] = [], action: Redux.Action): W.NavData[] {
             const { navList } = action as A.SetNavListAction;
             return navList;
         }
+        default: return state;
+    }
+}
 
+function workerError(state: string | null = null, action: Redux.Action): string | null {
+    switch (action.type) {
+        case A.ActionType.SET_WORKER_ERROR: {
+            const { message } = action as A.SetWorkerErrorAction;
+            return message;
+        }
+        case A.ActionType.SET_PAGE_DATA: {
+            return null;
+        }
         default: return state;
     }
 }

@@ -5,6 +5,7 @@ export interface AppState {
     fileInfo?: FileInfo;
     pageData?: W.PageData;
     navList: W.NavData[];
+    workerError?: string;
 }
 
 export interface AppInfo {
